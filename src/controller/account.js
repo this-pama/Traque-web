@@ -126,7 +126,7 @@ export default({ config, db }) => {
       function(token, done) {
         Account.findOne({ username: req.body.email.toLowerCase() }, function(err, user) {
           if (!user) {
-            return res.status(200).json({message : 'No account with that email address exists.'});
+            return res.status(400).json({message : 'No account with that email address exists.'});
           }
   
           user.resetPasswordToken = token;

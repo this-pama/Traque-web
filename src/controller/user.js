@@ -29,6 +29,15 @@ export default({ config, db }) => {
     });
   });
 
+  api.get('/:id', (req, res) => {
+    User.findById(req.params.id, (err, users) => {
+      if (err) {
+        return res.status(400).json(err);
+      }
+      res.status(200).json(users);
+    });
+  });
+
   // 'v1/user/add' - Add a user
   api.post('/add', async (req,res) =>{
 
@@ -142,10 +151,16 @@ export default({ config, db }) => {
       key: activationKey, 
       expiration: { $gt: Date.now() }  
       },
-      (err, key) =>{
-        if(err) return res.status(500).send(err)
+      async (err, key) =>{
+        if(err || !key) return res.status(500).send(err)
 
-        return res.status(200).json({ message: 'success', data: key })
+        User.findById(key.userId, (err, user)=>{
+          if(err) return res.status(500).send(err)
+
+          return res.status(200).json({ message: 'success', data: { key, user} })
+        });
+
+        
       }
 
     )
