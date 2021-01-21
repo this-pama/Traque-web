@@ -22,10 +22,13 @@ let generateAccessToken = (req, res, next) => {
 }
 
 let respond = (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     user: req.user.username,
     token: req.token,
     id: req.user.id,
+    isAdmin : req.user.isAdmin,
+    isStaff: req.user.isStaff,
+    isSuper: req.user.isSuper,
   });
 }
 

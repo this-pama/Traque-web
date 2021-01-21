@@ -1,8 +1,9 @@
-import mongoose from 'mongoose';
+require('dotenv').config();
 import { Router } from 'express';
 import User from '../model/user';
 import UserType from '../model/userTypes'
 import Account from '../model/account'
+import Ministry from '../model/ministry'
 import ExpoToken from "../model/expoPushToken"
 import Expo from 'expo-server-sdk';
 import passport from 'passport'
@@ -41,10 +42,15 @@ export default({ config, db }) => {
       designation,
       staffId,
       department,
+      ministry,
       address,
       state,
       country,
       userType,
+      isAdmin,
+      isSuper,
+      isStaff,
+      gradeLevel,
     } = req.body;
 
     //determine if user type exist
@@ -60,22 +66,37 @@ export default({ config, db }) => {
       gender,
       designation,
       staffId,
+      ministry,
       department,
       address,
       state,
       country,
       userType: usertype && usertype[0]._id,
-    })
+      isAdmin,
+      isSuper,
+      isStaff,
+      gradeLevel,
+    }, ...req.body)
 
     let activationKey = randomize('0', 6);
+    const { EMAIL_SENDER } = process.env;
+
+    //send error message if no minstry id
+    if(!ministry && (isAdmin || isStaff))  return res.status(500).send("Ministry id is required");
 
     newUser.save(async (err,doc) =>{
-      if(err) return res.status(500).send(err)
+      if(err) return res.status(500).send(err);
       
+      //save user id in ministry document
+      await Ministry
+      .findByIdAndUpdate(ministry, {userId: doc._id}).exec()
+      .catch(err=> res.status(500).send(err))
+
       //send activation key to user via sms and email
-      sendMail('info@aapexapps.net', { email: email, firstName, lastName, activationKey})
+      sendMail( EMAIL_SENDER , { email: email, firstName, lastName, activationKey})
 
       sendSms(telephone, `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`)
+
 
       let key = new ActivationKey({
         key: activationKey,
@@ -131,7 +152,7 @@ export default({ config, db }) => {
   })
 
 
-  // 'v1/user/activate/:userId' - Activate activate account
+  // 'v1/user/activate/:userId' - Activate account
   api.post('/activate/:userId', async (req, res)=>{
     const { userId } = req.params;
     const { password, confirmPassword, email } = req.body;
@@ -142,8 +163,20 @@ export default({ config, db }) => {
     })
 
     let doc= await User.findById(userId).exec();
+    if(!doc) return res.status(501)
+    .json({ 
+      message: 'user does not exist'
+    })
 
-    Account.register(new Account({ username: email, email }), password, function(err, account) {
+    const { isAdmin, isStaff, isSuper, _id } = doc;
+
+    Account.register(new Account({ 
+      username: email, 
+      email,
+      isAdmin,
+      isStaff,
+      isSuper,
+     }), password, function(err, account) {
       if (err) return res.status(500).json(err);
       
       passport.authenticate(
@@ -188,6 +221,15 @@ export default({ config, db }) => {
             }) 
         
       })  
+    })
+
+    api.get('/admin-list',async (req, res)=>{
+      const comments = await User.find({isAdmin: true })
+      .populate('ministry')
+      .populate({path : 'accountId', model: 'Account'})
+      // .catch(e=> console.log('/user/admin-list', e))
+
+       return res.status(200).json({ data: comments })
     })
 
 

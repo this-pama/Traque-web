@@ -5,6 +5,7 @@ import middleware from '../middleware';
 import user from '../controller/user';
 import account from '../controller/account';
 import usertype from '../controller/userType'
+import ministry from '../controller/ministry'
 
 
 let router = express();
@@ -19,6 +20,7 @@ initializeDb(db => {
   router.use('/user', user({ config, db }));
   router.use('/account', account({ config, db }));
   router.use('/usertype', usertype({ config, db }));
+  router.use('/ministry', ministry({ config, db }));
 
 });
 
