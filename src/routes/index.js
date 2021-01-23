@@ -6,6 +6,8 @@ import user from '../controller/user';
 import account from '../controller/account';
 import usertype from '../controller/userType'
 import ministry from '../controller/ministry'
+import department from '../controller/department'
+import subDepartment from '../controller/subDepartment'
 
 
 let router = express();
@@ -21,6 +23,8 @@ initializeDb(db => {
   router.use('/account', account({ config, db }));
   router.use('/usertype', usertype({ config, db }));
   router.use('/ministry', ministry({ config, db }));
+  router.use('/department', department({ config, db }))
+  router.use('/department/sub', subDepartment({ config, db }))
 
 });
 

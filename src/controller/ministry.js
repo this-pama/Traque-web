@@ -69,7 +69,7 @@ export default({ config, db }) => {
       user: userData,
     })
 
-  })
+  });
 
   return api;
 }

@@ -4,17 +4,20 @@ import User from '../model/user';
 import UserType from '../model/userTypes'
 import Account from '../model/account'
 import Ministry from '../model/ministry'
+import Department from '../model/department'
+import SubDepartment from '../model/subDepartment'
 import ExpoToken from "../model/expoPushToken"
 import Expo from 'expo-server-sdk';
 import passport from 'passport'
 
-import {sendMail, sendSms } from '../middleware/service'
+import {sendMail, sendSms, isObjectIdValid } from '../middleware/service'
 
 var randomize = require('randomatic');
 
 import ActivationKey from '../model/activationKeys'
 
 import { authenticate , generateAccessToken, respond } from '../middleware/authMiddleware';
+import { select } from 'async';
 
 export default({ config, db }) => {
   let api = Router();
@@ -83,7 +86,7 @@ export default({ config, db }) => {
       userType: usertype && usertype[0]._id,
       isAdmin,
       isSuper,
-      isStaff,
+      // isStaff,
       gradeLevel,
     }, ...req.body)
 
@@ -100,6 +103,85 @@ export default({ config, db }) => {
       await Ministry
       .findByIdAndUpdate(ministry, {userId: doc._id}).exec()
       .catch(err=> res.status(500).send(err))
+
+      //send activation key to user via sms and email
+      sendMail( EMAIL_SENDER , { email: email, firstName, lastName, activationKey})
+
+      sendSms(telephone, `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`)
+
+
+      let key = new ActivationKey({
+        key: activationKey,
+        expiration: Date.now() + (3600000 * 24), //24 hours
+        userId: doc._id,
+        email,
+      })
+  
+      await key.save();
+
+      return res.status(200).json({
+        message: 'success',
+        key: activationKey,
+      });
+      
+    });
+
+
+  })
+
+
+  // 'v1/user/add' - Add a staff user 
+  api.post('/add/staff', async (req,res) =>{
+
+    const {
+      firstName, lastName,email, telephone,
+      dob, gender, designation, staffId, 
+      ministry, address, state, country, permission,
+      gradeLevel, department, subDepartment,
+    } = req.body;
+
+    //send error message if no minstry or department id
+    if(isObjectIdValid(ministry) == false 
+      || isObjectIdValid(department) == false )  
+        return res.status(500).send("Ministry and Department id is required");
+
+      //send error if sub department but id not vaild
+    if(subDepartment && isObjectIdValid(subDepartment) == false) 
+      return res.status(500).send("Sub department id is must be valid");
+
+
+    let newUser = User({
+      firstName, lastName,email, telephone,
+      dob, gender, designation, staffId, department, subDepartment,
+      ministry, address, state, country, permission,
+      gradeLevel, isStaff: true, gradeLevel, 
+    }, ...req.body)
+
+    let activationKey = randomize('0', 6);
+    const { EMAIL_SENDER } = process.env;
+
+    newUser.save(async (err,doc) =>{
+      if(err) return res.status(500).send(err);
+
+      //push staff id to ministry staff array
+      await Ministry.findByIdAndUpdate(ministry, {
+        $push: { staff : doc._id }
+      })
+      .catch(e=>  res.status(500).send(e) )
+
+      //push staff id to department staff array
+      await Department.findByIdAndUpdate(department, {
+        $push: { staff : doc._id }
+      })
+      .catch(e=>  res.status(500).send(e) )
+
+
+      //if sub department details exist, save staff id in sub department
+      if( subDepartment && isObjectIdValid(subDepartment)){
+        await SubDepartment.findByIdAndUpdate(subDepartment, {
+          $push: { staff : doc._id }
+        })
+      }
 
       //send activation key to user via sms and email
       sendMail( EMAIL_SENDER , { email: email, firstName, lastName, activationKey})
@@ -188,6 +270,7 @@ export default({ config, db }) => {
     Account.register(new Account({ 
       username: email, 
       email,
+      userId: _id,
       isAdmin,
       isStaff,
       isSuper,
@@ -245,6 +328,24 @@ export default({ config, db }) => {
       // .catch(e=> console.log('/user/admin-list', e))
 
        return res.status(200).json({ data: comments })
+    })
+
+
+    //get list of staff related to admin id
+    api.get('/staff-list/:userId', async (req, res)=>{
+      const { userId } = req.params;
+      if(isObjectIdValid(userId) == false) return res.status(500).send('User id is not valid')
+
+      const user = await User.findById(userId);
+
+      if(!user || !user.ministry) return res.status(500).send('Ministry id is not found')
+
+      const data = await User.find({ ministry : user.ministry, isStaff: true })
+                        .populate({path: 'department', select: ['_id', 'name'] })
+                        .populate({path: 'subDepartment', select: ['_id', 'name'] })
+                        .populate({path: 'ministry', select: ['_id', 'name'] })
+
+      return res.status(200).json({ data })
     })
 
 

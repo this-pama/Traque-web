@@ -3,8 +3,14 @@ const Email = require('email-templates');
 const path = require('path');
 const fetch = require('node-fetch');
 import Expo from 'expo-server-sdk';
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const { NODE_ENV } = process.env;
+
+export const isObjectIdValid = id => 
+  ObjectId.isValid(id) 
+  ? String(new ObjectId(id) === id) 
+    ? true : false : false;
 
 export const sendMail= (sender, receiver, folder) => {
   const email = new Email({

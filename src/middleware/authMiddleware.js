@@ -26,6 +26,7 @@ let respond = (req, res) => {
     user: req.user.username,
     token: req.token,
     id: req.user.id,
+    userId: req.user.userId,
     isAdmin : req.user.isAdmin,
     isStaff: req.user.isStaff,
     isSuper: req.user.isSuper,

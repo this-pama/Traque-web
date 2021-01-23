@@ -26,6 +26,7 @@ let UserSchema = new Schema({
   profileImage: String,
   ministry: {type: Schema.Types.ObjectId, ref: 'Ministry', required : false },
   department: {type: Schema.Types.ObjectId, ref: 'Department', required : false },
+  subDepartment: {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
   designation: String,
   accountId: {type: Schema.Types.ObjectId, ref: 'Account', required : false },
   userType: {type: Schema.Types.ObjectId, ref: 'UserType', required : false },
@@ -40,6 +41,20 @@ let UserSchema = new Schema({
   isSuper: {
     type: Boolean,
     default: false
+  },
+  permission:{
+    createServiceFile : {
+      type: Boolean,
+      default: false
+    },
+    createManagementFile: {
+      type: Boolean,
+      default: false
+    },
+    viewReport :{
+      type: Boolean,
+      default: false
+    },
   },
   createdAt:  {
     type: Date,
