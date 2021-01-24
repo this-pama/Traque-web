@@ -33,6 +33,9 @@ export default({ config, db }) => {
   });
 
   api.get('/:id', (req, res) => {
+    if(isObjectIdValid(req.params.id) == false) 
+      return res.status(400).send('User id is not valid');
+      
     User.findById(req.params.id, (err, users) => {
       if (err) {
         return res.status(400).json(err);
@@ -88,6 +91,11 @@ export default({ config, db }) => {
       isSuper,
       // isStaff,
       gradeLevel,
+      permission:{
+        createServiceFile: true,
+        createMagementFile: false,
+        viewReport: true,
+      }
     }, ...req.body)
 
     let activationKey = randomize('0', 6);
