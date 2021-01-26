@@ -11,6 +11,7 @@ let history = new Schema({
 
   sentBy: {type: Schema.Types.ObjectId, ref: 'User', required : false },
   sentDate: {  type: Date },
+  sentTime: {  type: Date },
 
   receivedBy: {type: Schema.Types.ObjectId, ref: 'User', required : false },
   receivedDate: {  type: Date },
@@ -55,9 +56,9 @@ let File = new Schema({
    subDepartment: {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
    outgoing: {
      value: {
-      type: Boolean,
-      default: false
-    },
+        type: Boolean,
+        default: false
+      },
      label: String,
      userId: {type: Schema.Types.ObjectId, ref: 'User' },
    },
@@ -83,7 +84,7 @@ let File = new Schema({
       default: false
     },
     label: String,
-    userId: {type: Schema.Types.ObjectId, ref: 'User' },
+    userId: [{type: Schema.Types.ObjectId, ref: 'User' }],
   },
   delayed: {
     value: {
@@ -111,7 +112,7 @@ let File = new Schema({
     default: false
   },
 }, 
-{ usePushEach: true });
+{ usePushEach: true, timestamps: true });
 
 module.exports = mongoose.model('File', File);
 

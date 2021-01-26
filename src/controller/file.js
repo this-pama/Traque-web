@@ -62,7 +62,8 @@ export default({ config, db }) => {
       createdDate, 
       fileNo: fileNumber,
       ministry, department, subDepartment,
-      history
+      deleted: false,
+      history,
     });
 
     newFile.save(async (err,doc)=>{
@@ -124,13 +125,16 @@ export default({ config, db }) => {
     const doc = await File.find({
       createdBy : userId,
       deleted: false,                       
-      ongoing: { value: false},
+      outgoing: { value: false},                                                
       incoming: { value: false},
-      sent: { value: false},
+      sent:  {
+        userId: [],
+        value: false
+      },                                                                                               
       delayed: { value: false},
       pending: { value: false},
       archived: { value: false},
-     })
+     });
 
      return res.status(200).json({data : doc })
 
@@ -171,44 +175,89 @@ export default({ config, db }) => {
   })
 
 
+  //forward file
+  api.post('/forward/:id/:userId', async (req, res)=>{
+    const { id, userId } = req.params;
+    const { 
+      receiverId, sentDate, sentTime, location,                                                                              
+     } = req.body;
+
+    if(isObjectIdValid(userId) == false
+    || isObjectIdValid(id) == false
+    || isObjectIdValid(receiverId) == false) 
+      return res.status(500).send("Id not valid")
+
+    const user = await User.findById(receiverId);
+    if(user == null) return res.status(500).send("User not found");
+
+    const receiver = await User.findById(userId);
+    if(receiver == null) return res.status(500).send("User not found")
+
+    const outgoing= {
+      value: true,
+      label: "Outgoing",
+      userId: user._id,
+    };
+
+    const incoming = {
+      value: true,
+      label: "Incoming",
+      userId: receiver._id,
+    };
+
+    const history = {
+      originatingDept : user.department,
+      originatingSubDept : user.subDepartment,
+    
+      sentBy: user._id,
+      sentDate,
+      sentTime,
+    
+      receivedBy: receiver._id,
+
+      location,
+    };
+
+    let update = {
+      outgoing,
+      incoming,
+      history: {
+        $push: history
+      }
+    };
+
+    File.findByIdAndUpdate(id, 
+      update, { new: true})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
+
+  })
+
+
   //API to get landing page data for sa in mobile
   api.get('/manage-landing/:userId', async (req, res)=>{
     const {userId } = req.params; 
     if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
 
     const outgoing = await File.find({ 
-      outgoing : {
-        userId,
-        value: true
-      }
+      // "outgoing.userId" : userId,
+      'outgoing.value': true
     });
 
     const incoming = await File.find({ 
-      incoming : {
-        userId,
-        value: true
-      }
+      'incoming.value' : true
     });
 
     const sent = await File.find({ 
-      sent : {
-        userId,
-        value: true
-      }
+      "sent.value" : true
     });
 
     const pending = await File.find({ 
-      pending : {
-        userId,
-        value: true
-      }
+      'pending.value': true
     });
 
     const delayed = await File.find({ 
-      delayed : {
-        userId,
-        value: true
-      }
+      'delayed.value': true
     });
 
     return res.status(200).json({

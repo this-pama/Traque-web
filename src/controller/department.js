@@ -1,9 +1,10 @@
 require('dotenv').config();
 import { Router } from 'express';
 import Department from '../model/department';
+import SubDepartment from '../model/subDepartment'
 import File from '../model/file'
 
-import {sendMail, sendSms } from '../middleware/service'
+import {isObjectIdValid, sendMail, sendSms } from '../middleware/service'
 
 import { authenticate , generateAccessToken, respond } from '../middleware/authMiddleware';
 import user from '../model/user';
@@ -88,6 +89,41 @@ export default({ config, db }) => {
   api.get('/department-list/:userId', async  (req, res)=>{
     const department = await Department.find({userId : req.params.userId});
     return res.status(200).json({ data : department, message: 'success'})
+  })
+
+  //get list of staff of a department
+  api.get('/staff/:id', async(req, res)=>{
+    const { id } = req.params;
+
+    if(isObjectIdValid(id) == false)
+      return res.status(500).send('Id is invalid')
+
+      const data = await Department.findById(id)
+        .populate({ path: 'staff', model: 'User', select: ['firstName', 'lastName', '_id'] })
+
+        return res.status(200).json({
+          message: 'success',
+          data
+        })
+
+  })
+
+
+  //get list of staff of a sub department
+  api.get('/sub/staff/:id', async(req, res)=>{
+    const { id } = req.params;
+
+    if(isObjectIdValid(id) == false)
+      return res.status(500).send('Id is invalid')
+
+      const data = await SubDepartment.findById(id)
+        .populate({ path: 'staff', model: 'User', select: ['firstName', 'lastName', '_id'] })
+
+        return res.status(200).json({
+          message: 'success',
+          data
+        })
+
   })
 
   //get details of a sepecific  department by id
