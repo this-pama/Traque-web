@@ -1,14 +1,10 @@
 require('dotenv').config();
 import { Router } from 'express';
 import File from '../model/file';
-import Department from '../model/department'
-import SubDepartment from '../model/subDepartment'
-import Ministry from '../model/ministry'
 import User from '../model/user';
+const ObjectId = require('mongoose').Types.ObjectId;
 
 import {isObjectIdValid, sendMail, sendSms } from '../middleware/service'
-
-import { authenticate , generateAccessToken, respond } from '../middleware/authMiddleware';
 
 var randomize = require('randomatic');
 
@@ -110,6 +106,7 @@ export default({ config, db }) => {
       value: true,
       userId,
     }})
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'outgoing'])
     .populate({ path: 'createdBy', select: ['firstName', 'lastName', 'designation', '_id'], model: 'User' })
     .populate({path: 'department', select: ['name', '_id'] , model: "Department"})
     .populate({path: 'subDepartment', select: ['name', '_id'] , model: "Sub Department"})
@@ -122,28 +119,56 @@ export default({ config, db }) => {
     const {userId } = req.params; 
     if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
 
-    const doc = await File.find({
+    File.find({
       createdBy : userId,
       deleted: false,                       
       outgoing: { value: false},                                                
       incoming: { value: false},
-      sent:  {
-        userId: [],
-        value: false
-      },                                                                                               
-      delayed: { value: false},
+      // sent:{
+      //   $elemMatch : {
+      //     userId : ObjectId(userId),
+      //     value: false
+      //   }
+      // },                                                                                               
+      delayed: { value: false},                                 
       pending: { value: false},
       archived: { value: false},
-     });
-
-     return res.status(200).json({data : doc })
+     })
+     .then(doc=> res.status(200).json({data : doc }))
+     .catch(err=> res.status(500).send(err))
 
   })
 
 
+  //get list of archive file for a user
+  api.get('/archived/:userId', async (req, res)=>{
+    const {userId } = req.params; 
+    if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
+
+    File.find({ 
+      'archived.userId': ObjectId(userId),
+      'archived.value' : true,
+      deleted: false,
+    })
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'archived', 
+    'department', 'subDepartment', 'ministry', 'createdDate'])
+    .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'ministry', model: "Ministry", select: ['name', '_id']})
+    .populate({ path: 'department', model: "Department", select: ['name', '_id']})
+    .populate({ path: 'subDepartment', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'archived.archivedBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'archived.archivedSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'archived.archivedDept', model: "Department", select: ['name', '_id']})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
+
+  })
+
   //achive a file
   api.post('/archive/:id/:userId', async(req, res)=>{
     const { id, userId } = req.params;
+    const { location } = req.body;
+
     if(isObjectIdValid(userId) == false
     || isObjectIdValid(id) == false) 
       return res.status(500).send("Id not valid")
@@ -151,20 +176,115 @@ export default({ config, db }) => {
      const user = await User.findById(userId);
 
      if(user == null) return res.status(500).send("User not found")
+     
+     const pending = {
+      value: false,
+      label: 'Pending',
+      userId: null,
+  
+      originatingDept : null,
+      originatingSubDept :  null,
+  
+      sentBy: null,
+      sentDate: null,
+      sentTime:  null,
+  
+      location,
+  
+      receivedBy: user._id,
+      receivedDate: new Date(),
+      receivedTime: new Date(),
+  
+      receivingDept: null,
+      receivingSubDept: null,
+    };
+
+    let incoming = {
+      value: false,
+      label: "Incoming",
+      userId: null,
+
+      originatingDept : null,
+      originatingSubDept : null,
+
+      sentBy: null,
+      sentDate: null,
+      sentTime: null,
+
+      location: null,
+    }
+
+    let outgoing = {
+      value: false,
+      label: "Outgoing",
+      userId: null,
+
+      receivedBy: null,
+      originatingDept : null,
+      originatingSubDept : null,
+
+      sentBy: null,
+      sentDate: null,
+      sentTime: null,
+
+      location: null,
+    }
+
+    let delayed = {
+      value: false,
+      label: "Delayed",
+      userId: null,
+
+      originatingDept : null,
+      originatingSubDept : null,
+
+      sentBy: null,
+      sentDate: null,
+      sentTime: null,
+
+      delayedBy: null,
+      delayedDate: null,
+      delayedTime: null,
+
+      delayedDept: null,
+      delayedSubDept: null,
+
+      location: null,
+    }
 
       let update = {
         archived: {
           value: true,
           label: "Achived",
-          userId: user._id
+          userId: user._id,
+
+          archivedBy: user._id,
+          archivedDate: new Date(),
+          archivedTime: new Date(),
+
+          archivedDept: user.department || null,
+          archivedSubDept: user.subDepartment || null,
+
+          location,
         },
-        history: {
-          $push: {
+        
+        $push: { history: {
+            type: 'archived',
+            label: "Archived",
+
             archivedBy: user._id,
             archivedDate: new Date(),
-            location: req.body.location,
-          }
-        }
+            location: location,
+
+            archivedDept: user.department || null,
+            archivedSubDept: user.subDepartment || null,
+        }},
+
+        pending,
+        outgoing,
+        incoming,
+        delayed,
+        
       };
 
       File.findByIdAndUpdate(id, 
@@ -197,15 +317,36 @@ export default({ config, db }) => {
       value: true,
       label: "Outgoing",
       userId: user._id,
+
+      originatingDept : user.department,
+      originatingSubDept : user.subDepartment,
+
+      sentDate,
+      sentTime,
+    
+      receivedBy: receiver._id,
+
+      location,
     };
 
     const incoming = {
       value: true,
       label: "Incoming",
       userId: receiver._id,
+
+      originatingDept : user.department,
+      originatingSubDept : user.subDepartment,
+    
+      sentBy: user._id,
+      sentDate,
+      sentTime,
+
+      location,
     };
 
     const history = {
+      type : "outgoing",
+      label: "Outgoing",
       originatingDept : user.department,
       originatingSubDept : user.subDepartment,
     
@@ -221,12 +362,300 @@ export default({ config, db }) => {
     let update = {
       outgoing,
       incoming,
-      history: {
-        $push: history
-      }
+      $push: { history: history } 
     };
 
-    File.findByIdAndUpdate(id, 
+    File.findByIdAndUpdate(id, update, { new: true, }) 
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
+
+  })
+
+  //get list of incoming file for a user
+  api.get('/incoming/:userId', async (req, res)=>{
+    const {userId } = req.params; 
+    if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
+
+    File.find({ 
+      'incoming.userId': ObjectId(userId),
+      'incoming.value' : true,
+      deleted: false,
+    })
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'incoming'])
+    .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'incoming.sentBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'incoming.originatingSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'incoming.originatingDept', model: "Department", select: ['name', '_id']})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
+
+  })
+
+
+  //get list of pending file for a user
+  api.get('/pending/:userId', async (req, res)=>{
+    const {userId } = req.params; 
+    if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
+
+    File.find({ 
+      'pending.userId': ObjectId(userId),
+      'pending.value' : true,
+      deleted: false,
+    })
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'pending'])
+    .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'pending.sentBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'pending.receivedBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'pending.originatingSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'pending.originatingDept', model: "Department", select: ['name', '_id']})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
+
+  })
+
+
+  //get list of delayed file for a user
+  api.get('/delayed/:userId', async (req, res)=>{
+    const {userId } = req.params; 
+    if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
+
+    File.find({ 
+      'delayed.userId': ObjectId(userId),
+      'delayed.value' : true,
+      deleted: false,
+    })
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'delayed'])
+    .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'delayed.sentBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'delayed.delayedBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'delayed.delayedSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'delayed.delayedDept', model: "Department", select: ['name', '_id']})
+    .populate({ path: 'delayed.originatingSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'delayed.originatingDept', model: "Department", select: ['name', '_id']})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
+
+  })
+
+   //delay of a file
+   api.post('/delay/:fileId/:userId', async (req,res)=>{
+    const {userId, fileId } = req.params; 
+    const { location } = req.body;
+
+    if(isObjectIdValid(userId) == false
+    || isObjectIdValid(fileId) == false) 
+    return res.status(500).send("User id not valid")
+
+    const user = await User.findById(userId);
+    if(user == null) return res.status(500).send("User not found");
+
+    const file = await File.find({_id: fileId, deleted: false });
+
+    if(file.length <= 0) return res.status(500).send("File not found");
+    
+    const delayed = {
+      value: true,
+      label: 'Delayed',
+      userId: user._id,
+  
+      originatingDept : file && file[0].pending ? file[0].pending.originatingDept : null,
+      originatingSubDept : file && file.pending ? file[0].pending.originatingSubDept : null,
+  
+      sentBy: file && file[0].pending ? file[0].pending.sentBy : null,
+      sentDate: file && file[0].pending ? file[0].pending.sentDate : null,
+      sentTime: file && file[0].pending ? file[0].pending.sentTime : null,
+  
+      location,
+
+      delayedBy: user._id,
+      delayedDate: new Date(),
+      delayedTime: new Date(),
+
+      delayedDept : user ? user.department : null,
+      delayedSubDept : user ? user.subDepartment : null,
+  
+    };
+
+    const pending = {
+      value: false,
+      label: 'Pending',
+      userId: null,
+  
+      originatingDept : null,
+      originatingSubDept :  null,
+  
+      sentBy: null,
+      sentDate: null,
+      sentTime:  null,
+  
+      location,
+  
+      receivedBy: user._id,
+      receivedDate: new Date(),
+      receivedTime: new Date(),
+  
+      receivingDept: null,
+      receivingSubDept: null,
+    };
+
+
+    const history = {
+      type: 'delayed',
+      label: 'Delayed',
+      userId: user._id,
+  
+      originatingDept : file && file[0].pending ? file[0].pending.originatingDept : null,
+      originatingSubDept : file && file.pending ? file[0].pending.originatingSubDept : null,
+  
+      sentBy: file && file[0].pending ? file[0].pending.sentBy : null,
+      sentDate: file && file[0].pending ? file[0].pending.sentDate : null,
+      sentTime: file && file[0].pending ? file[0].pending.sentTime : null,
+  
+      location,
+
+      delayedBy: user._id,
+      delayedDate: new Date(),
+      delayedTime: new Date(),
+
+      delayedDept : user ? user.department : null,
+      delayedSubDept : user ? user.subDepartment : null,
+    };
+
+    let update= {
+      $push: { history: history },
+      pending,
+      delayed,
+    };
+
+    File.findByIdAndUpdate(fileId, 
+      update, { new: true})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).json(err))
+
+  })
+
+  //acknowledge receipt of a file
+  api.post('/receive/:fileId/:userId', async (req,res)=>{
+    const {userId, fileId } = req.params; 
+    const { location } = req.body;
+
+    if(isObjectIdValid(userId) == false
+    || isObjectIdValid(fileId) == false) 
+    return res.status(500).send("User id not valid")
+
+    const user = await User.findById(userId);
+    if(user == null) return res.status(500).send("User not found");
+
+    const file = await File.find({_id: fileId, deleted: false });
+
+    if(file.length <= 0) return res.status(500).send("File not found");
+    
+    const pending = {
+      value: true,
+      label: 'Pending',
+      userId: user._id,
+  
+      originatingDept : file && file[0].incoming ? file[0].incoming.originatingDept : null,
+      originatingSubDept : file && file.incoming ? file[0].incoming.originatingSubDept : null,
+  
+      sentBy: file && file[0].incoming ? file[0].incoming.sentBy : null,
+      sentDate: file && file[0].incoming ? file[0].incoming.sentDate : null,
+      sentTime: file && file[0].incoming ? file[0].incoming.sentTime : null,
+  
+      location,
+  
+      receivedBy: user._id,
+      receivedDate: new Date(),
+      receivedTime: new Date(),
+  
+      receivingDept: user ? user.department : null,
+      receivingSubDept: user ? user.subDepartment : null,
+    };
+
+    const sent= {
+      value: true,
+      label: "Sent",
+      userId: file && file[0].incoming ? file[0].incoming.sentBy : null,
+  
+      originatingDept : file && file[0].incoming ? file[0].incoming.originatingDept : null,
+      originatingSubDept : file && file[0].incoming ? file[0].incoming.originatingSubDept : null,
+  
+      sentBy: file && file[0].incoming ? file[0].incoming.sentBy : null,
+      sentDate: file && file[0].incoming ? file[0].incoming.sentDate : null,
+      sentTime: file && file[0].incoming ? file[0].incoming.sentTime : null,
+  
+      location,
+  
+      receivedBy: user._id,
+      receivedDate: new Date(),
+      receivedTime: new Date(),
+  
+      receivingDept: user ? user.department : null,
+      receivingSubDept: user ? user.subDepartment : null,
+    }
+
+    const history = {
+      type: 'incoming',
+      label: 'Incoming',
+      userId: user._id,
+  
+      originatingDept : file && file[0].incoming ? file[0].incoming.originatingDept : null,
+      originatingSubDept : file && file.incoming ? file.incoming.originatingSubDept : null,
+  
+      sentBy: file && file[0].incoming ? file[0].incoming.sentBy : null,
+      sentDate: file && file[0].incoming ? file[0].incoming.sentDate : null,
+      sentTime: file && file[0].incoming ? file[0].incoming.sentTime : null,
+  
+      location,
+  
+      receivedBy: user._id,
+      receivedDate: new Date(),
+      receivedTime: new Date(),
+  
+      receivingDept: user ? user.department : null,
+      receivingSubDept: user ? user.subDepartment : null,
+    };
+
+    let incoming = {
+      value: false,
+      label: "Incoming",
+      userId: null,
+
+      originatingDept : null,
+      originatingSubDept : null,
+
+      sentBy: null,
+      sentDate: null,
+      sentTime: null,
+
+      location: null,
+    }
+
+    let outgoing = {
+      value: false,
+      label: "Outgoing",
+      userId: null,
+
+      receivedBy: null,
+      originatingDept : null,
+      originatingSubDept : null,
+
+      sentBy: null,
+      sentDate: null,
+      sentTime: null,
+
+      location: null,
+    }
+
+    let update= {
+      pending,
+      $push: { sent : sent },
+      $push: { history: history },
+      incoming,
+      outgoing 
+    };
+
+    File.findByIdAndUpdate(fileId, 
       update, { new: true})
     .then(e=> res.status(200).json({ message: 'success', data: e}))
     .catch(err=> res.status(500).send(err))
@@ -240,23 +669,30 @@ export default({ config, db }) => {
     if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
 
     const outgoing = await File.find({ 
-      // "outgoing.userId" : userId,
+      "outgoing.userId" : ObjectId(userId),                 
       'outgoing.value': true
     });
 
     const incoming = await File.find({ 
+      'incoming.userId': ObjectId(userId),
       'incoming.value' : true
     });
 
     const sent = await File.find({ 
-      "sent.value" : true
-    });
+      sent: { $in : [{
+          'user' : ObjectId(userId),
+          "value" : true
+        }]
+      }
+  });
 
     const pending = await File.find({ 
+      'pending.userId': ObjectId(userId),
       'pending.value': true
     });
 
     const delayed = await File.find({ 
+      'delayed.userId': ObjectId(userId),
       'delayed.value': true
     });
 
