@@ -102,16 +102,19 @@ export default({ config, db }) => {
     const {userId } = req.params;
     if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
 
-    const data = await File.find({ outgoing: {
-      value: true,
-      userId,
-    }})
-    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'outgoing'])
-    .populate({ path: 'createdBy', select: ['firstName', 'lastName', 'designation', '_id'], model: 'User' })
-    .populate({path: 'department', select: ['name', '_id'] , model: "Department"})
-    .populate({path: 'subDepartment', select: ['name', '_id'] , model: "Sub Department"})
+    File.find({ 
+      'outgoing.userId': ObjectId(userId),
+      'outgoing.value' : true,
+      deleted: false,
+    })
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'outgoing','createdDate'])
+    .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'outgoing.receivedBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'outgoing.receivingSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'outgoing.receivingDept', model: "Department", select: ['name', '_id']})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
 
-    return res.status(200).json({data})
   })
 
   //get list of data still in open registry
@@ -307,11 +310,10 @@ export default({ config, db }) => {
     || isObjectIdValid(receiverId) == false) 
       return res.status(500).send("Id not valid")
 
-    const user = await User.findById(receiverId);
-    if(user == null) return res.status(500).send("User not found");
-
-    const receiver = await User.findById(userId);
-    if(receiver == null) return res.status(500).send("User not found")
+    const user = await User.findById(userId);
+    const receiver = await User.findById(receiverId);
+    if(user == null || receiver == null) 
+      return res.status(500).send("User not found");
 
     const outgoing= {
       value: true,
@@ -325,6 +327,8 @@ export default({ config, db }) => {
       sentTime,
     
       receivedBy: receiver._id,
+      receivingDept: receiver ? receiver.department : null,
+      receivingSubDept: receiver ? receiver.subDepartment : null,
 
       location,
     };
@@ -355,6 +359,8 @@ export default({ config, db }) => {
       sentTime,
     
       receivedBy: receiver._id,
+      receivingDept: receiver ? receiver.department : null,
+      receivingSubDept: receiver ? receiver.subDepartment : null,
 
       location,
     };
@@ -663,8 +669,8 @@ export default({ config, db }) => {
   })
 
 
-  //API to get landing page data for sa in mobile
-  api.get('/manage-landing/:userId', async (req, res)=>{
+  //API to get info about file for a user 
+  api.get('/manage/:userId', async (req, res)=>{
     const {userId } = req.params; 
     if(isObjectIdValid(userId) == false) return res.status(500).send("User id not valid")
 
@@ -705,6 +711,39 @@ export default({ config, db }) => {
     })
 
   });
+
+
+   //get the history of a file 
+   api.get('/history/:id', async (req, res)=>{
+    const {id } = req.params; 
+    if(isObjectIdValid(id) == false) 
+      return res.status(500).send("User id not valid");
+
+    File.findById(id)
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'history','ministry'])
+    .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id', 'designation']})
+    .populate({ path: 'ministry', model: "Ministry", select: ['name', '_id']})
+    .populate({ path: 'history.createdBy', model: "User", select: ['firstName', 'lastName', '_id', 'designation']})
+    .populate({ path: 'history.originatingSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'history.originatingDept', model: "Department", select: ['name', '_id']})
+
+    .populate({ path: 'history.sentBy', model: "User", select: ['firstName', 'lastName', '_id', 'designation']})
+    .populate({ path: 'history.receivingSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'history.receivingDept', model: "Department", select: ['name', '_id']})
+    .populate({ path: 'history.receivedBy', model: "User", select: ['firstName', 'lastName', '_id', 'designation']})
+
+    .populate({ path: 'history.delayedBy', model: "User", select: ['firstName', 'lastName', '_id', 'designation']})
+    .populate({ path: 'history.delayedSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'history.delayedDept', model: "Department", select: ['name', '_id']})
+
+    .populate({ path: 'history.archivedBy', model: "User", select: ['firstName', 'lastName', '_id', 'designation']})
+    .populate({ path: 'history.archivedSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'history.archivedDept', model: "Department", select: ['name', '_id']})
+
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err));
+
+  })          
 
   return api;
 }

@@ -99,10 +99,13 @@ let File = new Schema({
       originatingDept : {type: Schema.Types.ObjectId, ref: 'Department', required : false },
       originatingSubDept : {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
 
+      receivingDept: {type: Schema.Types.ObjectId, ref: 'Department', required : false },
+      receivingSubDept: {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
+      receivedBy: {type: Schema.Types.ObjectId, ref: 'User', required : false },
+
       sentDate: {  type: Date },
       sentTime: {  type: Date },
 
-      receivedBy: {type: Schema.Types.ObjectId, ref: 'User', required : false },
       location: { type: Object, default: {} },
    },
    incoming: {
