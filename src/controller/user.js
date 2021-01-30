@@ -68,9 +68,9 @@ export default({ config, db }) => {
       gradeLevel,
     } = req.body;
 
-    //determine if user type exist
-    let usertype = await UserType.find({type: userType, label: userType}).exec()
-    if(usertype.length <= 0) return res.status(500).json({message : "User type does not exist"})
+    // //determine if user type exist
+    // let usertype = await UserType.find({type: userType, label: userType}).exec()
+    // if(usertype.length <= 0) return res.status(500).json({message : "User type does not exist"})
 
     let newUser = User({
       firstName,
@@ -86,7 +86,7 @@ export default({ config, db }) => {
       address,
       state,
       country,
-      userType: usertype && usertype[0]._id,
+      // userType: usertype && usertype[0]._id,
       isAdmin,
       isSuper,
       // isStaff,
@@ -95,6 +95,8 @@ export default({ config, db }) => {
         createServiceFile: true,
         createMagementFile: false,
         viewReport: true,
+        viewSectionReport: true,
+        viewGeneralReport: true
       }
     }, ...req.body)
 
@@ -154,13 +156,14 @@ export default({ config, db }) => {
         return res.status(500).send("Ministry and Department id is required");
 
       //send error if sub department but id not vaild
-    if(subDepartment && isObjectIdValid(subDepartment) == false) 
+    if(subDepartment != null && isObjectIdValid(subDepartment) == false) 
       return res.status(500).send("Sub department id is must be valid");
 
 
     let newUser = User({
       firstName, lastName,email, telephone,
-      dob, gender, designation, staffId, department, subDepartment,
+      dob, gender, designation, staffId, department, 
+      subDepartment : subDepartment != null ? subDepartment : null,
       ministry, address, state, country, permission,
       gradeLevel, isStaff: true, gradeLevel, 
     }, ...req.body)

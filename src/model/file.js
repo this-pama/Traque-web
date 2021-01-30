@@ -149,7 +149,31 @@ let File = new Schema({
       receivingDept: {type: Schema.Types.ObjectId, ref: 'Department', required : false },
       receivingSubDept: {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
   },
-  sent: [sentData],
+  sent: [{
+    value: {
+      type: Boolean,
+      default: false
+    },
+    label: String,
+    userId: {type: Schema.Types.ObjectId, ref: 'User' },
+
+    originatingDept : {type: Schema.Types.ObjectId, ref: 'Department', required : false },
+    originatingSubDept : {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
+
+    sentBy: {type: Schema.Types.ObjectId, ref: 'User', required : false },
+    sentDate: {  type: Date },
+    sentTime: {  type: Date },
+
+    location: { type: Object, default: {} },
+
+    receivedBy: {type: Schema.Types.ObjectId, ref: 'User', required : false },
+    receivedDate: {  type: Date },
+    receivedTime: {  type: Date },
+
+    receivingDept: {type: Schema.Types.ObjectId, ref: 'Department', required : false },
+    receivingSubDept: {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
+}
+  ],
   delayed: {
     value: {
       type: Boolean,

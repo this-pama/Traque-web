@@ -60,6 +60,7 @@ export default({ config, db }) => {
       ministry, department, subDepartment,
       deleted: false,
       history,
+      // sent: []
     });
 
     newFile.save(async (err,doc)=>{
@@ -655,8 +656,7 @@ export default({ config, db }) => {
 
     let update= {
       pending,
-      $push: { sent : sent },
-      $push: { history: history },
+      $push: { history: history, sent : sent },
       incoming,
       outgoing 
     };
@@ -685,12 +685,9 @@ export default({ config, db }) => {
     });
 
     const sent = await File.find({ 
-      sent: { $in : [{
-          'user' : ObjectId(userId),
-          "value" : true
-        }]
-      }
-  });
+          'sent.userId' : ObjectId(userId),
+          "sent.value" : true
+      });
 
     const pending = await File.find({ 
       'pending.userId': ObjectId(userId),
@@ -743,7 +740,32 @@ export default({ config, db }) => {
     .then(e=> res.status(200).json({ message: 'success', data: e}))
     .catch(err=> res.status(500).send(err));
 
-  })          
+  }) 
+  
+  
+  
+   //get the list of sent file for a user 
+   api.get('/sent/:id', async (req, res)=>{
+    const {id } = req.params; 
+    if(isObjectIdValid(id) == false) 
+      return res.status(500).send("User id not valid");
+
+    File.find({ 'sent.userId': id, 'sent.value': true })
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'sent','ministry'])
+    .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id', 'designation']})
+    .populate({ path: 'ministry', model: "Ministry", select: ['name', '_id']})
+    .populate({ path: 'sent.receivedBy', model: "User", select: ['firstName', 'lastName', '_id', 'designation']})
+    .populate({ path: 'sent.receivingSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'sent.receivingDept', model: "Department", select: ['name', '_id']})
+
+    .populate({ path: 'sent.sentBy', model: "User", select: ['firstName', 'lastName', '_id', 'designation']})
+    .populate({ path: 'sent.originatingSubDept', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'sent.originatingDept', model: "Department", select: ['name', '_id']})
+
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err));
+
+  })
 
   return api;
 }

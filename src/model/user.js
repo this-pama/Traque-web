@@ -55,6 +55,14 @@ let UserSchema = new Schema({
       type: Boolean,
       default: false
     },
+    viewSectionReport :{
+      type: Boolean,
+      default: false
+    },
+    viewGeneralReport :{
+      type: Boolean,
+      default: false
+    },
   },
   createdAt:  {
     type: Date,
