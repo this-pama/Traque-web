@@ -11,7 +11,7 @@ var randomize = require('randomatic');
 export default({ config, db }) => {
   let api = Router();
 
-  const { FILE_NUMBER_PREFIX } = process.env;
+  const { FILE_NUMBER_PREFIX, EMAIL_SENDER } = process.env;
   //NOTE: file types: created, outgoing, incoming, pending, sent, delayed, achived
 
   // '/v1/file' - GET all files
@@ -293,7 +293,17 @@ export default({ config, db }) => {
 
       File.findByIdAndUpdate(id, 
         update, { new: true})
-      .then(e=> res.status(200).json({ message: 'success', data: e}))
+      .then(async e=> {
+        const sender = await User.findById(e.createdBy);
+
+        if(sender && sender._id){
+          let message = `Dear ${sender.firstName}, file ${e.name} has been archived.`;
+          sendMail( EMAIL_SENDER , { email: sender.email, firstName: sender.firstName, message }, 'file');
+          sendSms(sender.telephone, message);
+        }
+
+        return res.status(200).json({ message: 'success', data: e})
+      })
       .catch(err=> res.status(500).send(err))
 
   })
@@ -315,6 +325,8 @@ export default({ config, db }) => {
     const receiver = await User.findById(receiverId);
     if(user == null || receiver == null) 
       return res.status(500).send("User not found");
+    
+    const { email, telephone, firstName } = receiver;
 
     const outgoing= {
       value: true,
@@ -372,8 +384,17 @@ export default({ config, db }) => {
       $push: { history: history } 
     };
 
+
     File.findByIdAndUpdate(id, update, { new: true, }) 
-    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .then(e=> {
+      //send messages
+      let message = `Hello ${firstName}, ${e.name} has been forwarded to you.`;
+      sendMail( EMAIL_SENDER , { email, firstName, message }, 'file')
+
+      sendSms(telephone, message)
+
+      return res.status(200).json({ message: 'success', data: e})
+    })
     .catch(err=> res.status(500).send(err))
 
   })
@@ -447,7 +468,9 @@ export default({ config, db }) => {
    //delay of a file
    api.post('/delay/:fileId/:userId', async (req,res)=>{
     const {userId, fileId } = req.params; 
-    const { location } = req.body;
+    const { location, justification } = req.body;
+
+    if(justification.length <= 0) return res.status(500).send("Justification for delay is required")
 
     if(isObjectIdValid(userId) == false
     || isObjectIdValid(fileId) == false) 
@@ -459,7 +482,7 @@ export default({ config, db }) => {
     const file = await File.find({_id: fileId, deleted: false });
 
     if(file.length <= 0) return res.status(500).send("File not found");
-    
+
     const delayed = {
       value: true,
       label: 'Delayed',
@@ -473,6 +496,7 @@ export default({ config, db }) => {
       sentTime: file && file[0].pending ? file[0].pending.sentTime : null,
   
       location,
+      justification,
 
       delayedBy: user._id,
       delayedDate: new Date(),
@@ -528,15 +552,29 @@ export default({ config, db }) => {
       delayedSubDept : user ? user.subDepartment : null,
     };
 
+    const sender = await User.findById(file && file[0].pending ? file[0].pending.sentBy : null)
+
+
     let update= {
       $push: { history: history },
       pending,
       delayed,
     };
+    
 
     File.findByIdAndUpdate(fileId, 
       update, { new: true})
-    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .then(e=> {
+      //send messages
+      if(sender && sender._id){
+        let message = `Dear ${sender.firstName}, ${e.name} has been delayed. Justification is ${justification}`;
+        sendMail( EMAIL_SENDER , { email: sender.email, firstName: sender.firstName, message }, 'file')
+
+        sendSms(sender.telephone, message)
+      }
+
+      return res.status(200).json({ message: 'success', data: e})
+    })
     .catch(err=> res.status(500).json(err))
 
   })
@@ -661,9 +699,20 @@ export default({ config, db }) => {
       outgoing 
     };
 
+    const sender = await User.findById(file && file[0].pending ? file[0].pending.sentBy : null);
+
     File.findByIdAndUpdate(fileId, 
       update, { new: true})
-    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .then(e=>{
+      if(sender && sender._id){
+        let message = `Dear ${sender.firstName}, ${e.name} has been received and is been processed.`;
+        sendMail( EMAIL_SENDER , { email: sender.email, firstName: sender.firstName, message }, 'file')
+
+        sendSms(sender.telephone, message)
+      }
+
+      return res.status(200).json({ message: 'success', data: e})
+    })
     .catch(err=> res.status(500).send(err))
 
   })

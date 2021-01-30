@@ -46,6 +46,10 @@ export const sendMail= (sender, receiver, folder) => {
         folderPath= path.join(__dirname, '../emails/changepassword')
         break;
 
+      case 'file':
+        folderPath= path.join(__dirname, '../emails/file')
+        break;
+
       default:
         folderPath= path.join(__dirname, '../emails/welcome')
    }

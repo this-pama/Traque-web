@@ -190,6 +190,7 @@ let File = new Schema({
       sentTime: {  type: Date },
 
       location: { type: Object, default: {} },
+      justification: String,
 
       delayedBy: {type: Schema.Types.ObjectId, ref: 'User', required : false },
       delayedDate: {  type: Date },
