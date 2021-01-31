@@ -19,14 +19,51 @@ let UserSchema = new Schema({
   dob: Date,
   gender: String,
   staffId: String,
+  gradeLevel: String,
   state: String,
   country: String,
   telephone: Number,
   profileImage: String,
-  department: String,
+  ministry: {type: Schema.Types.ObjectId, ref: 'Ministry', required : false },
+  department: {type: Schema.Types.ObjectId, ref: 'Department', required : false },
+  subDepartment: {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
   designation: String,
-  accountId: {type: Schema.Types.ObjectId, ref: 'User Account ID', required : false },
-  userType: {type: Schema.Types.ObjectId, ref: 'User type ID', required : false },
+  accountId: {type: Schema.Types.ObjectId, ref: 'Account', required : false },
+  userType: {type: Schema.Types.ObjectId, ref: 'UserType', required : false },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  isStaff: {
+    type: Boolean,
+    default: false
+  },
+  isSuper: {
+    type: Boolean,
+    default: false
+  },
+  permission:{
+    createServiceFile : {
+      type: Boolean,
+      default: false
+    },
+    createManagementFile: {
+      type: Boolean,
+      default: false
+    },
+    viewReport :{
+      type: Boolean,
+      default: false
+    },
+    viewSectionReport :{
+      type: Boolean,
+      default: false
+    },
+    viewGeneralReport :{
+      type: Boolean,
+      default: false
+    },
+  },
   createdAt:  {
     type: Date,
     default: Date.now

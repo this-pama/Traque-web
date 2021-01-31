@@ -16,7 +16,15 @@ export default({ config, db }) => {
   let api = Router();
 
   // '/v1/account/login'
-  api.post('/login', passport.authenticate(
+  api.post('/login',(req, res, next)=>{
+    Account.findOne({ email: req.body.email},(err, account)=>{
+      if (err) return res.status(500).json(err);
+
+      if(account && account.disable) return res.status(200).json({ message: "Account has been disabled"});
+
+      next()
+    })
+  }, passport.authenticate(
     'local', {
       session: false,
       scope: []
@@ -34,14 +42,30 @@ export default({ config, db }) => {
 
     // '/v1/account/:id' - GET a specific account
     api.get('/:id', (req, res) => {
-    Account.findById(req.params.id, (err, user) => {
-      if (err) return res.status(500).json(err);
-      return res.json({
-        message: 'success',
-        data: user
+      Account.findById(req.params.id, (err, user) => {
+        if (err) return res.status(500).json(err);
+        return res.json({
+          message: 'success',
+          data: user
+        });
       });
     });
-  });
+
+
+    // '/v1/account/disable/:id' - GET - Disable a particular account
+    api.post('/disable/:id', (req, res) => {
+      Account.findById(req.params.id, (err, user) => {
+        if (err) return res.status(500).json(err);
+
+        user.disable = req.body.disable;
+        user.save();
+
+        return res.json({
+          message: 'success',
+          data: user
+        });
+      });
+    });
 
 
   // '/v1/account' - GET all account
@@ -102,7 +126,7 @@ export default({ config, db }) => {
       function(token, done) {
         Account.findOne({ username: req.body.email.toLowerCase() }, function(err, user) {
           if (!user) {
-            return res.status(200).json({message : 'No account with that email address exists.'});
+            return res.status(400).json({message : 'No account with that email address exists.'});
           }
   
           user.resetPasswordToken = token;
