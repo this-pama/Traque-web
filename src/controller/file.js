@@ -550,6 +550,8 @@ export default({ config, db }) => {
 
       delayedDept : user ? user.department : null,
       delayedSubDept : user ? user.subDepartment : null,
+
+      justification,
     };
 
     const sender = await User.findById(file && file[0].pending ? file[0].pending.sentBy : null)

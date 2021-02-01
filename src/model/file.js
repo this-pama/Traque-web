@@ -43,6 +43,8 @@ let history = new Schema({
 
   location: { type: Object, default: {} },
 
+  justification: String,
+
 });
 
 
