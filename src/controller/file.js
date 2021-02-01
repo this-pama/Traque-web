@@ -336,8 +336,8 @@ export default({ config, db }) => {
       originatingDept : user.department,
       originatingSubDept : user.subDepartment,
 
-      sentDate,
-      sentTime,
+      sentDate: new Date(),
+      sentTime :  new Date(),
     
       receivedBy: receiver._id,
       receivingDept: receiver ? receiver.department : null,
