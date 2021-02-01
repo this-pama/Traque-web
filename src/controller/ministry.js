@@ -51,7 +51,7 @@ export default({ config, db }) => {
   api.get('/ministry-list', async (req, res)=>{
     const data = await Ministry.find()
     .populate({ path: 'userId', model: 'User' })
-    .populate({path: 'userId', select: ['ministry', 'firstName', 'lastName'] , model: "User"})
+    // .populate({path: 'userId', select: ['ministry', 'firstName', 'lastName'] , model: "User"})
 
     return res.status(200).json({data})
   })

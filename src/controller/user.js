@@ -332,13 +332,12 @@ export default({ config, db }) => {
       })  
     })
 
-    api.get('/admin-list',async (req, res)=>{
-      const comments = await User.find({isAdmin: true })
+    api.get('/admin/admin-list',async (req, res)=>{
+      User.find({ isAdmin: true })
       .populate('ministry')
       .populate({path : 'accountId', model: 'Account'})
-      // .catch(e=> console.log('/user/admin-list', e))
-
-       return res.status(200).json({ data: comments })
+      .then(e=> res.status(200).json({ data: e }))
+      .catch(e=> res.status(500).send(e) )
     })
 
 
