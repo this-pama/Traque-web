@@ -802,7 +802,7 @@ export default({ config, db }) => {
       return res.status(500).send("User id not valid");
 
     File.find({ 'sent.userId': id, 'sent.value': true })
-    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'sent','ministry'])
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'sent','ministry', 'archived'])
     .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id', 'designation']})
     .populate({ path: 'ministry', model: "Ministry", select: ['name', '_id']})
     .populate({ path: 'sent.receivedBy', model: "User", select: ['firstName', 'lastName', '_id', 'designation']})
