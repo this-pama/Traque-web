@@ -36,7 +36,7 @@ export default({ config, db }) => {
 
     const { ministry, department, subDepartment } = user;
     const {
-      name, type, createdDate, fileNo, location,
+      name, type, createdDate, fileNo, location, serviceFileType,
     }= req.body;
 
     const rand = randomize('0', 6);
@@ -56,6 +56,7 @@ export default({ config, db }) => {
       name, type, 
       createdBy : userId,
       createdDate, 
+      serviceFileType,
       fileNo: fileNumber,
       ministry, department, subDepartment,
       deleted: false,

@@ -83,6 +83,7 @@ let File = new Schema({
     trim: true,
    },
    type: String,
+   serviceFileType: String,
    isDelayed: Boolean,
    createdBy:  {type: Schema.Types.ObjectId, ref: 'User', required : false },
    createdDate: { type: Date },
