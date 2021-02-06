@@ -75,8 +75,8 @@ export default({ config, db }) => {
   api.put('/update/:id', async (req, res)=>{
     const rand = randomize('0', 6);
 
-    let fileNumber = FILE_NUMBER_PREFIX +  rand + '-' + req.body.fileNo;
-    let update= await {...req.body, fileNo: fileNumber };
+    // let fileNumber = FILE_NUMBER_PREFIX +  rand + '-' + req.body.fileNo;
+    let update= await {...req.body };
   
     File.findByIdAndUpdate(req.params.id, 
       update, 
