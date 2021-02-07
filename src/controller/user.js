@@ -92,8 +92,8 @@ export default({ config, db }) => {
       // isStaff,
       gradeLevel,
       permission:{
-        createServiceFile: true,
-        createMagementFile: false,
+        createServiceFile: false,
+        createMagementFile: true,
         viewReport: true,
         viewSectionReport: true,
         viewGeneralReport: true

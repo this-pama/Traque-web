@@ -1,5 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
+import
+  {iconHeaderAvatar}
+from '@wfp/icons'
+import { Icon } from '@wfp/ui';
 
 const Wrapper = styled.div`
     background-color: #EEF1FA;
@@ -10,6 +14,7 @@ const Wrapper = styled.div`
     width: 100%;
     text-align: right;
     padding-right: 10rem;
+    font-size: 14px;
     .account {
         margin: 0.7rem; 
     }
@@ -50,7 +55,8 @@ const Header = (props)=>{
             <div className='background'>
             <div className='account'>
                 <div class="dropdown">
-                    Hi,
+                    <Icon icon={iconHeaderAvatar} color={'#1841BA'} width={20} height={20} />
+                    {`  `}  <span style={{ paddingTop: -20 }}>Hi,</span>
                 <div class="dropdown-content">
                     <a href="#">Link 1</a>
                     <a href="#">Link 2</a>

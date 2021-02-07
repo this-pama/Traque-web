@@ -18,6 +18,7 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css'
 import './App.css';
 import ResetPassword from './ResetPassword'
 import SA_Landing from './SuperAdmin/Landing'
+import Dashboard from './Dashboard'
 
 class App extends React.Component {
   constructor(props) {
@@ -106,11 +107,21 @@ class App extends React.Component {
                 <BrowserRouter>
                     <>
                     <Switch>
-                        <Route
-                            exact
-                            path="/sa-landing"
-                            component={() => <SA_Landing />}
-                        />
+                        
+
+                                <Route
+                                    exact
+                                    path="/ministry"
+                                    component={(props) => (
+                                        <Dashboard {...props} user={user} />
+                                    )}
+                                />
+
+                                <Route
+                                    // exact
+                                    path="/sa-landing"
+                                    component={() => <SA_Landing />}
+                                />
 
                         <Route
                             // exact
@@ -135,13 +146,21 @@ class App extends React.Component {
 
                         {!isLogged ? (
                             <Switch>
-                                <Redirect to={`/sa-landing`} />
+                                <Redirect to={`/ministry`} />
 
                             </Switch>
                         ) : (
                             <>
                             <Switch>
                                 {/* {isIE && <Redirect to='/outdated-browser' /> } */}
+
+                                {/* <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/hr"
+                                    component={(props) => (
+                                        <Dashboard {...props} user={user} />
+                                    )}
+                                /> */}
                                 
 
 

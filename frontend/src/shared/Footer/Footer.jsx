@@ -9,6 +9,8 @@ const Wrapper = styled.div`
     left: 0;
     bottom: 0;
     width: 100%;
+    font-size: 12px;
+    font-weight: bold;
 `
 
 const Header = (props)=>{
