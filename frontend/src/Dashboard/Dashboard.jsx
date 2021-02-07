@@ -45,29 +45,33 @@ const listElReactRouter = ({
         }}
     />
 )
-const Dashboard = ({ user }) => {
+const Dashboard = (props) => {
     const views = [
         {
             permissions: true,
+            default: true,
             label: 'Ministry',
             path: '/ministry/list',
-            component: () => <MinistryTable />,
+            component: () => <MinistryTable props={props} />,
         },
+
         {
             permissions: true,
-            label: 'Admins',
+            label: 'Admin',
             path: '/ministry/admin',
-            component: () => <AdminTable />,
+            component: () => <AdminTable {...props} />,
         },
     ]
-    const allowedViews = views.filter((view) =>  view.permissions )
 
+    const defaultView = views.find((view) => view.default );
+    const allowedViews = views.filter((view) =>  view.permissions );
+    
     return (
         <div>
-            <Header />
+            {/* <Header /> */}
             <MySecondaryNavigation
-                l1Label=" "
-                l1Link=" "
+                l1Label="Traquer"
+                l1Link="#"
                 pageTitle={`Traquer`}
                 tabs={
                     <Tabs customTabContent={true}>
@@ -83,12 +87,12 @@ const Dashboard = ({ user }) => {
                 }
             ></MySecondaryNavigation>
             <div
-                // className="wfp--module__background"
+                className="wfp--module__background"
                 style={{ minHeight: '400px' }}
             >
                 <Wrapper pageWidth="lg" spacing="md">
                     <InnerWrapper>
-                        <div id="export-button-portal" />
+                        {/* <div id="export-button-portal" /> */}
                         <Switch>
                             {allowedViews.map((view, i) => (
                                 <Route
@@ -98,14 +102,18 @@ const Dashboard = ({ user }) => {
                                 />
                             ))}
 
-                            {/* <Redirect
-                                to={'/login'}
-                            /> */}
+                            <Redirect
+                                to={
+                                    defaultView
+                                        ? defaultView.path
+                                        : '/login'
+                                }
+                            />
                         </Switch>
                     </InnerWrapper>
                 </Wrapper>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </div>
     )
 }
@@ -114,6 +122,7 @@ export default Dashboard
 
 const InnerWrapper = styled.div`
     position: relative;
+    padding-bottom: 1rem;;
     #export-button-portal {
         position: absolute;
         right: 0;

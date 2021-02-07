@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import styled, { createGlobalStyle } from 'styled-components'
 import { AgGridReact } from 'ag-grid-react'
-import 'ag-grid-enterprise'
+// import 'ag-grid-enterprise'
 import { Button, Link, Icon } from '@wfp/ui'
 import {iconOverflowMenu, iconChevronDown} from '@wfp/icons'
 import moment from 'moment'
-// import * as gridComponents from '../AgCells'
+import * as gridComponents from '../shared/GridComponent/index'
 
 import ExcelIcon from './excelIcon.svg'
 
@@ -75,6 +75,8 @@ class Grid extends React.Component {
             columnKeys: config.exportedColumns,
             sheetName: this.props.exportFileName
         }
+        
+        console.log('export', api)
         api && api.exportDataAsExcel(params)
     }
 
@@ -87,7 +89,7 @@ class Grid extends React.Component {
                 {portalElement &&
                     ReactDOM.createPortal(
                         <ExportButtonContent>
-                            <Button
+                            {/* <Button
                                 onClick={this.onExport}
                                 kind="secondary"
                                 small
@@ -102,7 +104,7 @@ class Grid extends React.Component {
                                         alt="Spreadsheet icon"
                                     />
                                 </div>
-                            </Button>
+                            </Button> */}
                         </ExportButtonContent>,
                         portalElement
                     )}
@@ -123,7 +125,7 @@ class Grid extends React.Component {
                         rowData={data}
                         defaultColDef={defaultColDef}
                         columnDefs={config.columnDefs}
-                        // frameworkComponents={gridComponents}
+                        frameworkComponents={gridComponents}
                         reactNext={true}
                         suppressScrollOnNewData={true}
                         sideBar={ this.props.sideBar && 'columns'}
@@ -244,7 +246,7 @@ class Grid extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        userRole: state.user.role.role_name,
+        userRole: state.user,
     }
 }
 

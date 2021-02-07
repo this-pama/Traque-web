@@ -12,11 +12,10 @@ export default({ config, db }) => {
 
   // '/v1/ministry' - GET all ministry
   api.get('/', (req, res) => {
-    Ministry.find({}, (err, users) => {
-      if (err) return res.status(400).json(err);
-
-      return res.status(200).json(users);
-    });
+    Ministry.find({})
+    .populate({ path: "userId", model: 'User', select: ['firstName', 'lastName', '_id']})
+    .then(users=> res.status(200).json(users))
+    .catch(err=> res.status(400).json(err))
   });
 
   // 'v1/ministry/add' - Add a ministry

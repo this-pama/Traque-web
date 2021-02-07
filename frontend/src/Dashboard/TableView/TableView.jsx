@@ -20,17 +20,19 @@ const Applicants = ({
         getData()
     }, [])
     const [filteredApplications, filterTiles] = useFilterTiles({
-        data: data ? data.applications : null,
+        data: data ? data : null,
         filters: filters,
         hideEmptyTiles,
     })
     if (!filteredApplications || !filterTiles)
         return <Loading active withOverlay={true} />
 
+    
+
     return (
         <>
             <Header
-                count={data.applications.length || 0}
+                count={data.length || 0}
                 title={title}
             ></Header>
             {filterTiles}

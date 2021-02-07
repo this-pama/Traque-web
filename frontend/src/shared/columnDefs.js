@@ -1,10 +1,15 @@
+import ministryColDef from '../Dashboard/views/MinistryColDef/ministryColDef'
+import adminColDef from '../Dashboard/views/Admin/adminColDef'
+
 // this function returns only the columns needed for specific view (for example /hr/global )
 export default function getColumnDefs(viewName, onValueChange) {
     let columnDefs
     switch (viewName) {
         case 'ministry':
-            columnDefs = [
-                ]
+            columnDefs = [ ...ministryColDef ]
+            break;
+        case 'admin':
+            columnDefs = [ ...adminColDef ]
             break;
             
         default:

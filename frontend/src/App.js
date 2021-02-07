@@ -10,8 +10,9 @@ import IdleTimer from 'react-idle-timer'
 import { Modal, Wrapper, Loading, Blockquote } from '@wfp/ui'
 import Login from './Login'
 import Activate from './Activate'
+import CreateMinistry from './Dashboard/views/CreateMinistry'
 
-import 'ag-grid-enterprise'
+// import 'ag-grid-enterprise'
 import 'ag-grid-community/dist/styles/ag-grid.css'
 import 'ag-grid-community/dist/styles/ag-theme-balham.css'
 
@@ -19,6 +20,7 @@ import './App.css';
 import ResetPassword from './ResetPassword'
 import SA_Landing from './SuperAdmin/Landing'
 import Dashboard from './Dashboard'
+import CreateAdmin from './Dashboard/views/CreateAdmin'
 
 class App extends React.Component {
   constructor(props) {
@@ -109,11 +111,27 @@ class App extends React.Component {
                     <Switch>
                         
 
-                                <Route
-                                    exact
+                                <ProtectedRoute
+                                    isAllowed={true}
                                     path="/ministry"
                                     component={(props) => (
                                         <Dashboard {...props} user={user} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={true}
+                                    path="/create-ministry"
+                                    component={(props) => (
+                                        <CreateMinistry {...props} user={user} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={true}
+                                    path="/create-admin"
+                                    component={(props) => (
+                                        <CreateAdmin {...props} user={user} />
                                     )}
                                 />
 
@@ -146,7 +164,7 @@ class App extends React.Component {
 
                         {!isLogged ? (
                             <Switch>
-                                <Redirect to={`/ministry`} />
+                                <Redirect to={`/create-admin`} />
 
                             </Switch>
                         ) : (
