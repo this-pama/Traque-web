@@ -12,6 +12,8 @@ import {
     ReduxFormWrapper,
 } from '@wfp/ui'
 import { Link  } from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const Wrapper = styled.div`
     .login {
@@ -52,11 +54,11 @@ const Wrapper = styled.div`
             justify-content: center;
         }
         &--paragraph {
-            font-size: 0.8rem;
-            margin-top: -2rem;
+            font-size: 1rem;
+            margin-top: 0rem;
             display: flex;
             align-items: center;
-            justify-content: ;
+            justify-content:center;
             padding-bottom: 1rem;
         }
         &&--card {
@@ -107,9 +109,65 @@ const Wrapper = styled.div`
 }
 `
 
-const Login = () => {
-
+const Login = (props) => {
+    const [ loading, setLoading ]= useState(false);
     const [ code, setCode ] = useState(false);
+
+    const onSubmit = async (values) => {
+        setLoading(true);
+        let formData;
+        try {
+            formData={
+                email: values.email,
+            }
+
+            await axios.post(`/v1/account/forgot`, formData)
+            .then((data)=> {
+                if(data.data.success){
+                    setCode(true)
+                }
+                else{
+                    toast.error('Ooops! error occurred. Please try again', {closeOnClick: true, autoClose: 1000 }); 
+                }
+                setLoading(false)
+            });  
+        } catch (err) {
+            console.log('Error occurred', err)
+            toast.error('Ooops! erro occured', {closeOnClick: true, autoClose: 1000 }); 
+            setLoading(false)
+        }
+    }
+
+    const resetCode = async (values) => {
+        setLoading(true);
+        let formData;
+        try {
+            formData={
+                password: values.password,
+                confirmPassword: values.confirm
+            }
+
+            await axios.post(`/v1/account/reset/${values.code}`, formData)
+            .then((data)=> {
+                if(data.data.success){
+                    toast('Successfully reset password', {closeOnClick: true, autoClose: 1000 });
+                    props.history.push('/login');
+                }
+                else{
+                    data.data.message ?
+                    toast.error(data.data.message, {closeOnClick: true, autoClose: 1000 })
+                    : toast.error('Ooops! error occurred. Please try again', {closeOnClick: true, autoClose: 1000 }); 
+                }
+                setLoading(false)
+            });  
+        } catch (err) {
+            console.log('Error occurred', err)
+            toast.error('Ooops! erro occured', {closeOnClick: true, autoClose: 1000 }); 
+            setLoading(false)
+        }
+    }
+
+    
     return (
         <Wrapper>
             <div className="login">
@@ -118,28 +176,49 @@ const Login = () => {
                 </div>
                 <div className='login--border'>
                     <p className="login--paragraph">
-                        Introducing Traquer, a passionate bird that helps you watch over your files
-                        while you go about your daily business. Traquer is a location file tracking system.
-                        A simulation of manual file movement to electronic file monitoring
+                        A code will be sent to your email address.
                     </p>
                 </div>
             <div className='login--border'>
+            <Loading active={loading} withOverlay={true} />
                     <div >
                         <div class="card">
                             <div style={{ justifyContent: 'center', alignItems: 'center' }}>
                                 <img src={SignUp} alt="Logo" style={{ width: '30%', height: '30%', }} />
                             </div>
                             <div class="container">
+                                
+                            <Form
+                                onSubmit={onSubmit}
+                                validate={(values) => {
+                                    const errors = {}
+                                    const {
+                                        password,
+                                        email
+                                    } = values
+
+                                    if (!email) {
+                                        errors.email = {
+                                            value:
+                                                'Email required',
+                                        }
+                                    } 
+                                    if (!password) {
+                                        errors.password = {
+                                            value:
+                                                'Password required',
+                                        }
+                                    } 
+                                    return errors
+                                }}
+                                render={({ values, onSave, valid, reset }) => (
+                                    <form>
                             <Grid fluid>
                                 <Row>
                                     <Col xs={2} md={2} />
                                     <Col xs={8} md={8}>
                                         <Form
-                                            onSubmit={(e) => {
-                                                console.log('jj')
-                                            }}
-                                            // initialValues={this.state.formData}
-                                            // validate={validate}
+                                            onSubmit={onSubmit}
                                             render={({
                                                 handleSubmit,
                                                 submitError,
@@ -165,10 +244,10 @@ const Login = () => {
                                                                 inputComponent={
                                                                     TextInput
                                                                 }
-                                                                id="code"
-                                                                name="code"
+                                                                id="email"
+                                                                name="email"
                                                                 type="text"
-                                                                labelText="Activation code"
+                                                                labelText="Email"
                                                             />
 
                                                             <div style={{
@@ -177,7 +256,7 @@ const Login = () => {
                                                                 <div
                                                                     className="button"
                                                                     type="submit"
-                                                                    onClick={()=> setCode(true)}
+                                                                    onClick={()=> onSubmit(values)}
                                                                 >
                                                                     SUBMIT
                                                                 </div>
@@ -214,7 +293,7 @@ const Login = () => {
                                                                 id="password"
                                                                 name="password"
                                                                 type="password"
-                                                                labelText="Password"
+                                                                labelText="New Password"
                                                             />
 
                                                             <Field
@@ -236,6 +315,7 @@ const Login = () => {
                                                                 <div
                                                                     className="button"
                                                                     type="submit"
+                                                                    onClick={()=> resetCode(values)}
                                                                 >
                                                                     SUBMIT
                                                                 </div>
@@ -251,6 +331,9 @@ const Login = () => {
                                          <Col xs={2} md={2} />
                                      </Row>
                                  </Grid>  
+                                 </form>
+                                )}
+                            />
                             </div>
                         </div> 
                     </div>

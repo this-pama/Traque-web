@@ -11,6 +11,10 @@ import { Modal, Wrapper, Loading, Blockquote } from '@wfp/ui'
 import Login from './Login'
 import Activate from './Activate'
 import CreateMinistry from './Dashboard/views/CreateMinistry'
+import { ToastContainer, toast } from 'react-toastify'
+import {
+    Footer
+} from '@wfp/ui'
 
 // import 'ag-grid-enterprise'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -27,7 +31,7 @@ class App extends React.Component {
       super(props)
 
       this.state = {
-          timeout: 1000 * 60 ,
+          timeout: 1000 * 60 * 5,
           showModal: false,
           isTimedOut: false,
       }
@@ -81,9 +85,7 @@ class App extends React.Component {
 
   render() {
       const { user, error, comment } = this.props;
-     
       const isLogged = user ? true : false;
-      let pos, href ;
 
        // Internet Explorer 6-11
       const isIE = /*@cc_on!@*/ false || !!document.documentMode;
@@ -110,9 +112,39 @@ class App extends React.Component {
                     <>
                     <Switch>
                         
+                        <Route
+                            // exact
+                            path="/login"
+                            component={(props) => <Login {...props} />}
+                        />
+
+                        <Route
+                            exact
+                            path="/activate"
+                            component={(props) => <Activate {...props} />}
+                        />
+
+                        <Route
+                            exact
+                            path="/reset-password"
+                            component={(props) => <ResetPassword {...props} />}
+                        />
+                        
+                        
+                    </Switch>
+
+                        {!isLogged ? (
+                            <Switch>
+                                <Redirect to={`/login`} />
+
+                            </Switch>
+                        ) : (
+                            <>
+                            <Switch>
+                                {/* {isIE && <Redirect to='/outdated-browser' /> } */}
 
                                 <ProtectedRoute
-                                    isAllowed={true}
+                                    isAllowed={isLogged}
                                     path="/ministry"
                                     component={(props) => (
                                         <Dashboard {...props} user={user} />
@@ -120,7 +152,7 @@ class App extends React.Component {
                                 />
 
                                 <ProtectedRoute
-                                    isAllowed={true}
+                                    isAllowed={isLogged}
                                     path="/create-ministry"
                                     component={(props) => (
                                         <CreateMinistry {...props} user={user} />
@@ -128,7 +160,7 @@ class App extends React.Component {
                                 />
 
                                 <ProtectedRoute
-                                    isAllowed={true}
+                                    isAllowed={isLogged}
                                     path="/create-admin"
                                     component={(props) => (
                                         <CreateAdmin {...props} user={user} />
@@ -140,51 +172,18 @@ class App extends React.Component {
                                     path="/sa-landing"
                                     component={() => <SA_Landing />}
                                 />
-
-                        <Route
-                            // exact
-                            path="/login"
-                            component={() => <Login />}
-                        />
-
-                        <Route
-                            exact
-                            path="/activate"
-                            component={() => <Activate />}
-                        />
-
-                        <Route
-                            exact
-                            path="/reset-password"
-                            component={() => <ResetPassword />}
-                        />
-                        
-                        
-                    </Switch>
-
-                        {!isLogged ? (
-                            <Switch>
-                                <Redirect to={`/create-admin`} />
-
-                            </Switch>
-                        ) : (
-                            <>
-                            <Switch>
-                                {/* {isIE && <Redirect to='/outdated-browser' /> } */}
-
-                                {/* <ProtectedRoute
-                                    isAllowed={isLogged}
-                                    path="/hr"
-                                    component={(props) => (
-                                        <Dashboard {...props} user={user} />
-                                    )}
-                                /> */}
                                 
 
 
                             </Switch>
                             </>
                         )}
+
+                        <ToastContainer />
+
+                        {/* <Footer>
+                            <div>Testing</div>
+                        </Footer> */}
 
                         <Modal
                             open={this.state.showModal}

@@ -4,6 +4,7 @@ import axios from 'axios'
 import styled from 'styled-components'
 import _ from 'lodash'
 import { Row, Col } from 'react-flexbox-grid'
+import Select from 'react-select'
 
 import MySecondaryNavigation from '../MySecondaryNavigation'
 import {
@@ -19,8 +20,10 @@ import {
     ReduxFormWrapper,
 } from '@wfp/ui'
 import { iconCloseOutline } from '@wfp/icons'
+import { gradeLevel, gender } from '../../shared/utils'
 
 import { Form, FormSpy, Field } from 'react-final-form'
+import { toast } from 'react-toastify'
 
 
 class RostersScreeningForm extends React.Component {
@@ -29,36 +32,107 @@ class RostersScreeningForm extends React.Component {
         formData: null,
         showErrors: false,
         loading: false,
+        ministry: [],
     }
     componentDidMount() {
         window.scrollTo(0, 0)
+        this.fetchMinistry()
+
+        const { location } = this.props;
+        const {state}= location;
+
+        if(state && state.edit && state.data){
+            const { firstName, lastName, email, gender, telephone, gradeLevel, designation,
+                ministry,} = state.data;
+
+                console.log('state.data', state.data)
+            
+            this.setState({
+                formData:{
+                    firstName,
+                    lastName,
+                    email,
+                    gender: {label: gender, value: gender},
+                    telephone,
+                    gradeLevel: {label: gradeLevel, value: gradeLevel},
+                    designation,
+                    // staffId,
+                    ministry
+                }
+            })
+        };
+    }
+
+    fetchMinistry=  async () => {
+        try {
+            axios.get(`/v1/ministry`)
+            .then(data=> this.setState({ ministry : data.data }))
+        } catch (err) {
+            console.log('Error while loading ministry', err)
+        }
     }
     
     onSubmit = async (values) => {
-        const formData={}
+        this.setState({ loading: true });
+
+        const { firstName, lastName, email, gender, telephone, gradeLevel, designation,
+        ministry,} = values;
+
+        const formData={
+            firstName,
+            lastName,
+            email,
+            gender: gender.value,
+            telephone,
+            gradeLevel: gradeLevel.value,
+            designation,
+            // staffId,
+            ministry: ministry._id,
+            isAdmin: true,
+            isSuper: false,
+            isStaff: false,
+            // userType: 'Admin'
+        };
+
+        const { location } = this.props;
+        const {state}= location;
+
         try {
-            await axios.put(`/api/screening/${formData.id}/finish`, formData)
-            this.props.history.goBack()
+            if(state && state.edit){
+                await axios.put(`/v1/user/update/${state.id}`, formData)
+                .then(()=> this.setState({ loading: false }))
+                toast('Successfully updated ', {closeOnClick: true, autoClose: 1000 });
+                this.props.history.goBack()
+            }
+            else{
+                await axios.post(`/v1/user/add`, formData)
+                .then(()=>toast('Successfully created'), {closeOnClick: true, autoClose: 1000 })
+                this.setState({ loading: false });
+                this.props.history.goBack()
+            }
         } catch (err) {
             console.log('Error in ScreeningForm onSubmit method', err)
-            this.setState({ showErrors: true })
+            toast.error('Oops! something went wrong. Please try again ', {closeOnClick: true, autoClose: 1000 });
+            this.setState({ loading: false });
         }
     }
 
     
     render() {
         const { showErrors } = this.state
-        const { formData, loading } = this.state
+        const { formData, loading, ministry } = this.state
         const { id } = this.props.match.params;
+        const { location } = this.props;
+        const {state}= location;
         
         return (
             <>
                 <MySecondaryNavigation
                     l1Label="Admin"
                     l1Link="/ministry/admin"
-                    l2Label="Create ministry administrator"
+                    l2Label={  state && state.edit ? "Update Admin data" : "Create ministry administrator"}
                     l2Link="#"
-                    pageTitle={'Create Administrator'}
+                    pageTitle={  state && state.edit ? "Update Admin data" : "Create ministry administrator"}
                 />
                 {loading ? (
                     <Loading active={true} withOverlay={true} />
@@ -186,6 +260,155 @@ class RostersScreeningForm extends React.Component {
                                                 </FieldWrapper>
                                             </Col>
 
+                                            
+                                            <Col 
+                                                md={6}
+                                                sm={6}
+                                                xs={12}
+                                            >
+                                                <FieldWrapper>
+                                                    <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        inputComponent={
+                                                            TextInput
+                                                        }
+                                                        id="designation"
+                                                        name="designation"
+                                                        type="text"
+                                                        labelText="Designation"
+                                                    />
+                                                </FieldWrapper>
+                                            </Col>
+
+                                            <Col 
+                                                md={6}
+                                                sm={6}
+                                                xs={12}
+                                            >
+                                                <FieldWrapper>
+                                                    <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        name="gradeLevel"
+                                                        labelText="Grade level"
+                                                        placeholder="Select grade level"
+                                                    >
+                                                        {({
+                                                            input,
+                                                            meta,
+                                                        }) => (
+                                                            <>
+                                                            <div className='wfp--label'>Grade level</div>
+                                                            <Select
+                                                                className="wfp--react-select-container auto-width"
+                                                                classNamePrefix="wfp--react-select"
+                                                                closeMenuOnSelect={true}
+                                                                // onChange={(vars) => {
+                                                                //     this.languageChange(vars, originalOnChange)
+                                                                // }}
+                                                                options={gradeLevel}
+                                                                getOptionValue={(option) =>
+                                                                    option['value'] ? option['value'] : option['id']
+                                                                }
+                                                                getOptionLabel={(option) =>
+                                                                    option['label']
+                                                                }
+                                                                {...input}
+                                                                {...meta}
+                                                            />
+                                                            </>
+                                                        )}
+                                                    </Field>
+                                                </FieldWrapper>
+                                            </Col>
+
+                                            <Col 
+                                                md={6}
+                                                sm={6}
+                                                xs={12}
+                                            >
+                                                <FieldWrapper>
+                                                    <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        name="gender"
+                                                        labelText="gender"
+                                                        placeholder="Select gender"
+                                                    >
+                                                        {({
+                                                            input,
+                                                            meta,
+                                                        }) => (
+                                                            <>
+                                                            <div className='wfp--label'>Gender</div>
+                                                            <Select
+                                                                className="wfp--react-select-container auto-width"
+                                                                classNamePrefix="wfp--react-select"
+                                                                closeMenuOnSelect={true}
+                                                                options={gender}
+                                                                getOptionValue={(option) =>
+                                                                    option['value'] ? option['value'] : option['id']
+                                                                }
+                                                                getOptionLabel={(option) =>
+                                                                    option['label']
+                                                                }
+                                                                {...input}
+                                                                {...meta}
+                                                            />
+                                                            </>
+                                                        )}
+                                                    </Field>
+                                                </FieldWrapper>
+                                            </Col>
+
+
+                                            <Col 
+                                                md={6}
+                                                sm={6}
+                                                xs={12}
+                                            >
+                                                <FieldWrapper>
+                                                    <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        name="ministry"
+                                                        labelText="Ministry"
+                                                        placeholder="Select ministry"
+                                                    >
+                                                        {({
+                                                            input,
+                                                            meta,
+                                                        }) => (
+                                                            <>
+                                                            <div className='wfp--label'>Ministry</div>
+                                                            <Select
+                                                                className="wfp--react-select-container auto-width"
+                                                                classNamePrefix="wfp--react-select"
+                                                                closeMenuOnSelect={true}
+                                                                // onChange={(vars) => {
+                                                                //     this.languageChange(vars, originalOnChange)
+                                                                // }}
+                                                                options={ministry}
+                                                                getOptionValue={(option) =>
+                                                                    option['_id'] 
+                                                                }
+                                                                getOptionLabel={(option) =>
+                                                                    option['name']
+                                                                }
+                                                                {...input}
+                                                                {...meta}
+                                                            />
+                                                            </>
+                                                        )}
+                                                    </Field>
+                                                </FieldWrapper>
+                                            </Col>
+
                                             </ModuleBody>
                                             <ModuleFooter>
                                                 <div></div>
@@ -214,7 +437,7 @@ class RostersScreeningForm extends React.Component {
                                                             )
                                                         }}
                                                     >
-                                                        Create
+                                                       {state && state.edit ? "Update" : "Create"} 
                                                     </Button>
                                                 </div>
                                             </ModuleFooter>

@@ -3,12 +3,15 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
 const PositionLink = (props) => {
-    const { status, position_id, id, create_user } = props.data
+    const {  _id, } = props.data
 
     return (
         <Wrapper>
             <Link
-                to={''}
+                to={{
+                    pathname: "/create-ministry",
+                    state: { edit: true, id : _id, data: props.data }
+                  }}
             >
                 Edit
             </Link>

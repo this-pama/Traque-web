@@ -31,7 +31,10 @@ const MinistryView = ({props}) => {
         <>
         <div id="export-button-portal" >
             <Button
-               onClick={()=> props.history.push('/create-ministry')}
+               onClick={(data)=> {
+                   console.log(data)
+                   props.history.push('/create-ministry')
+               }}
                 icon={iconAddOutline}
                 kind="secondary"
                 small

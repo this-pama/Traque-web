@@ -25,11 +25,13 @@ export const checkLoginStatus = () => {
     }
 }
 
-export const getUserData = () => {
+export const getUserData = (data) => {
     return (dispatch) => {
-        axios.get('/api/profile').then((res) => {
-            dispatch(setUserData(res.data.data))
-        })
+        if (data.userId) {
+            axios.get(`/v1/user/${data.userId}`).then((res) => {
+                dispatch(setUserData(res.data))
+            })
+        }
     }
 }
 

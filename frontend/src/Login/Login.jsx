@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import Logo from '../assets/logo.png'
 import LoginIcon from '../assets/login2.png'
@@ -11,7 +11,11 @@ import {
     Loading,
     ReduxFormWrapper,
 } from '@wfp/ui'
-import { Link  } from 'react-router-dom'
+import { Link, Redirect  } from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import store from '../store'
+import {getUserData} from '../store/actions'
 
 const Wrapper = styled.div`
     .login {
@@ -107,7 +111,36 @@ const Wrapper = styled.div`
 }
 `
 
-const Login = () => {
+const Login = (props) => {
+    const [ loading, setLoading ]= useState(false);
+
+    const onSubmit = async (values) => {
+        setLoading(true);
+        let formData;
+        try {
+            formData={
+                email: values.email,
+                password: values.password
+            }
+
+            await axios.post(`/v1/account/login`, formData)
+            .then((data)=> {
+                if(data.data){
+                    store.dispatch(getUserData(data.data))
+                }
+                if(data.data && data.data.isSuper){
+                    props.history.push('/ministry');
+                }
+                setLoading(false)
+            });  
+        } catch (err) {
+            console.log('Ooops! login failed', err)
+            toast.error('Ooops! login failed', {closeOnClick: true, autoClose: 1000 }); 
+            setLoading(false)
+        }
+    }
+
+
     return (
         <Wrapper>
             <div className="login">
@@ -122,28 +155,46 @@ const Login = () => {
                     </p>
                 </div>
             <div className='login--border'>
+                <Loading active={loading} withOverlay={true} />
                     <div >
                         <div class="card">
                             <div style={{ justifyContent: 'center', alignItems: 'center' }}>
                                 <img src={LoginIcon} alt="Logo" style={{ width: '30%', height: '30%', }} />
                             </div>
                             <div class="container">
+                                
+                            <Form
+                                onSubmit={onSubmit}
+                                validate={(values) => {
+                                    const errors = {}
+                                    const {
+                                        password,
+                                        email
+                                    } = values
+
+                                    if (!email) {
+                                        errors.email = {
+                                            value:
+                                                'Email required',
+                                        }
+                                    } 
+                                    if (!password) {
+                                        errors.password = {
+                                            value:
+                                                'Password required',
+                                        }
+                                    } 
+                                    return errors
+                                }}
+                                render={({ values, onSave, valid, reset }) => (
+                                    <form>
                             <Grid fluid>
                                 <Row>
                                     <Col xs={2} md={2} />
                                     <Col xs={8} md={8}>
                                         <Form
-                                            onSubmit={(e) => {
-                                                console.log('jj')
-                                            }}
-                                            // initialValues={this.state.formData}
-                                            // validate={validate}
+                                            onSubmit={onSubmit}
                                             render={({
-                                                handleSubmit,
-                                                submitError,
-                                                form,
-                                                submitting,
-                                                pristine,
                                                 values,
                                                 errors,
                                             }) => (
@@ -184,6 +235,12 @@ const Login = () => {
                                                             <div
                                                                 className="button"
                                                                 type="submit"
+                                                                onClick={(e) => {
+                                                                    e.preventDefault()
+                                                                    onSubmit(
+                                                                        values
+                                                                    )
+                                                                }}
                                                             >
                                                                 LOGIN
                                                             </div>
@@ -217,6 +274,9 @@ const Login = () => {
                                          <Col xs={2} md={2} />
                                      </Row>
                                  </Grid>  
+                                 </form>
+                                )}
+                            />
                             </div>
                         </div> 
                     </div>

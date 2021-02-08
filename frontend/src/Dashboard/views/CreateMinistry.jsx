@@ -4,6 +4,8 @@ import axios from 'axios'
 import styled from 'styled-components'
 import _ from 'lodash'
 import { Row, Col } from 'react-flexbox-grid'
+import { toast } from 'react-toastify'
+import Select from 'react-select'
 
 import MySecondaryNavigation from '../MySecondaryNavigation'
 import {
@@ -29,36 +31,80 @@ class RostersScreeningForm extends React.Component {
         formData: null,
         showErrors: false,
         loading: false,
+        admin: []
     }
     componentDidMount() {
         window.scrollTo(0, 0)
+        this.fetchAdmin()
+
+        const { location } = this.props;
+        const {state}= location;
+
+        if(state && state.edit && state.data){
+            this.setState({
+                formData: {
+                    ministry: state.data.name,
+                    admin: state.data.userId
+                }
+            })
+        };
+    }
+
+    fetchAdmin=  async () => {
+        try {
+            axios.get(`/v1/user/admin/admin-list`)
+            .then(data=> this.setState({ admin : data.data.data }))
+        } catch (err) {
+            console.log('Error while loading ministry', err)
+        }
     }
     
     onSubmit = async (values) => {
-        const formData={}
+        this.setState({ loading: true });
+        const { location } = this.props;
+        const {state}= location;
+        let formData;
+       
         try {
-            await axios.put(`/api/screening/${formData.id}/finish`, formData)
-            this.props.history.goBack()
+            if(state && state.edit){
+                formData={
+                    name: values.ministry,
+                    userId: values.admin._id
+                }
+    
+                await axios.put(`/v1/ministry/update/${state.id}`, formData)
+                .then(()=> this.setState({ loading: false }))
+                toast('Successfully updated a ministry', {closeOnClick: true, autoClose: 1000 });
+                this.props.history.goBack()
+            }
+            else{
+                await axios.post(`/v1/ministry/add`, { name: values.ministry })
+                .then(()=> this.setState({ loading: false }))
+                toast('Successfully created a ministry', {closeOnClick: true, autoClose: 1000 });
+                this.props.history.goBack()
+            }
+            
+            
         } catch (err) {
             console.log('Error in ScreeningForm onSubmit method', err)
-            this.setState({ showErrors: true })
+            this.setState({ loading: false })
         }
     }
 
     
     render() {
-        const { showErrors } = this.state
-        const { formData, loading } = this.state
-        const { id } = this.props.match.params;
-        
+        const { showErrors } = this.state;
+        const { formData, loading, admin } = this.state;
+        const { location } = this.props;
+        const {state}= location;
         return (
             <>
                 <MySecondaryNavigation
                     l1Label="Ministry"
                     l1Link="/ministry"
-                    l2Label="Create ministry"
+                    l2Label={  state && state.edit ? 'Update ministry' : 'Create ministry' }
                     l2Link="#"
-                    pageTitle={'Create ministry'}
+                    pageTitle={  state && state.edit ? 'Update ministry' : 'Create ministry' }
                 />
                 {loading ? (
                     <Loading active={true} withOverlay={true} />
@@ -72,7 +118,6 @@ class RostersScreeningForm extends React.Component {
                             spacing="md"
                             mobilePageWidth="full"
                         >
-
                             <Form
                                 onSubmit={this.onSubmit}
                                 initialValues={formData}
@@ -84,8 +129,7 @@ class RostersScreeningForm extends React.Component {
 
                                     if (!ministry) {
                                         errors.ministry = {
-                                            value:
-                                                'Ministry name is required',
+                                            value: 'Ministry name is required',
                                             show: showErrors,
                                         }
                                     } 
@@ -96,7 +140,7 @@ class RostersScreeningForm extends React.Component {
                                         <Module noMargin>
                                             <ModuleHeader>
                                                 <span style={{ fontSize: 20 }}>
-                                                    Create ministry
+                                                    {  state && state.edit ? 'Update ministry' : 'Create ministry' }
                                                 </span>
                                             </ModuleHeader>
                                             <ModuleBody>
@@ -120,6 +164,55 @@ class RostersScreeningForm extends React.Component {
                                                     />
                                                 </FieldWrapper>
                                             </Col>
+
+                                            {
+                                                state && state.edit ?
+                                                (
+                                                    <Col 
+                                                        md={6}
+                                                        sm={6}
+                                                        xs={12}
+                                                    >
+                                                        <FieldWrapper>
+                                                            <Field
+                                                                component={
+                                                                    ReduxFormWrapper
+                                                                }
+                                                                name="admin"
+                                                                labelText="Admin"
+                                                                placeholder="Select designated admin"
+                                                            >
+                                                                {({
+                                                                    input,
+                                                                    meta,
+                                                                }) => (
+                                                                    <>
+                                                                    <div className='wfp--label'>Designated Admin</div>
+                                                                    <Select
+                                                                        className="wfp--react-select-container auto-width"
+                                                                        classNamePrefix="wfp--react-select"
+                                                                        closeMenuOnSelect={true}
+                                                                        // onChange={(vars) => {
+                                                                        //     this.languageChange(vars, originalOnChange)
+                                                                        // }}
+                                                                        options={admin}
+                                                                        getOptionValue={(option) =>
+                                                                            option['_id'] 
+                                                                        }
+                                                                        getOptionLabel={(option) =>
+                                                                            option['firstName'] + " " + option['lastName'] 
+                                                                        }
+                                                                        {...input}
+                                                                        {...meta}
+                                                                    />
+                                                                    </>
+                                                                )}
+                                                            </Field>
+                                                        </FieldWrapper>
+                                                    </Col>
+                                                )
+                                                : null
+                                            }
                                             </ModuleBody>
                                             <ModuleFooter>
                                                 <div></div>
@@ -148,7 +241,7 @@ class RostersScreeningForm extends React.Component {
                                                             )
                                                         }}
                                                     >
-                                                        Create
+                                                       { state && state.edit ? 'Update' : 'Create' } 
                                                     </Button>
                                                 </div>
                                             </ModuleFooter>

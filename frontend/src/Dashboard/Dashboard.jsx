@@ -59,7 +59,7 @@ const Dashboard = (props) => {
             permissions: true,
             label: 'Admin',
             path: '/ministry/admin',
-            component: () => <AdminTable {...props} />,
+            component: () => <AdminTable props={props}  />,
         },
     ]
 

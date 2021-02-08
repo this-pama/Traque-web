@@ -26,7 +26,7 @@ const Admin = ({props}) => {
         <>
         <div id="export-button-portal" >
             <Button
-                onClick={()=> props.history.push('/create-ministry')}
+                onClick={()=> props.history.push('/create-admin')}
                 icon={iconAddOutline}
                 kind="secondary"
                 small
