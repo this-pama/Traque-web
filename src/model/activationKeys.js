@@ -13,6 +13,10 @@ let ActivationSchema = new Schema({
     default: Date.now
   },
   userId: {type: Schema.Types.ObjectId, ref: 'User ID'},
+  active: {
+    type: Boolean,
+    default: false
+  }
 }, 
 { usePushEach: true });
 

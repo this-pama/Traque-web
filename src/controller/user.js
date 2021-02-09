@@ -21,6 +21,8 @@ import { select } from 'async';
 
 export default({ config, db }) => {
   let api = Router();
+  
+  const { EMAIL_SENDER } = process.env;
 
   // '/v1/user' - GET all users
   api.get('/', (req, res) => {
@@ -169,7 +171,6 @@ export default({ config, db }) => {
     }, ...req.body)
 
     let activationKey = randomize('0', 6);
-    const { EMAIL_SENDER } = process.env;
 
     newUser.save(async (err,doc) =>{
       if(err) return res.status(500).send(err);
@@ -271,10 +272,17 @@ export default({ config, db }) => {
     })
 
     let doc= await User.findById(userId).exec();
-    if(!doc) return res.status(501)
+    if(!doc || doc._id == null) return res.status(501)
     .json({ 
       message: 'user does not exist'
     })
+
+    let activationKey = await ActivationKey.find({ userId: doc._id, active: false});
+    if(!activationKey || activationKey._id == null) return res.status(501)
+    .json({ 
+      message: 'user does not exist'
+    })
+
 
     const { isAdmin, isStaff, isSuper, _id } = doc;
 
@@ -285,8 +293,11 @@ export default({ config, db }) => {
       isAdmin,
       isStaff,
       isSuper,
-     }), password, function(err, account) {
+     }), password, async function(err, account) {
       if (err) return res.status(500).json(err);
+
+      //update activation key status
+      
       
       passport.authenticate(
         'local', {
@@ -295,6 +306,10 @@ export default({ config, db }) => {
         
         doc.accountId = account._id;
 
+        activationKey.active= true;
+        
+        await activationKey();
+
         await doc.save();
 
         return res.status(200).json({ message: 'success'})
@@ -302,6 +317,37 @@ export default({ config, db }) => {
       })
     });
 
+  })
+
+
+  // resned activation key to user
+  api.get('/activation/resend/:userId', async (req, res)=>{
+    let key = await ActivationKey.find({userId : req.params.userId});
+    if(!key || key.length <= 0) return res.status(501)
+    .json({ 
+      message: 'user has not been pre-registered'
+    })
+
+    const user = await User.findById(req.params.userId)
+    if(!user || user._id == null) return res.status(501)
+    .json({ 
+      message: 'User does not exist'
+    })
+
+    let activationKey = randomize('0', 6);
+
+    key.key = activationKey;
+    key.expiration = Date.now() + (3600000 * 24); //24 hours
+
+    const { firstName, lastName, email, telephone } = user;
+
+    //send activation key to user via sms and email
+    sendMail( EMAIL_SENDER , { email: email, firstName, lastName, activationKey})
+
+    sendSms(telephone, `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`)
+
+    return res.status(200).json({ success: true , message: "success"});
+    
   })
 
 
