@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import config from './config';
 import routes from './routes';
 import passport from 'passport';
+import path from 'path'
 
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -41,10 +42,16 @@ app.use(function(req, res, next) {
 	next();
 });
 
-console.log('env', process.env.NODE_ENV)
+// app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+// if(process.env.NODE_ENV === 'development') {
+//   app.get('/*', function (req, res) {
+//    	res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+//   });
+// }
 
 //A welcome message for debugging 
-app.get('/',(req,res)=> res.send("File tracking system"))
+app.get('/api',(req,res)=> res.send("File tracking system"))
 
 // app.get('/policy',(req,res)=> res.sendFile(path.join(__dirname + '/controller/public/Rapid/index.html')))
 

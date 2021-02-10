@@ -277,11 +277,20 @@ export default({ config, db }) => {
       message: 'user does not exist'
     })
 
-    let activationKey = await ActivationKey.find({ userId: doc._id, active: false});
+    let activationKey = await ActivationKey.findOne({ userId: doc._id, active: false });
+    
     if(!activationKey || activationKey._id == null) return res.status(501)
     .json({ 
-      message: 'user does not exist'
+      message: 'Activation key does not exist or has been used'
     })
+
+    if(activationKey.hasOwnProperty('active') 
+    && activationKey.active == true){
+        return res.status(501)
+        .json({ 
+          message: 'Activation key has been used'
+        })
+    }
 
 
     const { isAdmin, isStaff, isSuper, _id } = doc;
@@ -296,8 +305,6 @@ export default({ config, db }) => {
      }), password, async function(err, account) {
       if (err) return res.status(500).json(err);
 
-      //update activation key status
-      
       
       passport.authenticate(
         'local', {
@@ -308,7 +315,7 @@ export default({ config, db }) => {
 
         activationKey.active= true;
         
-        await activationKey();
+        await activationKey.save();
 
         await doc.save();
 
@@ -322,24 +329,23 @@ export default({ config, db }) => {
 
   // resned activation key to user
   api.get('/activation/resend/:userId', async (req, res)=>{
-    let key = await ActivationKey.find({userId : req.params.userId});
-    if(!key || key.length <= 0) return res.status(501)
-    .json({ 
-      message: 'user has not been pre-registered'
-    })
-
+  
     const user = await User.findById(req.params.userId)
     if(!user || user._id == null) return res.status(501)
     .json({ 
       message: 'User does not exist'
     })
-
+    const { firstName, lastName, email, telephone } = user;
     let activationKey = randomize('0', 6);
 
-    key.key = activationKey;
-    key.expiration = Date.now() + (3600000 * 24); //24 hours
+    let key = new ActivationKey({
+      key: activationKey,
+      expiration: Date.now() + (3600000 * 24), //24 hours
+      userId: user._id,
+      email,
+    })
 
-    const { firstName, lastName, email, telephone } = user;
+    await key.save();
 
     //send activation key to user via sms and email
     sendMail( EMAIL_SENDER , { email: email, firstName, lastName, activationKey})
