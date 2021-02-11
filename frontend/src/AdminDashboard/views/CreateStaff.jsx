@@ -5,8 +5,9 @@ import styled from 'styled-components'
 import _ from 'lodash'
 import { Row, Col } from 'react-flexbox-grid'
 import Select from 'react-select'
+import { connect } from 'react-redux'
 
-import MySecondaryNavigation from '../MySecondaryNavigation'
+import MySecondaryNavigation from '../../Dashboard/MySecondaryNavigation'
 import {
     Wrapper,
     Loading,
@@ -32,20 +33,18 @@ class Create extends React.Component {
         formData: null,
         showErrors: false,
         loading: false,
-        ministry: [],
+        department: [],
     }
     componentDidMount() {
         window.scrollTo(0, 0)
-        this.fetchMinistry()
+        this.fetchDept()
 
         const { location } = this.props;
         const {state}= location;
 
         if(state && state.edit && state.data){
             const { firstName, lastName, email, gender, telephone, gradeLevel, designation,
-                ministry,} = state.data;
-
-                console.log('state.data', state.data)
+                department } = state.data;
             
             this.setState({
                 formData:{
@@ -57,41 +56,57 @@ class Create extends React.Component {
                     gradeLevel: {label: gradeLevel, value: gradeLevel},
                     designation,
                     // staffId,
-                    ministry
+                    department
                 }
             })
         };
     }
 
-    fetchMinistry=  async () => {
+    fetchDept=  async () => {
         try {
-            axios.get(`/v1/ministry`)
-            .then(data=> this.setState({ ministry : data.data }))
+            axios.get(`/v1/department`)
+            .then(data=> this.setState({ department : data.data }))
         } catch (err) {
-            console.log('Error while loading ministry', err)
+            console.log('Error while loading department', err)
         }
     }
+
+    fetchSubDept=  async val => {
+        console.log('fettingggh')
+        this.setState({ loading: true })
+        try {
+            axios.get(`/v1/department/details/${val._id}`)
+            .then(data=> this.setState({ subDepartment : data.data.subDeparment, loading: false }))
+        } catch (err) {
+            console.log('Error while loading sub department', err)
+            this.setState({ loading: false })
+        }
+    }
+
     
     onSubmit = async (values) => {
         this.setState({ loading: true });
 
         const { firstName, lastName, email, gender, telephone, gradeLevel, designation,
-        ministry,} = values;
+        department, subDeparment } = values;
+        const {user} = this.props;
 
         const formData={
             firstName,
             lastName,
             email,
-            gender: gender.value,
+
+            gender: gender && gender.value,
             telephone,
-            gradeLevel: gradeLevel.value,
+            gradeLevel: gradeLevel &&  gradeLevel.value,
             designation,
-            // staffId,
-            ministry: ministry._id,
-            isAdmin: true,
+
+            ministry: user && user.ministry,
+            department: department && department._id,
+            subDeparment: subDeparment && subDeparment._id,
+            isAdmin: false,
             isSuper: false,
-            isStaff: false,
-            // userType: 'Admin'
+            isStaff: true,
         };
 
         const { location } = this.props;
@@ -105,7 +120,7 @@ class Create extends React.Component {
                 this.props.history.goBack()
             }
             else{
-                await axios.post(`/v1/user/add`, formData)
+                await axios.post(`/v1/user/add/staff`, formData)
                 .then(()=>toast('Successfully created'), {closeOnClick: true, autoClose: 1000 })
                 this.setState({ loading: false });
                 this.props.history.goBack()
@@ -120,7 +135,7 @@ class Create extends React.Component {
     
     render() {
         const { showErrors } = this.state
-        const { formData, loading, ministry } = this.state
+        const { formData, loading, department, subDeparment } = this.state
         const { id } = this.props.match.params;
         const { location } = this.props;
         const {state}= location;
@@ -128,11 +143,11 @@ class Create extends React.Component {
         return (
             <>
                 <MySecondaryNavigation
-                    l1Label="Admin"
-                    l1Link="/ministry/admin"
-                    l2Label={  state && state.edit ? "Update Admin data" : "Create ministry administrator"}
+                    l1Label="Admin dashboard"
+                    l1Link="/department"
+                    l2Label={  state && state.edit ? "Update staff" : "Create staff"}
                     l2Link="#"
-                    pageTitle={  state && state.edit ? "Update Admin data" : "Create ministry administrator"}
+                    pageTitle={  state && state.edit ? "Update staff" : "Create staff"}
                 />
                 {loading ? (
                     <Loading active={true} withOverlay={true} />
@@ -151,15 +166,23 @@ class Create extends React.Component {
                                 onSubmit={this.onSubmit}
                                 initialValues={formData}
                                 validate={(values) => {
-                                    const errors = {}
+                                    const errors = {};
                                     const {
-                                        ministry,
-                                    } = values
+                                        department,
+                                        firstName,
+                                        lastName,
+                                        email,
+                                        telephone,
+                                        gender, 
+                                        designation
+                                    } = values;
+                                    
 
-                                    if (!ministry) {
-                                        errors.ministry = {
+                                    if (!firstName || !lastName || !email || !telephone || !gender 
+                                        || !department || !designation ) {
+                                        errors.firstName = {
                                             value:
-                                                'Ministry name is required',
+                                                'Required',
                                             show: showErrors,
                                         }
                                     } 
@@ -170,7 +193,7 @@ class Create extends React.Component {
                                         <Module noMargin>
                                             <ModuleHeader>
                                                 <span style={{ fontSize: 20 }}>
-                                                    Create administrator
+                                                    Create Staff
                                                 </span>
                                             </ModuleHeader>
                                             <ModuleBody>
@@ -259,11 +282,50 @@ class Create extends React.Component {
                                                     />
                                                 </FieldWrapper>
                                             </Col>
-
-                                            
+                                        <Row>
                                             <Col 
                                                 md={6}
                                                 sm={6}
+                                                xs={12}
+                                            >
+                                                <FieldWrapper>
+                                                    <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        name="gender"
+                                                        labelText="gender"
+                                                        placeholder="Select gender"
+                                                    >
+                                                        {({
+                                                            input,
+                                                            meta,
+                                                        }) => (
+                                                            <>
+                                                            <div className='wfp--label'>Gender</div>
+                                                            <Select
+                                                                className="wfp--react-select-container auto-width"
+                                                                classNamePrefix="wfp--react-select"
+                                                                closeMenuOnSelect={true}
+                                                                options={gender}
+                                                                getOptionValue={(option) =>
+                                                                    option['value'] ? option['value'] : option['id']
+                                                                }
+                                                                getOptionLabel={(option) =>
+                                                                    option['label']
+                                                                }
+                                                                {...input}
+                                                                {...meta}
+                                                            />
+                                                            </>
+                                                        )}
+                                                    </Field>
+                                                </FieldWrapper>
+                                            </Col>
+
+                                            <Col 
+                                                md={5}
+                                                sm={5}
                                                 xs={12}
                                             >
                                                 <FieldWrapper>
@@ -281,6 +343,7 @@ class Create extends React.Component {
                                                     />
                                                 </FieldWrapper>
                                             </Col>
+                                        </Row>
 
                                             <Col 
                                                 md={6}
@@ -325,6 +388,8 @@ class Create extends React.Component {
                                                 </FieldWrapper>
                                             </Col>
 
+                                            
+                                        <Row>
                                             <Col 
                                                 md={6}
                                                 sm={6}
@@ -335,65 +400,22 @@ class Create extends React.Component {
                                                         component={
                                                             ReduxFormWrapper
                                                         }
-                                                        name="gender"
-                                                        labelText="gender"
-                                                        placeholder="Select gender"
+                                                        name="department"
+                                                        labelText="Department"
+                                                        placeholder="Select department"
                                                     >
                                                         {({
                                                             input,
                                                             meta,
                                                         }) => (
                                                             <>
-                                                            <div className='wfp--label'>Gender</div>
+                                                            <div className='wfp--label'>Department</div>
                                                             <Select
                                                                 className="wfp--react-select-container auto-width"
                                                                 classNamePrefix="wfp--react-select"
                                                                 closeMenuOnSelect={true}
-                                                                options={gender}
-                                                                getOptionValue={(option) =>
-                                                                    option['value'] ? option['value'] : option['id']
-                                                                }
-                                                                getOptionLabel={(option) =>
-                                                                    option['label']
-                                                                }
-                                                                {...input}
-                                                                {...meta}
-                                                            />
-                                                            </>
-                                                        )}
-                                                    </Field>
-                                                </FieldWrapper>
-                                            </Col>
-
-
-                                            <Col 
-                                                md={6}
-                                                sm={6}
-                                                xs={12}
-                                            >
-                                                <FieldWrapper>
-                                                    <Field
-                                                        component={
-                                                            ReduxFormWrapper
-                                                        }
-                                                        name="ministry"
-                                                        labelText="Ministry"
-                                                        placeholder="Select ministry"
-                                                    >
-                                                        {({
-                                                            input,
-                                                            meta,
-                                                        }) => (
-                                                            <>
-                                                            <div className='wfp--label'>Ministry</div>
-                                                            <Select
-                                                                className="wfp--react-select-container auto-width"
-                                                                classNamePrefix="wfp--react-select"
-                                                                closeMenuOnSelect={true}
-                                                                // onChange={(vars) => {
-                                                                //     this.languageChange(vars, originalOnChange)
-                                                                // }}
-                                                                options={ministry}
+                                                                onChange={val=>this.fetchSubDept(val)}
+                                                                options={department}
                                                                 getOptionValue={(option) =>
                                                                     option['_id'] 
                                                                 }
@@ -409,6 +431,50 @@ class Create extends React.Component {
                                                 </FieldWrapper>
                                             </Col>
 
+                                            <Col 
+                                                md={5}
+                                                sm={5}
+                                                xs={12}
+                                            >
+                                                <FieldWrapper>
+                                                    <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        name="subDepartment"
+                                                        labelText="Sub Department"
+                                                        placeholder="Select sub department"
+                                                    >
+                                                        {({
+                                                            input,
+                                                            meta,
+                                                        }) => (
+                                                            <>
+                                                            <div className='wfp--label'>Sub Department</div>
+                                                            <Select
+                                                                className="wfp--react-select-container auto-width"
+                                                                classNamePrefix="wfp--react-select"
+                                                                closeMenuOnSelect={true}
+                                                                // onChange={(vars) => {
+                                                                //     this.languageChange(vars, originalOnChange)
+                                                                // }}
+                                                                options={subDeparment}
+                                                                getOptionValue={(option) =>
+                                                                    option['_id'] 
+                                                                }
+                                                                getOptionLabel={(option) =>
+                                                                    option['name']
+                                                                }
+                                                                {...input}
+                                                                {...meta}
+                                                            />
+                                                            </>
+                                                        )}
+                                                    </Field>
+                                                </FieldWrapper>
+                                            </Col>
+
+                                        </Row>
                                             </ModuleBody>
                                             <ModuleFooter>
                                                 <div></div>
@@ -429,7 +495,7 @@ class Create extends React.Component {
                                                     </Button>
 
                                                     <Button
-                                                        // disabled={!valid}
+                                                        disabled={!valid}
                                                         onClick={(e) => {
                                                             e.preventDefault()
                                                             this.onSubmit(
@@ -467,7 +533,14 @@ class Create extends React.Component {
     }
 }
 
-export default withRouter(Create)
+const mapStateToProps = (state) => {
+    return {
+        userId: state.user._id,
+    }
+}
+
+export default connect(mapStateToProps, null)(Create)
+
 const FieldWrapper = styled.div`
     margin-bottom: 30px;
 `

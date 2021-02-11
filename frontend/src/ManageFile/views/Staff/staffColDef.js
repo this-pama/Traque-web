@@ -34,6 +34,7 @@ export const gender = () => ({
     field: 'gender',
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
+    width: 80,
 })
 
 export const email = () => ({
@@ -103,6 +104,40 @@ export const ministry = () => ({
     filterParams: globalFilterParams,
 })
 
+export const subDepartment = () => ({
+    headerName: 'Sub department',
+    // width: 140,
+    editable: false,
+    lockPosition: true,
+    valueGetter: ({ data }) => 
+        data.subDepartment 
+        ? `${data.subDepartment.name}`
+        : null,
+    __isExported: true,
+    hide: false,
+    editable: false,
+    field: 'subDepartment',
+    filter: 'agTextColumnFilter',
+    filterParams: globalFilterParams,
+})
+
+export const department = () => ({
+    headerName: 'Department',
+    // width: 140,
+    editable: false,
+    lockPosition: true,
+    valueGetter: ({ data }) => 
+        data.department 
+        ? `${data.department.name}`
+        : null,
+    __isExported: true,
+    hide: false,
+    editable: false,
+    field: 'department',
+    filter: 'agTextColumnFilter',
+    filterParams: globalFilterParams,
+})
+
 export const action = (onValueChange) => ({
     headerName: 'Action',
     lockPosition: true,
@@ -111,12 +146,13 @@ export const action = (onValueChange) => ({
     hide: false,
     editable: false,
     field: 'action',
-    cellRenderer: "AdminAction",
+    cellRenderer: "StaffAction",
     cellRendererParams: ({data}) => ({
         onValueChange,
         // id: data.sbp_request_id
     }),
     filter: false,
+    width: 120,
 })
 
 
@@ -128,6 +164,9 @@ export default [
 
     gender,
     designation,
+
+    department,
+    subDepartment,
 
     ministry,
     action

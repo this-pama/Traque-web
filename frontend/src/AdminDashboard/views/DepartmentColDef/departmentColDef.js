@@ -4,7 +4,7 @@ import React from 'react'
 
 
 export const name = () => ({
-    headerName: 'Ministry name',
+    headerName: 'Name',
     lockPosition: true,
     __isExported: true,
     hide: false,
@@ -30,19 +30,42 @@ export const createdAt = () => ({
     },
 })
 
-export const admin = () => ({
-    headerName: 'Designated Admin',
+export const no_of_staff = () => ({
+    headerName: 'No of staff',
     // width: 140,
     editable: false,
     lockPosition: true,
-    valueGetter: ({ data }) => 
-        data.userId 
-        ? `${data.userId.firstName} ${data.userId.lastName}`
-        : null,
     __isExported: true,
     hide: false,
     editable: false,
-    field: 'userId',
+    // field: 'staff',
+    valueGetter: ({data}) => data.staff ? data.staff.length : 0,
+    filter: 'agTextColumnFilter',
+    filterParams: globalFilterParams,
+})
+
+export const sub = () => ({
+    headerName: 'No of sub department',
+    // width: 140,
+    editable: false,
+    lockPosition: true,
+    __isExported: true,
+    hide: false,
+    editable: false,
+    valueGetter: ({data}) => data.subDepartment ? data.subDepartment.length : 0,
+    filter: 'agTextColumnFilter',
+    filterParams: globalFilterParams,
+})
+
+export const type = () => ({
+    headerName: 'Type',
+    // width: 140,
+    editable: false,
+    lockPosition: true,
+    __isExported: true,
+    hide: false,
+    editable: false,
+    field: 'type',
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
 })
@@ -55,7 +78,7 @@ export const action = (onValueChange) => ({
     hide: false,
     editable: false,
     field: 'action',
-    cellRenderer: "MinistryAction",
+    cellRenderer: "DepartmentAction",
     cellRendererParams: ({data}) => ({
         onValueChange,
         // id: data.sbp_request_id
@@ -66,7 +89,9 @@ export const action = (onValueChange) => ({
 
 export default [
     name,
-    admin,
+    type,
+    no_of_staff,
+    sub,
     createdAt,
     action
 ]

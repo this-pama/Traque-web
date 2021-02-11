@@ -2,27 +2,27 @@ import React from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
-const PositionLink = (props) => {
-    const {  _id, } = props.data
+const Action = (props) => {
+    const { _id } = props.data
 
     return (
         <Wrapper>
-            <Link
-                className="wfp--link"
+
+            <Link className="wfp--link"
                 style={{ fontWeight: 'bold' }}
                 to={{
-                    pathname: "/create-ministry",
+                    pathname: "/create-staff",
                     state: { edit: true, id : _id, data: props.data }
-                  }}
+                    }}
             >
-                Edit
+                Edit 
             </Link>
            
         </Wrapper>
     )
 }
 
-export default PositionLink
+export default Action
 
 
 const Wrapper = styled.div`

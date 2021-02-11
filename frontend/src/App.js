@@ -25,6 +25,13 @@ import ResetPassword from './ResetPassword'
 import SA_Landing from './SuperAdmin/Landing'
 import Dashboard from './Dashboard'
 import CreateAdmin from './Dashboard/views/CreateAdmin'
+import AdminDashboard from './AdminDashboard'
+import CreateDepartment from './AdminDashboard/views/CreateDepartment'
+import ViewSubDepartment from './AdminDashboard/views/SubDepartment'
+import CreateSubDepartment from './AdminDashboard/views/CreateSubDepartment'
+import CreateStaff from './AdminDashboard/views/CreateStaff'
+import ManageFile from './ManageFile'
+import ViewFileHistory from './ManageFile/views/ViewHistory'
 
 class App extends React.Component {
   constructor(props) {
@@ -164,6 +171,62 @@ class App extends React.Component {
                                     path="/create-admin"
                                     component={(props) => (
                                         <CreateAdmin {...props} user={user} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/create-staff"
+                                    component={(props) => (
+                                        <CreateStaff {...props} user={user} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/department"
+                                    component={(props) => (
+                                        <AdminDashboard {...props} user={user} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/create-department"
+                                    component={(props) => (
+                                        <CreateDepartment {...props} user={user} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/sub/department/:id"
+                                    component={(props) => (
+                                        <ViewSubDepartment {...props} id={props.match.params.id} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/create-sub-department/:id"
+                                    component={(props) => (
+                                        <CreateSubDepartment {...props} user={user} id={props.match.params.id} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/file"
+                                    component={(props) => (
+                                        <ManageFile {...props} user={user} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/history/file/:id"
+                                    component={(props) => (
+                                        <ViewFileHistory {...props} user={user} id={props.match.params.id} />
                                     )}
                                 />
 

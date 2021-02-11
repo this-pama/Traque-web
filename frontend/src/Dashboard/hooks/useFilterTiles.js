@@ -39,7 +39,7 @@ const useFilterTiles = ({ data, filters, hideEmptyTiles }) => {
     const tiles = (
         <TilesWrapper stretch={filters.length >= 4}>
             {filters.map((filter, i) => {
-                const { count, warning, title, role } = filter
+                const { count, warning, title, role, amountLabel } = filter
                 return (
                     <Tile
                         key={i}
@@ -50,6 +50,7 @@ const useFilterTiles = ({ data, filters, hideEmptyTiles }) => {
                         amount={count}
                         warning={count !== 0 && warning}
                         active={activeFilterIndex === i}
+                        amountLabel={amountLabel}
                     />
                 )
             })}

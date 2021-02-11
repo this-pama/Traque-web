@@ -131,6 +131,12 @@ const Login = (props) => {
                 if(data.data && data.data.isSuper){
                     props.history.push('/ministry');
                 }
+                else if(data.data && data.data.isAdmin){
+                    props.history.push('/department');
+                }
+                else if(data.data && data.data.isStaff){
+                    props.history.push('/file');
+                }
                 setLoading(false)
             });  
         } catch (err) {
@@ -266,7 +272,7 @@ const Login = (props) => {
                                                      }}
                                                 > 
                                                     <Link to='/reset-password'>
-                                                        Forget password?
+                                                        Forgot password?
                                                     </Link>
                                                 </div>
                                             </div>

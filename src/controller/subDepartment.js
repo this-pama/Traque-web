@@ -69,13 +69,5 @@ export default({ config, db }) => {
   })
 
 
-  //update sub department details
-  api.put('/update/:id', async (req, res)=>{
-    SubDepartment.findByIdAndUpdate(req.params.id, req.body, {new: true})
-    .then(e=> res.status(200).json({ message: 'success', data: e}))
-    .catch(err=> res.status(500).send(err))
-
-  })
-
   return api;
 }

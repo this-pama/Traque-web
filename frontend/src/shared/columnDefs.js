@@ -1,5 +1,13 @@
 import ministryColDef from '../Dashboard/views/MinistryColDef/ministryColDef'
 import adminColDef from '../Dashboard/views/Admin/adminColDef'
+import departmentColDef from "../AdminDashboard/views/DepartmentColDef/departmentColDef";
+import subDepartment from '../AdminDashboard/views/SubDepartmentColDef/subDepartmentColDef'
+import staffColDef from '../AdminDashboard/views/Staff/staffColDef'
+import incomingFile from '../ManageFile/views/IncomingColDef/incomingColDef'
+import outgoingFile from '../ManageFile/views/OutgoingColDef/outgoingColDef'
+import inProcessFile from '../ManageFile/views/InProcessFileColDef/inProcessColDef'
+import sentFile from '../ManageFile/views/SentFileColDef/sentFileColDef'
+import archivedFile from '../ManageFile/views/ArchivedFile/archivedFileColDef'
 
 // this function returns only the columns needed for specific view (for example /hr/global )
 export default function getColumnDefs(viewName, onValueChange) {
@@ -10,6 +18,38 @@ export default function getColumnDefs(viewName, onValueChange) {
             break;
         case 'admin':
             columnDefs = [ ...adminColDef ]
+            break;
+
+        case 'department':
+            columnDefs = [ ...departmentColDef ]
+            break;  
+
+        case 'subDepartment': 
+            columnDefs = [ ...subDepartment ]
+            break;
+
+        case 'staff': 
+            columnDefs = [ ...staffColDef ]
+            break;
+        
+        case 'incomingFile':
+            columnDefs= [ ...incomingFile ]
+            break;
+
+        case 'outgoingFile': 
+            columnDefs= [ ...outgoingFile ]
+            break;
+
+        case 'inProcessFile': 
+            columnDefs= [ ...inProcessFile ]
+            break;
+
+        case 'sentFile':
+            columnDefs=[...sentFile]
+            break;
+
+        case 'archivedFile':
+            columnDefs= [...archivedFile ]
             break;
             
         default:

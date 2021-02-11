@@ -3,132 +3,132 @@ import moment from 'moment'
 import React from 'react'
 
 
-export const firstName = () => ({
-    headerName: 'First name',
+export const name = () => ({
+    headerName: 'File Name/Title',
     lockPosition: true,
     __isExported: true,
     hide: false,
     editable: false,
-    field: 'firstName',
+    field: 'name',
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
 })
 
-export const lastName = () => ({
-    headerName: 'Last name',
+export const no = () => ({
+    headerName: 'File number',
     lockPosition: true,
     __isExported: true,
     hide: false,
     editable: false,
-    field: 'lastName',
+    field: 'fileNo',
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
 })
 
-export const gender = () => ({
-    headerName: 'Gender',
+export const type = () => ({
+    headerName: 'File type',
     lockPosition: true,
     __isExported: true,
     hide: false,
     editable: false,
-    field: 'gender',
+    field: 'type',
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
 })
 
-export const email = () => ({
-    headerName: 'Email',
+export const sentBy = () => ({
+    headerName: 'Sent from',
     lockPosition: true,
     __isExported: true,
     hide: false,
     editable: false,
-    field: 'email',
+    field: 'incoming',
+    valueGetter: ({data}) => {
+        return data.pending  && data.pending.sentBy
+        ? `${data.pending.sentBy.firstName}  ${data.pending.sentBy.lastName}`
+        : null
+    },
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
 })
 
-
-export const designation = () => ({
-    headerName: 'Designation',
+export const department = () => ({
+    headerName: 'Department',
     lockPosition: true,
     __isExported: true,
     hide: false,
     editable: false,
-    field: 'designation',
+    field: 'pending',
+    valueGetter: ({data}) => {
+        return data.pending && data.pending.originatingDept
+        ? `${data.pending.originatingDept.name}`
+        : null
+    },
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
 })
 
-export const telephone = () => ({
-    headerName: 'Telephone',
+
+
+export const subDepartment = () => ({
+    headerName: 'Sub Department',
     lockPosition: true,
     __isExported: true,
     hide: false,
     editable: false,
-    field: 'telephone',
+    field: 'pending',
+    valueGetter: ({data}) => {
+        return data.pending && data.pending.originatingSubDept
+        ? `${data.pending.originatingSubDept.name}`
+        : null
+    },
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
 })
 
-export const createdAt = () => ({
-    headerName: 'Created on',
-    // width: 140,
+export const sentDate = () => ({
+    headerName: 'Sent date',
     editable: false,
     lockPosition: true,
-    field: 'createdAt',
     keyCreator: cellRenderBasedOnKey,
     filter: 'agTextColumnFilter',
     filterParams: globalFilterParams,
     __isExported: true,
     comparator: (date1, date2) => new Date(date1) - new Date(date2),
-    valueGetter: (params) => {
-        return params.data.createdAt && new Date(params.data.createdAt).toDateString()
+    valueGetter: ({data }) => {
+        return data.pending && data.pending.receivedDate 
+        ? new Date(data.pending.receivedDate).toDateString()
+        : null
     },
-})
-
-export const ministry = () => ({
-    headerName: 'Ministry',
-    // width: 140,
-    editable: false,
-    lockPosition: true,
-    valueGetter: ({ data }) => 
-        data.ministry 
-        ? `${data.ministry.name}`
-        : null,
-    __isExported: true,
-    hide: false,
-    editable: false,
-    field: 'ministry',
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
 })
 
 export const action = (onValueChange) => ({
     headerName: 'Action',
     lockPosition: true,
-
     __isExported: false,
     hide: false,
     editable: false,
     field: 'action',
-    cellRenderer: "AdminAction",
+    cellRenderer: "InProcessFileAction",
     cellRendererParams: ({data}) => ({
         onValueChange,
         // id: data.sbp_request_id
     }),
     filter: false,
+    width: 400,
 })
 
 
 export default [
-    firstName,
-    lastName,
-    email,
-    telephone,
+    name,
+    no,
+    type,
 
-    gender,
-    designation,
+    sentBy,
+    department,
+    subDepartment,
 
-    ministry,
+    sentDate,
+
     action
 ]

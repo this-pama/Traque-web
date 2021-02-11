@@ -8,6 +8,8 @@ const Action = (props) => {
     return (
         <Wrapper>
             <Link
+                className="wfp--link"
+                style={{ fontWeight: 'bold' }}
                 to={{
                     pathname: "/create-admin",
                     state: { edit: true, id : _id, data: props.data }
@@ -22,10 +24,23 @@ const Action = (props) => {
 
 export default Action
 
+
 const Wrapper = styled.div`
     div:last-child {
-        margin-top: 6px;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: bold;
     }
+    a.wfp--link {
+        float: left;
+        color: #fbfcfc;
+        background: #0e7fce;
+        border-radius: 6px;
+        padding: 4px 10px;
+        height: 27px;
+        display: inline-block;
+        -webkit-text-decoration: none;
+        text-decoration: none;
+    }
+        
 `
