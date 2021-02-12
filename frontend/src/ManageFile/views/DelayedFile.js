@@ -46,12 +46,11 @@ const View = ({props}) => {
     const storeData = store.getState();
     const {user} = storeData;
 
-    const endpoint = `/v1/file/outgoing/${user && user._id}`
+    const endpoint = `/v1/file/delayed/${user && user._id}`
 
     const { data } = useSWR(endpoint)
     const fetchData = () => true;
     const applications = data ? data.data.data : null;
-
     let filePerm = user 
         && user.permission
         ? user.permission.createManagementFile
@@ -77,12 +76,12 @@ const View = ({props}) => {
             </div>
         )}
         <TableView
-            title={'Outgoing files'}
+            title={'Delayed files'}
             data={applications}
             filters={filters}
             fetchData={fetchData}
-            gridConfig={getColumnDefs('outgoingFile', fetchData)}
-            exportFileName={'incoming files'}
+            gridConfig={getColumnDefs('delayedFile', fetchData)}
+            exportFileName={'Delayed files'}
         />
         </>
     )

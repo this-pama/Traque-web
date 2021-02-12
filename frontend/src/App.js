@@ -12,9 +12,7 @@ import Login from './Login'
 import Activate from './Activate'
 import CreateMinistry from './Dashboard/views/CreateMinistry'
 import { ToastContainer, toast } from 'react-toastify'
-import {
-    Footer
-} from '@wfp/ui'
+import Footer from './shared/Footer'
 
 // import 'ag-grid-enterprise'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -32,13 +30,15 @@ import CreateSubDepartment from './AdminDashboard/views/CreateSubDepartment'
 import CreateStaff from './AdminDashboard/views/CreateStaff'
 import ManageFile from './ManageFile'
 import ViewFileHistory from './ManageFile/views/ViewHistory'
+import CreateFile from './ManageFile/views/CreateFile'
+import MyMainNavigation from './shared/MyMainNavigation'
 
 class App extends React.Component {
   constructor(props) {
       super(props)
 
       this.state = {
-          timeout: 1000 * 60 * 5,
+          timeout: 1000 * 60 * 10,
           showModal: false,
           isTimedOut: false,
       }
@@ -62,7 +62,7 @@ class App extends React.Component {
           }
 
           return this.setState({ showModal: false })
-      }, 2 * 60 * 1000)
+      }, 3 * 60 * 1000)
 
   componentDidMount() {
       const { checkLoginStatus } = this.props
@@ -118,9 +118,8 @@ class App extends React.Component {
                 <BrowserRouter>
                     <>
                     <Switch>
-                        
                         <Route
-                            // exact
+                            exact
                             path="/login"
                             component={(props) => <Login {...props} />}
                         />
@@ -137,7 +136,7 @@ class App extends React.Component {
                             component={(props) => <ResetPassword {...props} />}
                         />
                         
-                        
+                        <MyMainNavigation />
                     </Switch>
 
                         {!isLogged ? (
@@ -230,6 +229,14 @@ class App extends React.Component {
                                     )}
                                 />
 
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/create-file"
+                                    component={(props) => (
+                                        <CreateFile {...props} user={user} id={props.match.params.id} />
+                                    )}
+                                />
+
                                 <Route
                                     // exact
                                     path="/sa-landing"
@@ -244,9 +251,7 @@ class App extends React.Component {
 
                         <ToastContainer />
 
-                        {/* <Footer>
-                            <div>Testing</div>
-                        </Footer> */}
+                        {isLogged && <Footer /> }
 
                         <Modal
                             open={this.state.showModal}

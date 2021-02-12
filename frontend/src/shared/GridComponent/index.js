@@ -7,6 +7,8 @@ import IncomingFileAction from '../../ManageFile/views/IncomingColDef/Action'
 import OutgoingFileAction from '../../ManageFile/views/OutgoingColDef/Action'
 import InProcessFileAction from '../../ManageFile/views/InProcessFileColDef/Action'
 import SentFileAction from '../../ManageFile/views/SentFileColDef/Action'
+import DelayedFileAction from '../../ManageFile/views/DelayedFileColDef/Action'
+import RegistryAction from '../../ManageFile/views/Registry/Action'
 
 export {
     MinistryAction,
@@ -18,4 +20,6 @@ export {
     OutgoingFileAction,
     InProcessFileAction,
     SentFileAction,
+    DelayedFileAction,
+    RegistryAction,
 }

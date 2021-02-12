@@ -23,10 +23,11 @@ const Action = (props) => {
             await axios.post(`/v1/file/delay/${_id}/${user && user._id}`, { justification })
             .then(()=> {
                 setLoading(false)
-                onValueChange()
+                onValueChange();
+                toast('Successfully acknowledged receipt of file', {closeOnClick: true, autoClose: 1000 });
+                window.location.reload();
             })
-            
-            toast('Successfully acknowledged receipt of file', {closeOnClick: true, autoClose: 1000 });
+           
         } catch (err) {
             toast.error('Ooops! error occurred, please try again', {closeOnClick: true, autoClose: 1000 });
             setLoading(false)

@@ -51,20 +51,32 @@ const View = ({props}) => {
     const { data } = useSWR(endpoint)
     const fetchData = () => true;
     const applications = data ? data.data.data : null;
+
+    let filePerm = user 
+        && user.permission
+        ? user.permission.createManagementFile
+        || user.permission.createServiceFile
+        ? true
+        : false
+        : false;
+
     return (
         <>
-        <div id="export-button-portal" >
-            <Button
-               onClick={(data)=> {
-                   props.history.push('/create-department')
-               }}
-                icon={iconAddOutline}
-                kind="secondary"
-                small
-            >
-                Create file
-            </Button>
-        </div>
+        { filePerm && (
+            <div id="export-button-portal" >
+                <Button
+                onClick={(data)=> {
+                    props.history.push('/create-file')
+                }}
+                    icon={iconAddOutline}
+                    kind="secondary"
+                    small
+                >
+                    Create file
+                </Button>
+            </div>
+        )}
+        
         <TableView
             title={'Incoming files'}
             data={applications}

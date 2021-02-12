@@ -8,6 +8,8 @@ import outgoingFile from '../ManageFile/views/OutgoingColDef/outgoingColDef'
 import inProcessFile from '../ManageFile/views/InProcessFileColDef/inProcessColDef'
 import sentFile from '../ManageFile/views/SentFileColDef/sentFileColDef'
 import archivedFile from '../ManageFile/views/ArchivedFile/archivedFileColDef'
+import delayedFile from '../ManageFile/views/DelayedFileColDef/delayedFileColDef'
+import registryFile from '../ManageFile/views/Registry/registryColDef'
 
 // this function returns only the columns needed for specific view (for example /hr/global )
 export default function getColumnDefs(viewName, onValueChange) {
@@ -50,6 +52,14 @@ export default function getColumnDefs(viewName, onValueChange) {
 
         case 'archivedFile':
             columnDefs= [...archivedFile ]
+            break;
+
+        case 'delayedFile':
+            columnDefs= [...delayedFile]
+            break;
+
+        case 'registryFile':
+            columnDefs= [...registryFile];
             break;
             
         default:

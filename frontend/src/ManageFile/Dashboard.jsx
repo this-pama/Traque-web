@@ -1,17 +1,19 @@
 import React from 'react'
 import styled from 'styled-components'
 import MySecondaryNavigation from '../Dashboard/MySecondaryNavigation'
-import { Wrapper, Tabs, Tab, MainNavigationItem } from '@wfp/ui'
+import { Wrapper, Tabs, Tab,  } from '@wfp/ui'
 
-import DeptTable from './views/IncomingFile'
+import IncomingFile from './views/IncomingFile'
 import OutgoingFile from './views/OutgoingFile'
-import StaffTable from './views/StaffTable'
 import InProcessFile from './views/PendingFile'
 import SentFile from './views/SentFile'
 import ArchivedFile from './views/ArchivedFile'
+import DelayedFile from './views/DelayedFile'
+import RegistryFle from './views/Registry'
 
 import { Redirect, Route, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
+import Footer from '../shared/Footer'
 
 const listElReactRouter = ({
     index,
@@ -47,13 +49,21 @@ const listElReactRouter = ({
 )
 const Dashboard = (props) => {
     const { user } = props;
+    let filePerm = user 
+        && user.permission
+        ? user.permission.createManagementFile
+        || user.permission.createServiceFile
+        ? true
+        : false
+        : false;
+
     const views = [
         {
             permissions: true,
             default: true,
             label: 'Incoming file',
             path: '/file/incoming',
-            component: () => <DeptTable props={props} />,
+            component: () => <IncomingFile props={props} />,
         },
 
         {
@@ -80,8 +90,8 @@ const Dashboard = (props) => {
         {
             permissions: true,
             label: 'Delayed file',
-            path: '/department/staff/list',
-            component: () => <StaffTable props={props}  />,
+            path: '/file/delayed',
+            component: () => <DelayedFile props={props}  />,
         },
 
         {
@@ -92,10 +102,10 @@ const Dashboard = (props) => {
         },
 
         {
-            permissions: true,
+            permissions: filePerm,
             label: 'Open Registry',
-            path: '/department/list',
-            component: () => <DeptTable props={props} />,
+            path: '/file/registry',
+            component: () => <RegistryFle props={props} />,
         },
     ]
 

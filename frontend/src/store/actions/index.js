@@ -36,10 +36,6 @@ export const getUserData = (data) => {
 }
 
 export const logout = () => {
-    return async (dispatch) => {
-        try {
-            await axios.get('/api/logout')
-        } catch (err) {}
+    return async (dispatch) => 
         dispatch(clearStore())
-    }
 }

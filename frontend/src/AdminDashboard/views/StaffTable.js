@@ -30,7 +30,7 @@ const Admin = ({props}) => {
         <div id="export-button-portal" >
             <Button
                 onClick={(data)=> {
-                    props.history.push(`/create-sub-department/`)
+                    props.history.push(`/file`)
                 }}
                     icon={iconDocument}
                     kind="secondary"

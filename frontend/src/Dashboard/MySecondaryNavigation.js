@@ -14,7 +14,7 @@ const MyBannerNavigation = (props) => {
             {props.l1Label && (
                 <Breadcrumb>
                     <BreadcrumbItem>
-                        <RouteLink to={'/'} className="wfp--link">
+                        <RouteLink to={'#'} className="wfp--link">
                             <BreadcrumbHome />
                         </RouteLink>
                     </BreadcrumbItem>
