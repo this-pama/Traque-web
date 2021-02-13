@@ -14,8 +14,8 @@ const Action = (props) => {
     const {user} = storeData;
 
     const [isAction, setAction ] = useState(false);
+    const [ isAchive, setAchive ] = useState(false);
     const [ loading, setLoading ] = useState(false);
-    const [ message, setMessage ] = useState('')
 
     const onDelete = async ()=>{
         setLoading(true)
@@ -36,11 +36,37 @@ const Action = (props) => {
         setAction(false);
     }
 
+
+    const onAchive = async ()=>{
+        setLoading(true)
+        try {
+            await axios.post(`/v1/file/archive/${_id}/${user && user._id}`)
+            .then(()=> {
+                setLoading(false)
+                props.onValueChange && props.onValueChange();
+                toast('Successful', {closeOnClick: true, autoClose: 1000 });
+                window.location.reload();
+            })
+            
+        } catch (err) {
+            toast.error('Ooops! error occurred, please try again', {closeOnClick: true, autoClose: 1000 });
+            setLoading(false)
+        }
+
+        setAchive(false);
+    }
+
     return (
         <Wrapper>
             
             <div style={{ dispaly: 'inline'}}>
                 <div style={{ dispaly: 'inline'}}>
+                    <Link 
+                        to={{
+                            pathname: "/forward/file/" + _id,
+                            state: { edit: true, id : _id, data: props.data }
+                          }}
+                      >
                     <Icon
                         class="wfp--link"
                         icon={iconRestartGlyph}
@@ -49,16 +75,26 @@ const Action = (props) => {
                         fill='#0b77c2'
                         description="FORWARD"
                     />
+                    </Link>
                     <span style={{ paddingLeft: 20 }} />
 
-                    <Icon
-                        class="wfp--link"
-                        icon={iconEditGlyph}
-                        width={14}
-                        height={14}
-                        fill='#0b77c2'
-                        description="EDIT"
-                    />
+                    <Link 
+                        to={{
+                        pathname: "/create-file",
+                        state: { edit: true, id : _id, data: props.data }
+                      }}
+                      >
+                          <Icon
+                            class="wfp--link"
+                            icon={iconEditGlyph}
+                            width={14}
+                            height={14}
+                            fill='#0b77c2'
+                            description="EDIT"
+                        />
+
+                    </Link>
+                    
 
                     <span style={{ paddingLeft: 20 }} />
 
@@ -81,6 +117,7 @@ const Action = (props) => {
                         height={14}
                         fill='#0b77c2'
                         description="ARCHIVE"
+                        onClick={()=> setAchive(true)}
                     />
 
                 </div>
@@ -94,11 +131,29 @@ const Action = (props) => {
                 onRequestClose={()=>setAction(false)}
                 modalLabel="Delete"
                 wide={false}
+                danger
                 type='danger'
             >
                 <Loading active={loading} withOverlay={true} />
                 <p className="wfp--modal-content__text">
                     Are you sure you want to delete this file?
+                </p>
+            </Modal>
+
+            
+            <Modal
+                open={isAchive}
+                primaryButtonText="Archive file"
+                secondaryButtonText="Cancel"
+                onRequestSubmit={onAchive}
+                onRequestClose={()=>setAchive(false)}
+                modalLabel="Archive"
+                wide={false}
+                type='info'
+            >
+                <Loading active={loading} withOverlay={true} />
+                <p className="wfp--modal-content__text">
+                    Are you sure you want to Archive this file?
                 </p>
             </Modal>
         </Wrapper>

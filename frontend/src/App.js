@@ -32,6 +32,7 @@ import ManageFile from './ManageFile'
 import ViewFileHistory from './ManageFile/views/ViewHistory'
 import CreateFile from './ManageFile/views/CreateFile'
 import MyMainNavigation from './shared/MyMainNavigation'
+import ForwardFile from './ManageFile/views/ForwardFile'
 
 class App extends React.Component {
   constructor(props) {
@@ -234,6 +235,14 @@ class App extends React.Component {
                                     path="/create-file"
                                     component={(props) => (
                                         <CreateFile {...props} user={user} id={props.match.params.id} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/forward/file/:id"
+                                    component={(props) => (
+                                        <ForwardFile {...props} user={user} id={props.match.params.id} />
                                     )}
                                 />
 

@@ -46,7 +46,7 @@ const View = ({props}) => {
     const storeData = store.getState();
     const {user} = storeData;
 
-    const endpoint = `/v1/file/delayed/${user && user._id}`
+    const endpoint = `/v1/file/registry/${user && user._id}`
 
     const { data } = useSWR(endpoint)
     const fetchData = () => true;

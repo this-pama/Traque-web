@@ -16,6 +16,7 @@ const Action = (props) => {
 
     const [isAction, setAction ] = useState(false);
     const [ loading, setLoading ] = useState(false);
+    const [ isAchive, setAchive ] = useState(false);
 
     const onConfirm = async ()=>{
         setLoading(true)
@@ -36,6 +37,26 @@ const Action = (props) => {
         setAction(false);
     }
 
+    
+    const onAchive = async ()=>{
+        setLoading(true)
+        try {
+            await axios.post(`/v1/file/archive/${_id}/${user && user._id}`)
+            .then(()=> {
+                setLoading(false)
+                props.onValueChange && props.onValueChange();
+                toast('Successful', {closeOnClick: true, autoClose: 1000 });
+                window.location.reload();
+            })
+            
+        } catch (err) {
+            toast.error('Ooops! error occurred, please try again', {closeOnClick: true, autoClose: 1000 });
+            setLoading(false)
+        }
+
+        setAchive(false);
+    }
+
     return (
         <>
         
@@ -46,7 +67,7 @@ const Action = (props) => {
                     <Link className="wfp--link"
                         style={{ fontWeight: 'bold' }}
                         to={{
-                            pathname: "/create-department",
+                            pathname: "/forward/file/" + _id,
                             state: { edit: true, id : _id, data: props.data }
                           }}
                     >
@@ -56,7 +77,7 @@ const Action = (props) => {
                     {/* <br /> */}
 
                     <Link className="wfp--link"
-                        style={{ fontWeight: 'bold', marginLeft : 10 }}
+                        style={{ fontWeight: 'bold', marginLeft : 5 }}
                         to={{
                             pathname: `/history/file/${_id}`,
                           }}
@@ -64,13 +85,22 @@ const Action = (props) => {
                         VIEW HISTORY
                     </Link>
 
-                    <div style={{ marginLeft : 80}} />
+                    {/* <div style={{ marginLeft : 80}} /> */}
                     <Link className="wfp--link"
-                        style={{ fontWeight: 'bold', marginLeft : 10 }}
+                        style={{ fontWeight: 'bold', marginLeft : 5 }}
                         to='#'
                         onClick={()=>setAction(true)}
                     >
                         DELAY
+                    </Link>
+
+                    {/* <div style={{ marginLeft : 20}} /> */}
+                    <Link className="wfp--link"
+                        style={{ fontWeight: 'bold', marginLeft : 5 }}
+                        to='#'
+                        onClick={()=> setAchive(true)}
+                    >
+                        ARCHIVE
                     </Link>
 
                     <Modal
@@ -96,6 +126,24 @@ const Action = (props) => {
                             />
                         </p>
                     </Modal>
+
+                    
+            <Modal
+                open={isAchive}
+                primaryButtonText="Archive file"
+                secondaryButtonText="Cancel"
+                onRequestSubmit={onAchive}
+                onRequestClose={()=>setAchive(false)}
+                modalLabel="Archive"
+                wide={false}
+                type='info'
+            >
+                <Loading active={loading} withOverlay={true} />
+                <p className="wfp--modal-content__text">
+                    Are you sure you want to Archive this file?
+                </p>
+            </Modal>
+            
                 </div>
             </div>
         </Wrapper>

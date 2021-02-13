@@ -23,6 +23,7 @@ const Action = (props) => {
             .then(()=> setLoading(false))
             onValueChange()
             toast('Successfully acknowledged receipt of file', {closeOnClick: true, autoClose: 1000 });
+            window.location.reload();
         } catch (err) {
             toast.error('Ooops! error occurred, please try again', {closeOnClick: true, autoClose: 1000 });
             setLoading(false)

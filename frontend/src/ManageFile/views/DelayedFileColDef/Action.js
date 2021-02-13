@@ -14,6 +14,7 @@ const Action = (props) => {
     const {user} = storeData;
 
     const [isAction, setAction ] = useState(false);
+    const [ isAchive, setAchive ] = useState(false);
     const [ loading, setLoading ] = useState(false);
 
     const onConfirm = async ()=>{
@@ -31,6 +32,25 @@ const Action = (props) => {
         setAction(false);
     }
 
+    const onAchive = async ()=>{
+        setLoading(true)
+        try {
+            await axios.post(`/v1/file/archive/${_id}/${user && user._id}`)
+            .then(()=> {
+                setLoading(false)
+                props.onValueChange && props.onValueChange();
+                toast('Successful', {closeOnClick: true, autoClose: 1000 });
+                window.location.reload();
+            })
+            
+        } catch (err) {
+            toast.error('Ooops! error occurred, please try again', {closeOnClick: true, autoClose: 1000 });
+            setLoading(false)
+        }
+
+        setAchive(false);
+    }
+
     return (
         <Wrapper>
             
@@ -38,8 +58,10 @@ const Action = (props) => {
                 <div style={{ dispaly: 'inline'}}>
                     <Link className="wfp--link"
                         style={{ fontWeight: 'bold', marginLeft : 10 }}
-                        to='#'
-                        // onClick={()=>setAction(true)}
+                        to={{
+                            pathname: "/forward/file/" + _id,
+                            state: { edit: true, id : _id, data: props.data }
+                          }}
                     >
                         FORWARD
                     </Link>
@@ -52,6 +74,14 @@ const Action = (props) => {
                           }}
                     >
                         VIEW HISTORY
+                    </Link>
+
+                    <Link className="wfp--link"
+                        style={{ fontWeight: 'bold', marginLeft : 10 }}
+                        to='#'
+                        onClick={()=> setAchive(true)}
+                    >
+                        ARCHIVE
                     </Link>
 
                 </div>
@@ -70,6 +100,23 @@ const Action = (props) => {
                 <Loading active={loading} withOverlay={true} />
                 <p className="wfp--modal-content__text">
                     By acknowledging receipt, you confirm receipt of the file. Do you confirm receipt?
+                </p>
+            </Modal>
+
+            
+            <Modal
+                open={isAchive}
+                primaryButtonText="Archive file"
+                secondaryButtonText="Cancel"
+                onRequestSubmit={onAchive}
+                onRequestClose={()=>setAchive(false)}
+                modalLabel="Archive"
+                wide={false}
+                type='info'
+            >
+                <Loading active={loading} withOverlay={true} />
+                <p className="wfp--modal-content__text">
+                    Are you sure you want to Archive this file?
                 </p>
             </Modal>
         </Wrapper>

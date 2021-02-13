@@ -38,13 +38,18 @@ class Create extends React.Component {
         loading: false,
         date: moment(),
         focused: null,
-        serviceType: []
+        serviceType: [],
+        deptList: [],
+        staffList: [],
+        department: {}
     }
     componentDidMount() {
         window.scrollTo(0, 0)
 
         const { location } = this.props;
         const {state}= location;
+
+        this.fetchDepartment();
 
         if(state && state.edit && state.data){
             let oldNumber = state.data && state.data.fileNo
@@ -72,38 +77,19 @@ class Create extends React.Component {
     
     onSubmit = async (values) => {
         this.setState({ loading: true });
-        const { location, userId } = this.props;
+        const { location, userId, id } = this.props;
         const {state}= location;
         let formData={
-            name: values.name,
-            type: values.type.value,
-            fileNo: values.fileNo,
-            createdDate: this.state.date,
-            serviceFileType: values.type.value == 'Service file' 
-                ? values.serviceType && values.serviceType._id
-                : null
+            receiverId: values.designatedOfficer._id, 
+            sentDate: this.state.date,
+            sentTime: this.state.date,
         }
        
         try {
-            if(state && state.edit){
-                let oldNumber = state && state.data.fileNo
-                ? state.data.fileNo.slice(0, 11)
-                : null;
-                let fileNo = oldNumber ? oldNumber + values.fileNo : values.fileNo;
-
-                await axios.put(`/v1/file/update/${state.id}`, { ...formData, fileNo })
-                .then(()=> this.setState({ loading: false }))
-                toast('File successfully updated', {closeOnClick: true, autoClose: 1000 });
-                this.props.history.goBack()
-            }
-            else{
-                await axios.post(`/v1/file/add/${userId}`, formData)
-                .then(()=> this.setState({ loading: false }))
-                toast('File successfully created', {closeOnClick: true, autoClose: 1000 });
-                this.props.history.goBack()
-            }
-            
-            
+            await axios.post(`/v1/file/forward/${id}/${userId}`, formData)
+            .then(()=> this.setState({ loading: false }))
+            toast('File successfully forwarded', {closeOnClick: true, autoClose: 1000 });
+            this.props.history.push('/file/outgoing') 
         } catch (err) {
             console.log('Ooops! error occurred, please try again', err)
             toast.error('Ooops! error occurred, please try again', {closeOnClick: true, autoClose: 1000 });
@@ -111,20 +97,64 @@ class Create extends React.Component {
         }
     }
 
-    fetchService =  async () => {
-        const { user } = this.props;
+    fetchDepartment =  async () => {
+        const { user, id } = this.props;
+        this.setState({ loading: true})
         try {
-            axios.get(`/v1/service/file/${user && user.ministry}`)
-            .then(data=> this.setState({ serviceType : data.data }))
+            axios.get(`/v1/department`)
+            .then(data=> this.setState({ deptList : data.data, loading: false }))
         } catch (err) {
             console.log('Error while loading department', err)
+            this.setState({ loading: false})
         }
     }
 
     
+    fetchStaff =  async (p) => {
+        const { user, id } = this.props;
+        this.setState({ loading: true})
+        try {
+            axios.get(`/v1/department/staff/${p && p._id}`)
+            .then(data=> {
+                this.setState({ staffList : data.data.data.staff, loading: false })
+            })
+        } catch (err) {
+            console.log('Error while loading department', err)
+            this.setState({ loading: false})
+        }
+    }
+
+    validate= values =>{
+        const error = {}
+        const {
+            department,
+            designatedOfficer,
+        } = values;
+
+        if(!department){
+            error.department = {
+                value: 'Department name is required',
+            }
+        }
+
+        if(!designatedOfficer){
+            error.designatedOfficer={
+                value: 'Select receiver',
+            }
+        }
+
+        if(department && department != this.state.department){
+            this.fetchStaff(department);
+            this.setState({department })
+        }
+
+        return error;
+    }
+
+    
     render() {
-        const { showErrors, serviceType } = this.state;
-        const { formData, loading, admin } = this.state;
+        const { showErrors, serviceType, deptList } = this.state;
+        const { formData, loading, staffList } = this.state;
         const { location, userId, user } = this.props;
         const {state}= location;
         const permission = user && user.permission ? user.permission 
@@ -145,13 +175,12 @@ class Create extends React.Component {
                 <MySecondaryNavigation
                     l1Label="Manage File"
                     l1Link="/file"
-                    l2Label={  state && state.edit ? 'Update file' : 'Create file' }
+                    l2Label={"File Transfer" }
                     l2Link="#"
-                    pageTitle={  state && state.edit ? 'Update file' : 'Create file' }
+                    pageTitle={"File Transfer" }
                 />
-                {loading ? (
-                    <Loading active={true} withOverlay={true} />
-                ) : (
+                    <Loading active={loading} withOverlay={true} />
+                
                     <div
                         className="wfp--module__background"
                         style={{ minHeight: '400px' }}
@@ -164,34 +193,13 @@ class Create extends React.Component {
                             <Form
                                 onSubmit={this.onSubmit}
                                 initialValues={formData}
-                                validate={(values) => {
-                                    const errors = {}
-                                    const {
-                                        name, 
-                                        type,
-                                    } = values
-
-                                    if (!name) {
-                                        errors.name = {
-                                            value: 'Department name is required',
-                                            show: showErrors,
-                                        }
-                                    } 
-
-                                    if (!type) {
-                                        errors.name = {
-                                            value: 'Department type is required',
-                                            show: showErrors,
-                                        }
-                                    } 
-                                    return errors
-                                }}
+                                validate={(values) => this.validate(values)}
                                 render={({ values, onSave, valid, reset }) => (
                                     <form>
                                         <Module noMargin>
                                             <ModuleHeader>
                                                 <span style={{ fontSize: 20 }}>
-                                                    {  state && state.edit ? 'Update File' : 'Create File' }
+                                                   Forward file
                                                 </span>
                                             </ModuleHeader>
                                             <ModuleBody>
@@ -212,6 +220,7 @@ class Create extends React.Component {
                                                         name="name"
                                                         type="text"
                                                         labelText="File name/title"
+                                                        disabled={ true}
                                                     />
                                                 </FieldWrapper>
                                             </Col>
@@ -233,6 +242,7 @@ class Create extends React.Component {
                                                         name="fileNo"
                                                         type="text"
                                                         labelText="File number"
+                                                        disabled={ true}
                                                     />
                                                 </FieldWrapper>
                                             </Col>
@@ -256,7 +266,7 @@ class Create extends React.Component {
                                                                 meta,
                                                             }) => (
                                                                 <>
-                                                                <div className='wfp--label'>File type</div>
+                                                                <div className='wfp--label wfp--label--disabled'>File type</div>
                                                                 <Select
                                                                     className="wfp--react-select-container auto-width"
                                                                     classNamePrefix="wfp--react-select"
@@ -270,6 +280,7 @@ class Create extends React.Component {
                                                                     }
                                                                     {...input}
                                                                     {...meta}
+                                                                    isDisabled={true}
                                                                 />
                                                                 </>
                                                             )}
@@ -277,7 +288,7 @@ class Create extends React.Component {
                                                     </FieldWrapper>
                                                 </Col>
 
-                                                {fileList.filter(p=> p.label == 'Service file' ).length > 0 
+                                                {values.type == 'Service file'
                                                 && (
                                                 <Col 
                                                     md={8}
@@ -298,7 +309,7 @@ class Create extends React.Component {
                                                                 meta,
                                                             }) => (
                                                                 <>
-                                                                <div className='wfp--label'>Service File type</div>
+                                                                <div className='wfp--label wfp--label--disabled'>Service File type</div>
                                                                 <Select
                                                                     className="wfp--react-select-container auto-width"
                                                                     classNamePrefix="wfp--react-select"
@@ -312,7 +323,7 @@ class Create extends React.Component {
                                                                     }
                                                                     {...input}
                                                                     {...meta}
-                                                                    isDisabled={ values.type && values.type.label == "Management file" }
+                                                                    isDisabled={ true }
                                                                 />
                                                                 </>
                                                             )}
@@ -321,6 +332,86 @@ class Create extends React.Component {
                                                 </Col>
                                                 )}
                                                 
+                                                <Col 
+                                                    md={8}
+                                                    sm={8}
+                                                    xs={12}
+                                                >
+                                                    <FieldWrapper>
+                                                        <Field
+                                                            component={
+                                                                ReduxFormWrapper
+                                                            }
+                                                            name="department"
+                                                            labelText="Destination"
+                                                            placeholder="Select destination department"
+                                                        >
+                                                            {({
+                                                                input,
+                                                                meta,
+                                                            }) => (
+                                                                <>
+                                                                <div className='wfp--label '>Destination</div>
+                                                                <Select
+                                                                    className="wfp--react-select-container auto-width"
+                                                                    classNamePrefix="wfp--react-select"
+                                                                    closeMenuOnSelect={true}
+                                                                    options={deptList}
+                                                                    getOptionValue={(option) =>
+                                                                        option['_id'] 
+                                                                    }
+                                                                    getOptionLabel={(option) =>
+                                                                        option['name'] 
+                                                                    }
+                                                                    {...input}
+                                                                    {...meta}
+                                                                />
+                                                                </>
+                                                            )}
+                                                        </Field>
+                                                    </FieldWrapper>
+                                                </Col>
+
+                                                <Col 
+                                                    md={8}
+                                                    sm={8}
+                                                    xs={12}
+                                                >
+                                                    <FieldWrapper>
+                                                        <Field
+                                                            component={
+                                                                ReduxFormWrapper
+                                                            }
+                                                            name="designatedOfficer"
+                                                            labelText="Designated officer"
+                                                            placeholder="Select designated officer"
+                                                        >
+                                                            {({
+                                                                input,
+                                                                meta,
+                                                            }) => (
+                                                                <>
+                                                                <div className='wfp--label'>Designated officer</div>
+                                                                <Select
+                                                                    className="wfp--react-select-container auto-width"
+                                                                    classNamePrefix="wfp--react-select"
+                                                                    closeMenuOnSelect={true}
+                                                                    options={staffList}
+                                                                    getOptionValue={(option) =>
+                                                                        option['_id'] 
+                                                                    }
+                                                                    getOptionLabel={(option) =>
+                                                                        option['firstName'] + " " + option['lastName']
+                                                                    }
+                                                                    {...input}
+                                                                    {...meta}
+                                                                />
+                                                                </>
+                                                            )}
+                                                        </Field>
+                                                    </FieldWrapper>
+                                                </Col>
+
                                             
                                                 <Col 
                                                     md={8}
@@ -343,7 +434,7 @@ class Create extends React.Component {
                                                                     date={this.state.date }
                                                                     datePicker={SingleDatePicker}
                                                                     inputIconPosition="after"
-                                                                    labelText="Opening date"
+                                                                    labelText="Date forwarded"
                                                                     onDateChange={date=> this.setState({ date: moment(date) })}
                                                                     onChange={(date)=>this.setState({ date })}
                                                                     focused={this.state.focused}
@@ -378,7 +469,7 @@ class Create extends React.Component {
                                                             this.props.history.goBack()
                                                         }
                                                     >
-                                                        Go back
+                                                        CANCEL
                                                     </Button>
 
                                                     <Button
@@ -390,11 +481,11 @@ class Create extends React.Component {
                                                             )
                                                         }}
                                                         disabled={
-                                                            values.name && values.type
+                                                            values.designatedOfficer && values.designatedOfficer._id
                                                             ? false: true
                                                         }
                                                     >
-                                                       { state && state.edit ? 'Update' : 'Create' } 
+                                                      FORWARD FILE
                                                     </Button>
                                                 </div>
                                             </ModuleFooter>
@@ -418,7 +509,6 @@ class Create extends React.Component {
                             />
                         </Wrapper>
                     </div>
-                )}
             </>
         )
     }
