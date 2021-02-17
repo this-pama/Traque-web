@@ -33,6 +33,7 @@ import ViewFileHistory from './ManageFile/views/ViewHistory'
 import CreateFile from './ManageFile/views/CreateFile'
 import MyMainNavigation from './shared/MyMainNavigation'
 import ForwardFile from './ManageFile/views/ForwardFile'
+import NotAuthorized from './NotAuthorized'
 
 class App extends React.Component {
   constructor(props) {
@@ -66,11 +67,11 @@ class App extends React.Component {
       }, 3 * 60 * 1000)
 
   componentDidMount() {
-      const { checkLoginStatus } = this.props
+      const { checkLoginStatus, user } = this.props
       // even tho we keep user data in local storage,
       // refetch user data on mount because it might have been updated
 
-      checkLoginStatus();
+      checkLoginStatus(user);
       // this.loadAvailabilityForms()
   }
   
@@ -80,7 +81,7 @@ class App extends React.Component {
           showModal: !state.showModal,
       }))
       this.idleTimer.reset()
-      this.props.checkLoginStatus()
+      this.props.checkLoginStatus(this.props.user)
   }
 
   logOut = () => {
@@ -247,6 +248,11 @@ class App extends React.Component {
                                 />
 
                                 <Route
+                                    path="/not-authorized"
+                                    component={NotAuthorized}
+                                />
+
+                                <Route
                                     // exact
                                     path="/sa-landing"
                                     component={() => <SA_Landing />}
@@ -290,7 +296,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-    checkLoginStatus: () => dispatch(checkLoginStatus()),
+    checkLoginStatus: (data) => dispatch(checkLoginStatus(data)),
     logout: () => dispatch(logout()),
 })
 

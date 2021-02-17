@@ -4,6 +4,7 @@ import getColumnDefs from '../../shared/columnDefs'
 import { Button } from '@wfp/ui'
 import {iconAddOutline, iconDocument} from '@wfp/icons';
 import useSWR, { trigger } from 'swr'
+import Can from '../../shared/Can'
 
 const filters = [
     {
@@ -19,6 +20,8 @@ const filters = [
 
 const Admin = ({props}) => {
     const {user} = props;
+    const permission = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
 
     const endpoint = `/v1/user/staff-list/${user && user._id}`
     const { data } = useSWR(endpoint)
@@ -28,6 +31,11 @@ const Admin = ({props}) => {
     return (
         <>
         <div id="export-button-portal" >
+        <Can
+            rules={permission}
+            userRole={userRole}
+            perform="viewIncoming"
+            yes={() => (
             <Button
                 onClick={(data)=> {
                     props.history.push(`/file`)
@@ -38,8 +46,14 @@ const Admin = ({props}) => {
             >
                     Manage file
             </Button>
+            )}
+        />
             <span style={{ paddingLeft: 20 }} />
-
+        <Can
+            rules={permission}
+            userRole={userRole}
+            perform="createUser"
+            yes={() => (
             <Button
                 onClick={()=> props.history.push('/create-staff')}
                 icon={iconAddOutline}
@@ -48,6 +62,8 @@ const Admin = ({props}) => {
             >
                 Create staff
             </Button>
+            )}
+        />
         </div>
         <TableView
             title={'Staff list'}

@@ -155,3 +155,10 @@ export const fileType = [
         createManagementFile: true
     }
 ]
+
+export const check = (rules, role, action, data) => {
+    if (rules && rules.includes(action)) {
+        return true
+    }
+    return false
+}

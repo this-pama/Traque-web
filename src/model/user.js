@@ -30,6 +30,7 @@ let UserSchema = new Schema({
   designation: String,
   accountId: {type: Schema.Types.ObjectId, ref: 'Account', required : false },
   userType: {type: Schema.Types.ObjectId, ref: 'UserType', required : false },
+  userRole: {type: Schema.Types.ObjectId, ref: 'Role', required : true },
   isAdmin: {
     type: Boolean,
     default: false

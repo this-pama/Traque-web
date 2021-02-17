@@ -216,5 +216,10 @@ export default({ config, db }) => {
     });
   });
 
+  // //check if user is login
+  // api.get('/is-login/check', (req, res)=>{
+  //   console.log("req",req)
+  // })
+
   return api;
 }

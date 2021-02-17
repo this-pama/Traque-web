@@ -138,6 +138,22 @@ export const department = () => ({
     filterParams: globalFilterParams,
 })
 
+export const userRole = () => ({
+    headerName: 'Role',
+    // width: 140,
+    editable: false,
+    lockPosition: true,
+    valueGetter: ({ data }) => 
+        data.userRole 
+        ? `${data.userRole.name}`
+        : null,
+    __isExported: true,
+    hide: false,
+    editable: false,
+    filter: 'agTextColumnFilter',
+    filterParams: globalFilterParams,
+})
+
 export const action = (onValueChange) => ({
     headerName: 'Action',
     lockPosition: true,
@@ -163,6 +179,7 @@ export default [
     telephone,
 
     gender,
+    userRole,
     designation,
 
     department,

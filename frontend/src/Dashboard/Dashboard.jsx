@@ -8,10 +8,6 @@ import AdminTable from './views/AdminTable'
 
 import { Redirect, Route, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
-import ReactDOM from 'react-dom'
-import Header from '../shared/Header'
-import MiddleHeader from '../shared/MiddleHeader'
-import Footer from '../shared/Footer'
 
 const listElReactRouter = ({
     index,
@@ -46,25 +42,42 @@ const listElReactRouter = ({
     />
 )
 const Dashboard = (props) => {
+    const { user } = props;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
+
     const views = [
         {
-            permissions: true,
-            default: true,
+            permissions: ['manageMinistry'],
+            defaultsForUserType: ['Super Admin'],
             label: 'Ministry',
             path: '/ministry/list',
             component: () => <MinistryTable props={props} />,
         },
 
         {
-            permissions: true,
+            permissions: ['manageAdmin'],
             label: 'Admin',
             path: '/ministry/admin',
             component: () => <AdminTable props={props}  />,
         },
+
+        {
+            permissions: ['manageUserRole'],
+            label: 'User roles',
+            path: '/ministry/roles',
+            component: () => <AdminTable props={props}  />,
+        },
     ]
 
-    const defaultView = views.find((view) => view.default );
-    const allowedViews = views.filter((view) =>  view.permissions );
+    const defaultView = views.find(
+        (view) =>
+            view.defaultsForUserType &&
+            view.defaultsForUserType.filter(el =>  userRole && userRole.includes(el)).length > 0
+    );
+    const allowedViews = views.filter((view) =>
+        view.permissions.find((permission) => permissions.includes(permission))
+    );
     
     return (
         <div>
@@ -106,7 +119,7 @@ const Dashboard = (props) => {
                                 to={
                                     defaultView
                                         ? defaultView.path
-                                        : '/login'
+                                        : '/not-authorized'
                                 }
                             />
                         </Switch>

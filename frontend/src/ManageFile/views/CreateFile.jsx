@@ -42,6 +42,7 @@ class Create extends React.Component {
     }
     componentDidMount() {
         window.scrollTo(0, 0)
+        this.fetchService()
 
         const { location } = this.props;
         const {state}= location;
@@ -115,7 +116,7 @@ class Create extends React.Component {
         const { user } = this.props;
         try {
             axios.get(`/v1/service/file/${user && user.ministry}`)
-            .then(data=> this.setState({ serviceType : data.data }))
+            .then(data=> this.setState({ serviceType : data.data.data }))
         } catch (err) {
             console.log('Error while loading department', err)
         }

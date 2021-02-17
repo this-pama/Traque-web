@@ -18,6 +18,7 @@ import {
     FormGroup,
     TextInput,
     ReduxFormWrapper,
+    RadioButton,
 } from '@wfp/ui'
 import { iconCloseOutline } from '@wfp/icons'
 import { gradeLevel, gender } from '../../shared/utils'
@@ -33,19 +34,19 @@ class Create extends React.Component {
         showErrors: false,
         loading: false,
         ministry: [],
+        role: [],
     }
     componentDidMount() {
         window.scrollTo(0, 0)
-        this.fetchMinistry()
+        this.fetchMinistry();
+        this.fetchRole();
 
         const { location } = this.props;
         const {state}= location;
 
         if(state && state.edit && state.data){
             const { firstName, lastName, email, gender, telephone, gradeLevel, designation,
-                ministry,} = state.data;
-
-                console.log('state.data', state.data)
+                ministry, userRole } = state.data;
             
             this.setState({
                 formData:{
@@ -57,7 +58,8 @@ class Create extends React.Component {
                     gradeLevel: {label: gradeLevel, value: gradeLevel},
                     designation,
                     // staffId,
-                    ministry
+                    ministry,
+                    role: userRole
                 }
             })
         };
@@ -71,12 +73,21 @@ class Create extends React.Component {
             console.log('Error while loading ministry', err)
         }
     }
+
+    fetchRole=  async () => {
+        try {
+            axios.get(`/v1/role`)
+            .then(data=> this.setState({ role : data.data.filter(p => p.name == 'Admin') }))
+        } catch (err) {
+            console.log('Error while loading roles', err)
+        }
+    }
     
     onSubmit = async (values) => {
         this.setState({ loading: true });
 
         const { firstName, lastName, email, gender, telephone, gradeLevel, designation,
-        ministry,} = values;
+        ministry, role } = values;
 
         const formData={
             firstName,
@@ -91,7 +102,7 @@ class Create extends React.Component {
             isAdmin: true,
             isSuper: false,
             isStaff: false,
-            // userType: 'Admin'
+            userRole: role
         };
 
         const { location } = this.props;
@@ -120,7 +131,7 @@ class Create extends React.Component {
     
     render() {
         const { showErrors } = this.state
-        const { formData, loading, ministry } = this.state
+        const { formData, loading, ministry, role } = this.state
         const { id } = this.props.match.params;
         const { location } = this.props;
         const {state}= location;
@@ -154,15 +165,23 @@ class Create extends React.Component {
                                     const errors = {}
                                     const {
                                         ministry,
-                                    } = values
+                                        firstName,
+                                        lastName,
+                                        email,
+                                        telephone,
+                                        gender, 
+                                        designation, 
+                                        role,
+                                    } = values;
 
-                                    if (!ministry) {
-                                        errors.ministry = {
+                                    if (!firstName || !lastName || !email || !telephone || !gender 
+                                         || !designation || !role || !ministry) {
+                                        errors.firstName = {
                                             value:
-                                                'Ministry name is required',
+                                                'Required',
                                             show: showErrors,
                                         }
-                                    } 
+                                    }
                                     return errors
                                 }}
                                 render={({ values, onSave, valid, reset }) => (
@@ -409,6 +428,59 @@ class Create extends React.Component {
                                                 </FieldWrapper>
                                             </Col>
 
+                                            <Col 
+                                                md={6}
+                                                sm={6}
+                                                xs={12}
+                                            >
+                                                <FieldWrapper>
+                                                    <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        name="role"
+                                                    >
+                                                        {({
+                                                            input,
+                                                            meta,
+                                                        }) =>{
+                                                             return (
+                                                            <>
+                                                                <div className='wfp--label'>Please select user role</div>
+                                                                {role.map(
+                                                                    (
+                                                                        option,
+                                                                        i
+                                                                    ) => (
+                                                                        <>
+                                                                        <RadioButton
+                                                                            key={i}
+                                                                            {...input}
+                                                                            {...meta}
+                                                                            labelText={
+                                                                                option.name
+                                                                            }
+                                                                            value={
+                                                                                option._id
+                                                                            }
+                                                                            checked={
+                                                                                input.value ===
+                                                                                    option._id
+                                                                            }
+                                                                            // disabled={}
+                                                                        />
+                                                                        <br />
+                                                                        </>
+                                                                    )
+                                                                )}
+                                                            </>
+                                                        )
+                                                        }}
+                                                        
+                                                    </Field>
+                                                </FieldWrapper>
+                                            </Col>
+
                                             </ModuleBody>
                                             <ModuleFooter>
                                                 <div></div>
@@ -429,7 +501,7 @@ class Create extends React.Component {
                                                     </Button>
 
                                                     <Button
-                                                        // disabled={!valid}
+                                                         disabled={!valid}
                                                         onClick={(e) => {
                                                             e.preventDefault()
                                                             this.onSubmit(

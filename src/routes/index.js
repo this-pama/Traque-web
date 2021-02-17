@@ -10,6 +10,8 @@ import department from '../controller/department'
 import subDepartment from '../controller/subDepartment'
 import file from '../controller/file'
 import serviceFile from '../controller/serviceFileType'
+import seedUserRole from "../middleware/seedUserRoles";
+import role from '../controller/role'
 
 
 let router = express();
@@ -29,6 +31,8 @@ initializeDb(db => {
   router.use('/department/sub', subDepartment({ config, db }))
   router.use('/file', file({ config, db }));
   router.use('/service/file', serviceFile({ config, db }));
+  router.use('/seed', seedUserRole({ config, db }));
+  router.use('/role', role({ config, db }));
 
 });
 

@@ -6,6 +6,7 @@ import {iconAddOutline, iconDocument} from '@wfp/icons';
 import TableView from '../../Dashboard/TableView'
 import getColumnDefs from '../../shared/columnDefs'
 import store from '../../store'
+import Can from '../../shared/Can'
 
 const filters = [
     {
@@ -45,6 +46,8 @@ const View = ({props}) => {
 
     const storeData = store.getState();
     const {user} = storeData;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
 
     const endpoint = `/v1/file/outgoing/${user && user._id}`
 
@@ -52,30 +55,34 @@ const View = ({props}) => {
     const fetchData = () => true;
     const applications = data ? data.data.data : null;
 
-    let filePerm = user 
-        && user.permission
-        ? user.permission.createManagementFile
-        || user.permission.createServiceFile
-        ? true
-        : false
-        : false;
+    let filePerm = permissions ? permissions.includes('createManagementFile')
+                    ? 'createManagementFile'
+                    : permissions.includes('createServiceFile')
+                    ? 'createServiceFile'
+                    : 'does-not-exit'
+                    : 'does-not-exit';
 
     return (
         <>
-        { filePerm && (
             <div id="export-button-portal" >
-                <Button
-                onClick={(data)=> {
-                    props.history.push('/create-file')
-                }}
-                    icon={iconAddOutline}
-                    kind="secondary"
-                    small
-                >
-                    Create file
-                </Button>
+            <Can
+                rules={permissions}
+                userRole={userRole}
+                perform={filePerm}
+                yes={() => (
+                    <Button
+                    onClick={(data)=> {
+                        props.history.push('/create-file')
+                    }}
+                        icon={iconAddOutline}
+                        kind="secondary"
+                        small
+                    >
+                        Create file
+                    </Button>
+                )}
+            />
             </div>
-        )}
         <TableView
             title={'Outgoing files'}
             data={applications}

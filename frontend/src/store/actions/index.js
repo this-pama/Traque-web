@@ -14,14 +14,18 @@ const setUserData = (user) => ({
 export const clearStore = () => ({ type: CLEAR_STORE })
 
 
-export const checkLoginStatus = () => {
+export const checkLoginStatus = (data) => {
     return (dispatch) => {
-        return axios.get('/api/is-login').then((res) => {
-            const { is_login } = res.data
-            if (is_login) {
-                dispatch(getUserData())
-            }
-        })
+        if (data && data._id) {
+            return axios.get(`/v1/user/${data.userId}`).then((res) => {
+                const { is_login } = res.data
+                if (is_login) {
+                    dispatch(getUserData(res.data))
+                }
+                else return dispatch(clearStore())
+            })
+        }
+        else return dispatch(clearStore())
     }
 }
 
@@ -32,6 +36,7 @@ export const getUserData = (data) => {
                 dispatch(setUserData(res.data))
             })
         }
+        
     }
 }
 

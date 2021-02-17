@@ -1,5 +1,4 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
 import axios from 'axios'
 import styled from 'styled-components'
 import _ from 'lodash'
@@ -19,8 +18,10 @@ import {
     FormGroup,
     TextInput,
     ReduxFormWrapper,
-} from '@wfp/ui'
-import { iconCloseOutline } from '@wfp/icons'
+    RadioButton,
+    InputGroup,
+
+} from '@wfp/ui';
 import { gradeLevel, gender } from '../../shared/utils'
 
 import { Form, FormSpy, Field } from 'react-final-form'
@@ -34,17 +35,21 @@ class Create extends React.Component {
         showErrors: false,
         loading: false,
         department: [],
+        role: [],
+        departmentValue: null,
+        subDepartmentList: [],
     }
     componentDidMount() {
         window.scrollTo(0, 0)
-        this.fetchDept()
+        this.fetchDept();
+        this.fetchRole();
 
         const { location } = this.props;
         const {state}= location;
 
         if(state && state.edit && state.data){
             const { firstName, lastName, email, gender, telephone, gradeLevel, designation,
-                department } = state.data;
+                department, userRole } = state.data;
             
             this.setState({
                 formData:{
@@ -56,7 +61,9 @@ class Create extends React.Component {
                     gradeLevel: {label: gradeLevel, value: gradeLevel},
                     designation,
                     // staffId,
-                    department
+                    department,
+
+                    role: userRole && userRole._id,
                 }
             })
         };
@@ -71,12 +78,20 @@ class Create extends React.Component {
         }
     }
 
+    fetchRole=  async () => {
+        try {
+            axios.get(`/v1/role`)
+            .then(data=> this.setState({ role : data.data.filter(p => p.name != 'Super Admin' && p.name != 'Admin') }))
+        } catch (err) {
+            console.log('Error while loading roles', err)
+        }
+    }
+
     fetchSubDept=  async val => {
-        console.log('fettingggh')
-        this.setState({ loading: true })
+        this.setState({ loading: true})
         try {
             axios.get(`/v1/department/details/${val._id}`)
-            .then(data=> this.setState({ subDepartment : data.data.subDeparment, loading: false }))
+            .then(data=>  this.setState({ subDepartmentList : data.data.data.subDepartment, loading: false }))
         } catch (err) {
             console.log('Error while loading sub department', err)
             this.setState({ loading: false })
@@ -88,7 +103,7 @@ class Create extends React.Component {
         this.setState({ loading: true });
 
         const { firstName, lastName, email, gender, telephone, gradeLevel, designation,
-        department, subDeparment } = values;
+        department, subDeparment, role } = values;
         const {user} = this.props;
 
         const formData={
@@ -107,6 +122,8 @@ class Create extends React.Component {
             isAdmin: false,
             isSuper: false,
             isStaff: true,
+
+            userRole: role,
         };
 
         const { location } = this.props;
@@ -134,8 +151,8 @@ class Create extends React.Component {
 
     
     render() {
-        const { showErrors } = this.state
-        const { formData, loading, department, subDeparment } = this.state
+        const { showErrors, role } = this.state
+        const { formData, loading, department, subDepartmentList } = this.state
         const { id } = this.props.match.params;
         const { location } = this.props;
         const {state}= location;
@@ -149,9 +166,7 @@ class Create extends React.Component {
                     l2Link="#"
                     pageTitle={  state && state.edit ? "Update staff" : "Create staff"}
                 />
-                {loading ? (
-                    <Loading active={true} withOverlay={true} />
-                ) : (
+                    <Loading active={loading} withOverlay={true} />
                     <div
                         className="wfp--module__background"
                         style={{ minHeight: '400px' }}
@@ -166,6 +181,7 @@ class Create extends React.Component {
                                 onSubmit={this.onSubmit}
                                 initialValues={formData}
                                 validate={(values) => {
+                                    const { departmentValue } = this.state;
                                     const errors = {};
                                     const {
                                         department,
@@ -174,18 +190,25 @@ class Create extends React.Component {
                                         email,
                                         telephone,
                                         gender, 
-                                        designation
+                                        designation, 
+                                        role,
                                     } = values;
                                     
 
                                     if (!firstName || !lastName || !email || !telephone || !gender 
-                                        || !department || !designation ) {
+                                        || !department || !designation || !role) {
                                         errors.firstName = {
                                             value:
                                                 'Required',
                                             show: showErrors,
                                         }
-                                    } 
+                                    }
+                                    
+                                    if(department && department._id && department._id != departmentValue){
+                                        this.fetchSubDept(department);
+                                        this.setState({ departmentValue: department._id })
+                                    }
+
                                     return errors
                                 }}
                                 render={({ values, onSave, valid, reset }) => (
@@ -455,10 +478,7 @@ class Create extends React.Component {
                                                                 className="wfp--react-select-container auto-width"
                                                                 classNamePrefix="wfp--react-select"
                                                                 closeMenuOnSelect={true}
-                                                                // onChange={(vars) => {
-                                                                //     this.languageChange(vars, originalOnChange)
-                                                                // }}
-                                                                options={subDeparment}
+                                                                options={subDepartmentList}
                                                                 getOptionValue={(option) =>
                                                                     option['_id'] 
                                                                 }
@@ -474,6 +494,59 @@ class Create extends React.Component {
                                                 </FieldWrapper>
                                             </Col>
 
+                                            
+                                            <Col 
+                                                md={6}
+                                                sm={6}
+                                                xs={12}
+                                            >
+                                                <FieldWrapper>
+                                                    <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        name="role"
+                                                    >
+                                                        {({
+                                                            input,
+                                                            meta,
+                                                        }) =>{
+                                                             return (
+                                                            <>
+                                                                <div className='wfp--label'>Please select user role</div>
+                                                                {role.map(
+                                                                    (
+                                                                        option,
+                                                                        i
+                                                                    ) => (
+                                                                        <>
+                                                                        <RadioButton
+                                                                            key={i}
+                                                                            {...input}
+                                                                            {...meta}
+                                                                            labelText={
+                                                                                option.name
+                                                                            }
+                                                                            value={
+                                                                                option._id
+                                                                            }
+                                                                            checked={
+                                                                                input.value ===
+                                                                                    option._id
+                                                                            }
+                                                                            // disabled={}
+                                                                        />
+                                                                        <br />
+                                                                        </>
+                                                                    )
+                                                                )}
+                                                            </>
+                                                        )
+                                                        }}
+                                                        
+                                                    </Field>
+                                                </FieldWrapper>
+                                            </Col>
                                         </Row>
                                             </ModuleBody>
                                             <ModuleFooter>
@@ -527,7 +600,7 @@ class Create extends React.Component {
                             />
                         </Wrapper>
                     </div>
-                )}
+                
             </>
         )
     }

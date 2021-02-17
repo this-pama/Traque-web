@@ -6,6 +6,7 @@ import {iconAddOutline, iconDocument} from '@wfp/icons';
 import TableView from '../../Dashboard/TableView'
 import getColumnDefs from '../../shared/columnDefs'
 import store from '../../store'
+import Can from '../../shared/Can'
 
 const filters = [
     {
@@ -52,18 +53,23 @@ const View = ({props}) => {
     const fetchData = () => true;
     const applications = data ? data.data.data : null;
 
-    let filePerm = user 
-        && user.permission
-        ? user.permission.createManagementFile
-        || user.permission.createServiceFile
-        ? true
-        : false
-        : false;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
+    let filePerm = permissions ? permissions.includes('createManagementFile')
+                    ? 'createManagementFile'
+                    : permissions.includes('createServiceFile')
+                    ? 'createServiceFile'
+                    : 'does-not-exit'
+                    : 'does-not-exit';
         
     return (
         <>
-        { filePerm && (
             <div id="export-button-portal" >
+            <Can
+                rules={permissions}
+                userRole={userRole}
+                perform={filePerm}
+                yes={() => (
                 <Button
                 onClick={(data)=> {
                     props.history.push('/create-file')
@@ -74,8 +80,9 @@ const View = ({props}) => {
                 >
                     Create file
                 </Button>
+                )}
+            />
             </div>
-        )}
         <TableView
             title={'Archived files'}
             data={applications}

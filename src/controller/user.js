@@ -38,12 +38,11 @@ export default({ config, db }) => {
     if(isObjectIdValid(req.params.id) == false) 
       return res.status(400).send('User id is not valid');
       
-    User.findById(req.params.id, (err, users) => {
-      if (err) {
-        return res.status(400).json(err);
-      }
-      res.status(200).json(users);
-    });
+    User.findById(req.params.id)
+    .populate({path: 'userRole'})
+    .then(user=> res.status(200).json(user))
+    .catch(err=> res.status(400).json(err))
+    
   });
 
   // 'v1/user/add' - Add a user
@@ -68,6 +67,7 @@ export default({ config, db }) => {
       isSuper,
       isStaff,
       gradeLevel,
+      userRole,
     } = req.body;
 
     // //determine if user type exist
@@ -93,6 +93,7 @@ export default({ config, db }) => {
       isSuper,
       // isStaff,
       gradeLevel,
+      userRole,
       permission:{
         createServiceFile: false,
         createMagementFile: true,
@@ -149,13 +150,14 @@ export default({ config, db }) => {
       firstName, lastName,email, telephone,
       dob, gender, designation, staffId, 
       ministry, address, state, country, permission,
-      gradeLevel, department, subDepartment,
+      gradeLevel, department, subDepartment, userRole
     } = req.body;
 
     //send error message if no minstry or department id
     if(isObjectIdValid(ministry) == false 
-      || isObjectIdValid(department) == false )  
-        return res.status(500).send("Ministry and Department id is required");
+      || isObjectIdValid(department) == false 
+      || isObjectIdValid(userRole) == false)  
+        return res.status(500).send("User role, Ministry and Department id is required");
 
       //send error if sub department but id not vaild
     if(subDepartment != null && isObjectIdValid(subDepartment) == false) 
@@ -167,7 +169,7 @@ export default({ config, db }) => {
       dob, gender, designation, staffId, department, 
       subDepartment : subDepartment != null ? subDepartment : null,
       ministry, address, state, country, permission,
-      gradeLevel, isStaff: true, gradeLevel, 
+      gradeLevel, isStaff: true, gradeLevel, userRole
     }, ...req.body)
 
     let activationKey = randomize('0', 6);
@@ -388,6 +390,7 @@ export default({ config, db }) => {
       User.find({ isAdmin: true })
       .populate('ministry')
       .populate({path : 'accountId', model: 'Account'})
+      .populate({path: 'userRole', select: ['_id', 'name'] })
       .then(e=> res.status(200).json({ data: e }))
       .catch(e=> res.status(500).send(e) )
     })
@@ -406,6 +409,7 @@ export default({ config, db }) => {
                         .populate({path: 'department', select: ['_id', 'name'] })
                         .populate({path: 'subDepartment', select: ['_id', 'name'] })
                         .populate({path: 'ministry', select: ['_id', 'name'] })
+                        .populate({path: 'userRole', select: ['_id', 'name'] })
 
       return res.status(200).json({ data })
     })

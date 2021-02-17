@@ -13,7 +13,7 @@ import RegistryFle from './views/Registry'
 
 import { Redirect, Route, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
-import Footer from '../shared/Footer'
+// import Can from '../../shared/Can'
 
 const listElReactRouter = ({
     index,
@@ -49,68 +49,69 @@ const listElReactRouter = ({
 )
 const Dashboard = (props) => {
     const { user } = props;
-    let filePerm = user 
-        && user.permission
-        ? user.permission.createManagementFile
-        || user.permission.createServiceFile
-        ? true
-        : false
-        : false;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
 
     const views = [
         {
-            permissions: true,
-            default: true,
+            permissions: ['viewIncoming'],
+            defaultsForUserType: ['Admin', 'FTO', "Registry", 'Management'],
             label: 'Incoming file',
             path: '/file/incoming',
             component: () => <IncomingFile props={props} />,
         },
 
         {
-            permissions: true,
+            permissions: ['viewOutgoing'],
             label: 'Outgoing file',
             path: '/file/outgoing',
             component: () => <OutgoingFile props={props} />,
         },
 
         {
-            permissions: true,
-            label: 'In-Process file',
+            permissions: ['viewInbox'],
+            label: 'Inbox',
             path: '/file/pending',
             component: () => <InProcessFile props={props} />,
         },
 
         {
-            permissions: true,
+            permissions: ['viewSent'],
             label: 'Sent file',
             path: '/file/sent',
             component: () => <SentFile props={props} />,
         },
 
         {
-            permissions: true,
+            permissions: ['viewDelayed'],
             label: 'Delayed file',
             path: '/file/delayed',
             component: () => <DelayedFile props={props}  />,
         },
 
         {
-            permissions: true,
+            permissions: ['viewArchived'],
             label: 'Archived file',
             path: '/file/archived',
             component: () => <ArchivedFile props={props} />,
         },
 
         {
-            permissions: filePerm,
+            permissions: ['viewRegistry'],
             label: 'Open Registry',
             path: '/file/registry',
             component: () => <RegistryFle props={props} />,
         },
     ]
 
-    const defaultView = views.find((view) => view.default );
-    const allowedViews = views.filter((view) =>  view.permissions );
+    const defaultView = views.find(
+        (view) =>
+            view.defaultsForUserType &&
+            view.defaultsForUserType.filter(el => userRole && userRole.includes(el)).length > 0
+    );
+    const allowedViews = views.filter((view) =>
+        view.permissions.find((permission) => permissions.includes(permission))
+    );
     
     return (
         <div>
@@ -154,7 +155,7 @@ const Dashboard = (props) => {
                                 to={
                                     defaultView
                                         ? defaultView.path
-                                        : '/login'
+                                        : '/not-authorized'
                                 }
                             />
                         </Switch>

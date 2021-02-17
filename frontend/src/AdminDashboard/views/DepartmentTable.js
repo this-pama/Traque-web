@@ -6,6 +6,7 @@ import {iconAddOutline, iconDocument} from '@wfp/icons';
 import TableView from '../../Dashboard/TableView'
 import getColumnDefs from '../../shared/columnDefs'
 import store from '../../store'
+import Can from '../../shared/Can'
 
 const filters = [
     {
@@ -46,6 +47,8 @@ const View = ({props}) => {
 
     const storeData = store.getState();
     const {user} = storeData;
+    const permission = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
 
     const endpoint = `/v1/department/department-list/${user && user._id}`
 
@@ -55,27 +58,43 @@ const View = ({props}) => {
     return (
         <>
         <div id="export-button-portal" >
-            <Button
+        <Can
+            rules={permission}
+            userRole={userRole}
+            perform="viewIncoming"
+            yes={() => (
+                <Button
+                    onClick={(data)=> {
+                        props.history.push(`/file`)
+                    }}
+                        icon={iconDocument}
+                        kind="secondary"
+                        small
+                >
+                        Manage file
+                </Button>
+            )}
+            />
+            
+            <span style={{ paddingLeft: 20 }} />
+            <Can
+            rules={permission}
+            userRole={userRole}
+            perform="manageDepartment"
+            yes={() => (
+                <Button
                 onClick={(data)=> {
-                    props.history.push(`/file`)
+                    props.history.push('/create-department')
                 }}
-                    icon={iconDocument}
+                    icon={iconAddOutline}
                     kind="secondary"
                     small
-            >
-                    Manage file
-            </Button>
-            <span style={{ paddingLeft: 20 }} />
-            <Button
-               onClick={(data)=> {
-                   props.history.push('/create-department')
-               }}
-                icon={iconAddOutline}
-                kind="secondary"
-                small
-            >
-                Create department
-            </Button>
+                >
+                    Create department
+                </Button>
+                )}
+            />
+            
         </div>
         <TableView
             title={'Departments'}

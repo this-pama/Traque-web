@@ -62,8 +62,6 @@ class Create extends React.Component {
             name: values.name,
             type: values.type.value
         }
-
-        console.log('formData', formData)
        
         try {
             if(state && state.edit){

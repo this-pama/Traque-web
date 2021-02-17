@@ -42,25 +42,37 @@ const listElReactRouter = ({
     />
 )
 const Dashboard = (props) => {
+    const {user} = props;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
+
     const views = [
         {
-            permissions: true,
-            default: true,
+            permissions: ['manageDepartment'],
+            defaultsForUserType: ['Admin'],
             label: 'Department',
             path: '/department/list',
             component: () => <DeptTable props={props} />,
         },
 
         {
-            permissions: true,
+            permissions: ['createUser'],
+            // defaultsForUserType: ['Admin'],
+            default: true,
             label: 'Staff list',
-            path: '/department/staff/list',
+            path: '/department/staff',
             component: () => <StaffTable props={props}  />,
         },
     ]
 
-    const defaultView = views.find((view) => view.default );
-    const allowedViews = views.filter((view) =>  view.permissions );
+    const defaultView = views.find(
+        (view) =>
+            view.defaultsForUserType &&
+            view.defaultsForUserType.filter(el => userRole &&  userRole.includes(el)).length > 0
+    );
+    const allowedViews = views.filter((view) =>
+        view.permissions.find((permission) => permissions.includes(permission))
+    );
     
     return (
         <div>
@@ -102,7 +114,7 @@ const Dashboard = (props) => {
                                 to={
                                     defaultView
                                         ? defaultView.path
-                                        : '/login'
+                                        : '/not-authorized'
                                 }
                             />
                         </Switch>
