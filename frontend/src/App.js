@@ -34,6 +34,7 @@ import CreateFile from './ManageFile/views/CreateFile'
 import MyMainNavigation from './shared/MyMainNavigation'
 import ForwardFile from './ManageFile/views/ForwardFile'
 import NotAuthorized from './NotAuthorized'
+import CreateUserRole from './Dashboard/views/CreateUserRole'
 
 class App extends React.Component {
   constructor(props) {
@@ -50,7 +51,9 @@ class App extends React.Component {
   }
 
   _onIdle(e) {
-      if (window.location.pathname != '/login') {
+      if (window.location.pathname != '/login'
+      && window.location.pathname != '/reset-password'
+      && window.location.pathname != '/activate'                                                                                                                                                                                                                                                                                      ) {
           this.setState({ showModal: true })
           this.timeOut()
       }
@@ -247,6 +250,14 @@ class App extends React.Component {
                                     )}
                                 />
 
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/create-user-role"
+                                    component={(props) => (
+                                        <CreateUserRole {...props} user={user} />
+                                    )}
+                                />
+
                                 <Route
                                     path="/not-authorized"
                                     component={NotAuthorized}
@@ -278,7 +289,7 @@ class App extends React.Component {
                             modalHeading="You have been inactive!"
                         >
                             <p className="wfp--modal-content__text">
-                                You will get timed out. You want to stay?
+                                You will get timed out. You want to continue with your session?
                             </p>
                         </Modal>
                 

@@ -10,6 +10,7 @@ import sentFile from '../ManageFile/views/SentFileColDef/sentFileColDef'
 import archivedFile from '../ManageFile/views/ArchivedFile/archivedFileColDef'
 import delayedFile from '../ManageFile/views/DelayedFileColDef/delayedFileColDef'
 import registryFile from '../ManageFile/views/Registry/registryColDef'
+import userRolePermission from '../Dashboard/views/UserRoleColDef/userRoleColDef'
 
 // this function returns only the columns needed for specific view (for example /hr/global )
 export default function getColumnDefs(viewName, onValueChange) {
@@ -60,6 +61,9 @@ export default function getColumnDefs(viewName, onValueChange) {
 
         case 'registryFile':
             columnDefs= [...registryFile];
+            break;
+        case 'userRole':
+            columnDefs= [...userRolePermission];
             break;
             
         default:

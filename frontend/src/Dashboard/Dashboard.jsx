@@ -5,6 +5,7 @@ import { Wrapper, Tabs, Tab, MainNavigationItem } from '@wfp/ui'
 
 import MinistryTable from './views/MinistryTable'
 import AdminTable from './views/AdminTable'
+import UserRoleTable from './views/UserRoleTable'
 
 import { Redirect, Route, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -66,7 +67,7 @@ const Dashboard = (props) => {
             permissions: ['manageUserRole'],
             label: 'User roles',
             path: '/ministry/roles',
-            component: () => <AdminTable props={props}  />,
+            component: () => <UserRoleTable props={props}  />,
         },
     ]
 

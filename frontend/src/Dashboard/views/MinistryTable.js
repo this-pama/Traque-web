@@ -5,6 +5,7 @@ import {iconAddOutline} from '@wfp/icons';
 
 import TableView from '../TableView'
 import getColumnDefs from '../../shared/columnDefs'
+import Can from '../../shared/Can'
 
 const filters = [
     {
@@ -27,20 +28,31 @@ const MinistryView = ({props}) => {
     const { data } = useSWR(endpoint)
     const fetchData = () => true
     const applications = data ? data.data : null;
+    const { user } = props;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
+
     return (
         <>
         <div id="export-button-portal" >
-            <Button
-               onClick={(data)=> {
-                   console.log(data)
-                   props.history.push('/create-ministry')
-               }}
-                icon={iconAddOutline}
-                kind="secondary"
-                small
-            >
-                Create ministry
-            </Button>
+            <Can
+                rules={permissions}
+                userRole={userRole}
+                perform={'manageMinistry'}
+                yes={() => (
+                <Button
+                onClick={(data)=> {
+                    console.log(data)
+                    props.history.push('/create-ministry')
+                }}
+                    icon={iconAddOutline}
+                    kind="secondary"
+                    small
+                >
+                    Create ministry
+                </Button>
+                )}
+        />
         </div>
         <TableView
             title={'Created ministries'}

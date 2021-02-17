@@ -16,12 +16,12 @@ const filters = [
     },
    
 ]
-const endpoint = '/v1/user/admin/admin-list'
+const endpoint = '/v1/role'
 
 const Admin = ({props}) => {
     const { data } = useSWR(endpoint)
     const fetchData = () => trigger(endpoint)
-    const applications = data ? data.data.data : null;
+    const applications = data ? data.data : null;
 
     const { user } = props;
     const permissions = user && user.userRole ? user.userRole.permission : [];
@@ -33,25 +33,25 @@ const Admin = ({props}) => {
             <Can
                 rules={permissions}
                 userRole={userRole}
-                perform={'manageAdmin'}
+                perform={'manageUserRole'}
                 yes={() => (
             <Button
-                onClick={()=> props.history.push('/create-admin')}
+                onClick={()=> props.history.push('/create-user-role')}
                 icon={iconAddOutline}
                 kind="secondary"
                 small
             >
-                Create admin
+                Create user role
             </Button>
                 )}
         />
         </div>
         <TableView
-            title={'Ministry Administrators'}
+            title={'User roles and permissions'}
             data={applications}
             filters={[]}
             fetchData={fetchData}
-            gridConfig={getColumnDefs('admin', fetchData)}
+            gridConfig={getColumnDefs('userRole', fetchData)}
             // exportFileName={'Admin details'}
         />
         </>

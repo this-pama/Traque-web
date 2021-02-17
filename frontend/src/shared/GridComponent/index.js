@@ -9,6 +9,7 @@ import InProcessFileAction from '../../ManageFile/views/InProcessFileColDef/Acti
 import SentFileAction from '../../ManageFile/views/SentFileColDef/Action'
 import DelayedFileAction from '../../ManageFile/views/DelayedFileColDef/Action'
 import RegistryAction from '../../ManageFile/views/Registry/Action'
+import UserRoleAction from '../../Dashboard/views/UserRoleColDef/Action'
 
 export {
     MinistryAction,
@@ -22,4 +23,5 @@ export {
     SentFileAction,
     DelayedFileAction,
     RegistryAction,
+    UserRoleAction,
 }

@@ -3,6 +3,7 @@ import { Router } from 'express';
 import Role from '../model/role';
 import User from '../model/user'
 import { isObjectIdValid } from '../middleware/service';
+import allPermission from '../middleware/permissions'
 
 export default({ config, db }) => {
   let api = Router();
@@ -33,6 +34,11 @@ export default({ config, db }) => {
     .then(user=> res.status(200).json(user))
     .catch(e=> res.status(500).send(e))
 
+  })
+
+  //get the list of all available permission
+  api.get('/all-roles', (req,res)=>{
+    res.status(200).json(allPermission)
   })
 
   return api;
