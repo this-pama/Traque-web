@@ -6,12 +6,16 @@ import { Icon, Modal, Loading } from  '@wfp/ui';
 import store from '../../../store'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import Can from '../../../shared/Can'
 
 const Action = (props) => {
     const { onValueChange } = props;
     const { _id } = props.data;
     const storeData = store.getState();
+    
     const {user} = storeData;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
 
     const [isAction, setAction ] = useState(false);
     const [ isAchive, setAchive ] = useState(false);
@@ -56,17 +60,28 @@ const Action = (props) => {
             
             <div style={{ dispaly: 'inline'}}>
                 <div style={{ dispaly: 'inline'}}>
-                    <Link className="wfp--link"
-                        style={{ fontWeight: 'bold', marginLeft : 10 }}
-                        to={{
-                            pathname: "/forward/file/" + _id,
-                            state: { edit: true, id : _id, data: props.data }
-                          }}
-                    >
-                        FORWARD
-                    </Link>
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'transferFile'}
+                        yes={() => (
+                            <Link className="wfp--link"
+                                style={{ fontWeight: 'bold', marginLeft : 10 }}
+                                to={{
+                                    pathname: "/forward/file/" + _id,
+                                    state: { edit: true, id : _id, data: props.data }
+                                }}
+                            >
+                                FORWARD
+                            </Link>
+                        )}
+                        />
 
-
+                    <Can
+                    rules={permissions}
+                    userRole={userRole}
+                    perform={'viewFileHistory'}
+                    yes={() => (
                     <Link className="wfp--link"
                         style={{ fontWeight: 'bold', marginLeft : 10 }}
                         to={{
@@ -75,7 +90,14 @@ const Action = (props) => {
                     >
                         VIEW HISTORY
                     </Link>
+                    )}
+                    />
 
+                    <Can
+                    rules={permissions}
+                    userRole={userRole}
+                    perform={'archiveFile'}
+                    yes={() => (
                     <Link className="wfp--link"
                         style={{ fontWeight: 'bold', marginLeft : 10 }}
                         to='#'
@@ -83,26 +105,11 @@ const Action = (props) => {
                     >
                         ARCHIVE
                     </Link>
+                    )}
+                    />
 
                 </div>
             </div>
-
-            <Modal
-                open={isAction}
-                primaryButtonText="Confirm"
-                secondaryButtonText="No"
-                onRequestSubmit={onConfirm}
-                onRequestClose={()=>setAction(false)}
-                modalLabel="Confirm receipt"
-                wide={false}
-                type='info'
-            >
-                <Loading active={loading} withOverlay={true} />
-                <p className="wfp--modal-content__text">
-                    By acknowledging receipt, you confirm receipt of the file. Do you confirm receipt?
-                </p>
-            </Modal>
-
             
             <Modal
                 open={isAchive}

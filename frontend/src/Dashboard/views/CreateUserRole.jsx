@@ -46,9 +46,10 @@ class Create extends React.Component {
         if(state && state.edit && state.data){
             this.setState({
                 formData: {
-                    ministry: state.data.name,
-                    admin: state.data.userId
-                }
+                    name: state.data.name,
+                    permission: state.data.permission
+                },
+                permission: state.data.permission
             })
         };
     }
@@ -76,35 +77,31 @@ class Create extends React.Component {
         this.setState({ loading: true });
         const { location } = this.props;
         const {state}= location;
-        let formData;
+        let formData = {
+            name: values.name,
+            permission: this.state.permission,
+        };
 
-        console.log(this.state.permission)
-       
-        // try {
-        //     if(state && state.edit){
-        //         formData={
-        //             name: values.ministry,
-        //             userId: values.admin._id
-        //         }
-    
-        //         await axios.put(`/v1/ministry/update/${state.id}`, formData)
-        //         .then(()=> this.setState({ loading: false }))
-        //         toast('Successfully updated a ministry', {closeOnClick: true, autoClose: 1000 });
-        //         this.props.history.goBack()
-        //     }
-        //     else{
-        //         await axios.post(`/v1/ministry/add`, { name: values.ministry })
-        //         .then(()=> this.setState({ loading: false }))
-        //         toast('Successfully created a ministry', {closeOnClick: true, autoClose: 1000 });
-        //         this.props.history.goBack()
-        //     }
+        try {
+            if(state && state.edit){
+                await axios.put(`/v1/role/update/${state.id}`, formData)
+                .then(()=> this.setState({ loading: false }))
+                toast('Role successfully updated', {closeOnClick: true, autoClose: 1000 });
+                this.props.history.goBack()
+            }
+            else{
+                await axios.post(`/v1/role/create`, formData)
+                .then(()=> this.setState({ loading: false }))
+                toast('Role successfully created', {closeOnClick: true, autoClose: 1000 });
+                this.props.history.goBack()
+            }
             
             
-        // } catch (err) {
-        //     console.log('Ooops! error occurred, please try again', err)
-        //     toast.error('Ooops! error occurred, please try again', {closeOnClick: true, autoClose: 1000 });
-        //     this.setState({ loading: false })
-        // }
+        } catch (err) {
+            console.log('Ooops! error occurred, please try again', err)
+            toast.error('Ooops! error occurred, please try again', {closeOnClick: true, autoClose: 1000 });
+            this.setState({ loading: false })
+        }
     }
 
     
@@ -140,15 +137,21 @@ class Create extends React.Component {
                                 validate={(values) => {
                                     const errors = {}
                                     const {
-                                        ministry,
+                                        name,
                                     } = values
 
-                                    if (!ministry) {
-                                        errors.ministry = {
-                                            value: 'Ministry name is required',
+                                    if (!name) {
+                                        errors.name = {
+                                            value: 'Name is required',
                                             show: showErrors,
                                         }
                                     } 
+                                    if(this.state.permission.length <= 0){
+                                        errors.name = {
+                                            value: 'Permission is required is required',
+                                            show: showErrors,
+                                        }
+                                    }
                                     return errors
                                 }}
                                 render={({ values, onSave, valid, reset }) => (
@@ -181,30 +184,49 @@ class Create extends React.Component {
                                                     </FieldWrapper>
                                                 </Col>
 
-                                                <Col 
-                                                    md={6}
-                                                    sm={6}
-                                                    xs={12}
-                                                >
                                                 <FieldWrapper>
+                                                <Field
+                                                        component={
+                                                            ReduxFormWrapper
+                                                        }
+                                                        name="permission"
+                                                    >
+                                                        {({
+                                                            input,
+                                                            meta,
+                                                        }) =>(
                                                             
                                                     <InputGroup
-                                                        helperText="select any that apply"
+                                                        helperText="Select any that apply. Note that some permissions are restricted to specific user role. Super Admin can not have file related permissions and Admin can not have Super Admin related permissions."
                                                         labelText="Permissions"
                                                         vertical
                                                     >
+                                                        <Row>
                                                         {allRoles.map(p=>(
+                                                             <Col 
+                                                                md={4}
+                                                                sm={4}
+                                                                xs={12}
+                                                             >
                                                             <Checkbox
                                                                 // checked={false}
-                                                                // defaultChecked
+                                                                defaultChecked={values.permission
+                                                                ? values.permission.includes(p)
+                                                                : false}
+                                                                {...input}
+                                                                {...meta}
                                                                 id={p}
                                                                 labelText={p}
                                                                 onChange={(e,p)=> this.setPermission(e, p)}
                                                             />
+                                                            </Col>
                                                         ))}
+                                                        </Row>
                                                     </InputGroup>
+                                                        )}
+                                                    </Field>
+                                                
                                                 </FieldWrapper>
-                                            </Col>
 
                                             </ModuleBody>
                                             <ModuleFooter>
@@ -226,7 +248,7 @@ class Create extends React.Component {
                                                     </Button>
 
                                                     <Button
-                                                        // disabled={!valid}
+                                                        disabled={!valid}
                                                         onClick={(e) => {
                                                             e.preventDefault()
                                                             this.onSubmit(

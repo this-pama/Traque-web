@@ -77,7 +77,7 @@ export const action = (onValueChange) => ({
     hide: false,
     editable: false,
     field: 'action',
-    cellRenderer: "SentFileAction",
+    cellRenderer: "ArchivedAction",
     cellRendererParams: ({data}) => ({
         onValueChange,
         // id: data.sbp_request_id

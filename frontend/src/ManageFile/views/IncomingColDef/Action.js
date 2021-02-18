@@ -6,12 +6,16 @@ import { Icon, Modal, Loading } from  '@wfp/ui';
 import store from '../../../store'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import Can from '../../../shared/Can'
 
 const Action = (props) => {
     const { onValueChange } = props;
     const { _id } = props.data;
     const storeData = store.getState();
+
     const {user} = storeData;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
 
     const [isAction, setAction ] = useState(false);
     const [ loading, setLoading ] = useState(false);
@@ -46,14 +50,21 @@ const Action = (props) => {
                     </Link>
 
 
-                    <Link className="wfp--link"
-                        style={{ fontWeight: 'bold', marginLeft : 10 }}
-                        to={{
-                            pathname: `/history/file/${_id}`,
-                          }}
-                    >
-                        VIEW HISTORY
-                    </Link>
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'viewFileHistory'}
+                        yes={() => (
+                            <Link className="wfp--link"
+                                style={{ fontWeight: 'bold', marginLeft : 10 }}
+                                to={{
+                                    pathname: `/history/file/${_id}`,
+                                }}
+                            >
+                                VIEW HISTORY
+                            </Link>
+                        )}
+                    />
 
                 </div>
             </div>

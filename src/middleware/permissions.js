@@ -3,6 +3,7 @@ export default ([
     'createServiceFile',
     'archiveFile',
     'deleteFile',
+    'transferFile',
 
     'delayFile',
     'viewRegistry',

@@ -35,6 +35,8 @@ import MyMainNavigation from './shared/MyMainNavigation'
 import ForwardFile from './ManageFile/views/ForwardFile'
 import NotAuthorized from './NotAuthorized'
 import CreateUserRole from './Dashboard/views/CreateUserRole'
+import ServiceFileTypes from './AdminDashboard/views/CreateServiceFileType'
+import CreateServiceFileType from './AdminDashboard/views/CreateServiceFileType'
 
 class App extends React.Component {
   constructor(props) {
@@ -215,6 +217,14 @@ class App extends React.Component {
                                     path="/create-sub-department/:id"
                                     component={(props) => (
                                         <CreateSubDepartment {...props} user={user} id={props.match.params.id} />
+                                    )}
+                                />
+
+                                <ProtectedRoute
+                                    isAllowed={isLogged}
+                                    path="/create-service-file-type"
+                                    component={(props) => (
+                                        <CreateServiceFileType {...props} user={user} />
                                     )}
                                 />
 

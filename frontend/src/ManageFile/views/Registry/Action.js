@@ -6,16 +6,27 @@ import { Icon, Modal, Loading } from  '@wfp/ui';
 import store from '../../../store'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import Can from '../../../shared/Can'
 
 const Action = (props) => {
     const { onValueChange } = props;
     const { _id } = props.data;
     const storeData = store.getState();
+    
     const {user} = storeData;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
 
     const [isAction, setAction ] = useState(false);
     const [ isAchive, setAchive ] = useState(false);
     const [ loading, setLoading ] = useState(false);
+
+    let filePerm = permissions ? permissions.includes('createManagementFile')
+                    ? 'createManagementFile'
+                    : permissions.includes('createServiceFile')
+                    ? 'createServiceFile'
+                    : 'does-not-exit'
+                    : 'does-not-exit';
 
     const onDelete = async ()=>{
         setLoading(true)
@@ -61,63 +72,89 @@ const Action = (props) => {
             
             <div style={{ dispaly: 'inline'}}>
                 <div style={{ dispaly: 'inline'}}>
-                    <Link 
-                        to={{
-                            pathname: "/forward/file/" + _id,
-                            state: { edit: true, id : _id, data: props.data }
-                          }}
-                      >
-                    <Icon
-                        class="wfp--link"
-                        icon={iconRestartGlyph}
-                        width={14}
-                        height={14}
-                        fill='#0b77c2'
-                        description="FORWARD"
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'transferFile'}
+                        yes={() => (
+                            <Link 
+                                to={{
+                                    pathname: "/forward/file/" + _id,
+                                    state: { edit: true, id : _id, data: props.data }
+                                }}
+                            >
+                            <Icon
+                                class="wfp--link"
+                                icon={iconRestartGlyph}
+                                width={14}
+                                height={14}
+                                fill='#0b77c2'
+                                description="FORWARD"
+                            />
+                            </Link>
+                        )}
                     />
-                    </Link>
                     <span style={{ paddingLeft: 20 }} />
 
-                    <Link 
-                        to={{
-                        pathname: "/create-file",
-                        state: { edit: true, id : _id, data: props.data }
-                      }}
-                      >
-                          <Icon
-                            class="wfp--link"
-                            icon={iconEditGlyph}
-                            width={14}
-                            height={14}
-                            fill='#0b77c2'
-                            description="EDIT"
-                        />
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={filePerm}
+                        yes={() => (
+                        <Link 
+                            to={{
+                            pathname: "/create-file",
+                            state: { edit: true, id : _id, data: props.data }
+                        }}
+                        >
+                            <Icon
+                                class="wfp--link"
+                                icon={iconEditGlyph}
+                                width={14}
+                                height={14}
+                                fill='#0b77c2'
+                                description="EDIT"
+                            />
 
-                    </Link>
+                        </Link>
+                        )}
+                    />
                     
 
                     <span style={{ paddingLeft: 20 }} />
-
-                    <Icon
-                        class="wfp--link"
-                        icon={iconDeleteGlyph}
-                        width={14}
-                        height={14}
-                        fill='#0b77c2'
-                        description="DELETE"
-                        onClick={()=> setAction(true)}
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'deleteFile'}
+                        yes={() => (
+                            <Icon
+                                class="wfp--link"
+                                icon={iconDeleteGlyph}
+                                width={14}
+                                height={14}
+                                fill='#0b77c2'
+                                description="DELETE"
+                                onClick={()=> setAction(true)}
+                            />
+                        )}
                     />
 
                     <span style={{ paddingLeft: 20 }} />
-
-                    <Icon
-                        class="wfp--link"
-                        icon={iconAppServices}
-                        width={14}
-                        height={14}
-                        fill='#0b77c2'
-                        description="ARCHIVE"
-                        onClick={()=> setAchive(true)}
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'archiveFile'}
+                        yes={() => (
+                            <Icon
+                                class="wfp--link"
+                                icon={iconAppServices}
+                                width={14}
+                                height={14}
+                                fill='#0b77c2'
+                                description="ARCHIVE"
+                                onClick={()=> setAchive(true)}
+                            />
+                        )}
                     />
 
                 </div>

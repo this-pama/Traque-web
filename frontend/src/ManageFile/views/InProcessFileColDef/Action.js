@@ -6,12 +6,17 @@ import { Icon, Modal, Loading, TextArea } from  '@wfp/ui';
 import store from '../../../store'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import Can from '../../../shared/Can'
 
 const Action = (props) => {
     const { onValueChange } = props;
     const { _id } = props.data;
     const storeData = store.getState();
+
     const {user} = storeData;
+    const permissions = user && user.userRole ? user.userRole.permission : [];
+    const userRole = user && user.userRole ? user.userRole.name : null;
+
     const [justification, setJustification ] = useState('');
 
     const [isAction, setAction ] = useState(false);
@@ -64,44 +69,70 @@ const Action = (props) => {
             <div style={{ dispaly: 'inline'}}>
             
                 <div style={{ dispaly: 'inline'}}>
-                    <Link className="wfp--link"
-                        style={{ fontWeight: 'bold' }}
-                        to={{
-                            pathname: "/forward/file/" + _id,
-                            state: { edit: true, id : _id, data: props.data }
-                          }}
-                    >
-                        FORWARD
-                    </Link>
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'transferFile'}
+                        yes={() => (
+                            <Link className="wfp--link"
+                                style={{ fontWeight: 'bold' }}
+                                to={{
+                                    pathname: "/forward/file/" + _id,
+                                    state: { edit: true, id : _id, data: props.data }
+                                }}
+                            >
+                                FORWARD
+                            </Link>
+                        )}
+                    />
 
                     {/* <br /> */}
+                    
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'viewFileHistory'}
+                        yes={() => (
+                        <Link className="wfp--link"
+                            style={{ fontWeight: 'bold', marginLeft : 5 }}
+                            to={{
+                                pathname: `/history/file/${_id}`,
+                            }}
+                        >
+                            VIEW HISTORY
+                        </Link>
+                        )}
+                    />
 
-                    <Link className="wfp--link"
-                        style={{ fontWeight: 'bold', marginLeft : 5 }}
-                        to={{
-                            pathname: `/history/file/${_id}`,
-                          }}
-                    >
-                        VIEW HISTORY
-                    </Link>
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'delayFile'}
+                        yes={() => (
+                        <Link className="wfp--link"
+                            style={{ fontWeight: 'bold', marginLeft : 5 }}
+                            to='#'
+                            onClick={()=>setAction(true)}
+                        >
+                            DELAY
+                        </Link>
+                        )}
+                    />
 
-                    {/* <div style={{ marginLeft : 80}} /> */}
-                    <Link className="wfp--link"
-                        style={{ fontWeight: 'bold', marginLeft : 5 }}
-                        to='#'
-                        onClick={()=>setAction(true)}
-                    >
-                        DELAY
-                    </Link>
-
-                    {/* <div style={{ marginLeft : 20}} /> */}
-                    <Link className="wfp--link"
-                        style={{ fontWeight: 'bold', marginLeft : 5 }}
-                        to='#'
-                        onClick={()=> setAchive(true)}
-                    >
-                        ARCHIVE
-                    </Link>
+                    <Can
+                        rules={permissions}
+                        userRole={userRole}
+                        perform={'archiveFile'}
+                        yes={() => (
+                        <Link className="wfp--link"
+                            style={{ fontWeight: 'bold', marginLeft : 5 }}
+                            to='#'
+                            onClick={()=> setAchive(true)}
+                        >
+                            ARCHIVE
+                        </Link>
+                        )}
+                    />
 
                     <Modal
                         open={isAction}

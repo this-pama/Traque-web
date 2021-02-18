@@ -406,6 +406,7 @@ export default({ config, db }) => {
       if(!user || !user.ministry) return res.status(500).send('Ministry id is not found')
 
       const data = await User.find({ ministry : user.ministry, isStaff: true })
+                        .populate({path : 'accountId', model: 'Account', select: ['_id', 'disable', 'email'] })
                         .populate({path: 'department', select: ['_id', 'name'] })
                         .populate({path: 'subDepartment', select: ['_id', 'name'] })
                         .populate({path: 'ministry', select: ['_id', 'name'] })

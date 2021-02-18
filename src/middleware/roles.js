@@ -15,7 +15,8 @@ export const admin = {
     name: 'Admin',
     permission: [
         'createUser',
-        'manageDepartment'
+        'manageDepartment',
+        'manageServiceType',
     ]
 }
 
@@ -41,10 +42,13 @@ export const registry = {
     permission: [
     'createManagementFile',
     'createServiceFile',
+
     'archiveFile',
     'deleteFile',
 
     'delayFile',
+    'transferFile',
+
     'viewRegistry',
     'viewIncoming',
     'viewOutgoing',

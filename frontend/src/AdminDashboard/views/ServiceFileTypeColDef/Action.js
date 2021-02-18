@@ -1,41 +1,32 @@
 import React, { useState, useEffect }  from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import store from '../../../store'
-import Can from '../../../shared/Can'
+import {iconChevronDown} from '@wfp/icons'
+import { Icon, Modal } from  '@wfp/ui';
 
 const Action = (props) => {
     
     const { request_status, _id, reviewed_candidate, create_user } = props.data;
 
-    const storeData = store.getState();
-
-    const {user} = storeData;
-    const permissions = user && user.userRole ? user.userRole.permission : [];
-    const userRole = user && user.userRole ? user.userRole.name : null;
+    const [isAction, setAction ] = useState(false);
 
     return (
         <Wrapper>
             <div style={{ dispaly: 'inline'}}>
                 <div style={{ dispaly: 'inline'}}>
-                <Can
-                    rules={permissions}
-                    userRole={userRole}
-                    perform={'viewFileHistory'}
-                    yes={() => (
-                        <Link className="wfp--link"
-                            style={{ fontWeight: 'bold' }}
-                            to={{
-                                pathname: `/history/file/${_id}`,
-                            }}
-                        >
-                            VIEW HISTORY
-                        </Link>
-                    )}
-                />
+                    <Link className="wfp--link"
+                        style={{ fontWeight: 'bold' }}
+                        to={{
+                            pathname: "/create-service-file-type",
+                            state: { edit: true, id : _id, data: props.data }
+                          }}
+                    >
+                        Edit 
+                    </Link>
 
                 </div>
             </div>
+
         </Wrapper>
     )
 }
@@ -51,11 +42,10 @@ const Wrapper = styled.div`
     a.wfp--link {
         float: left;
         color: #fbfcfc;
-        font-size: 8px;
         background: #0e7fce;
         border-radius: 6px;
         padding: 4px 10px;
-        // height: 27px;
+        height: 27px;
         display: inline-block;
         -webkit-text-decoration: none;
         text-decoration: none;

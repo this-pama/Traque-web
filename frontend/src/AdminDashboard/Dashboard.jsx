@@ -5,6 +5,7 @@ import { Wrapper, Tabs, Tab, MainNavigationItem } from '@wfp/ui'
 
 import DeptTable from './views/DepartmentTable'
 import StaffTable from './views/StaffTable'
+import ServiceFileTypes from './views/ServiceTypes'
 
 import { Redirect, Route, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -62,6 +63,15 @@ const Dashboard = (props) => {
             label: 'Staff list',
             path: '/department/staff',
             component: () => <StaffTable props={props}  />,
+        },
+
+        {
+            permissions: ['manageServiceType'],
+            // defaultsForUserType: ['Admin'],
+            default: true,
+            label: 'Service file types',
+            path: '/department/service-file-types',
+            component: () => <ServiceFileTypes props={props}  />,
         },
     ]
 

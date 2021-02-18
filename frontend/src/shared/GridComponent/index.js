@@ -10,6 +10,8 @@ import SentFileAction from '../../ManageFile/views/SentFileColDef/Action'
 import DelayedFileAction from '../../ManageFile/views/DelayedFileColDef/Action'
 import RegistryAction from '../../ManageFile/views/Registry/Action'
 import UserRoleAction from '../../Dashboard/views/UserRoleColDef/Action'
+import ArchivedAction from '../../ManageFile/views/ArchivedFile/Action'
+import ServiceFileTypeAction from '../../AdminDashboard/views/ServiceFileTypeColDef/Action'
 
 export {
     MinistryAction,
@@ -24,4 +26,6 @@ export {
     DelayedFileAction,
     RegistryAction,
     UserRoleAction,
+    ArchivedAction,
+    ServiceFileTypeAction,
 }

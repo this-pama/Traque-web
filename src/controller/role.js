@@ -41,5 +41,29 @@ export default({ config, db }) => {
     res.status(200).json(allPermission)
   })
 
+  //create a permission
+  api.post('/create', (req, res)=>{
+    const { name, permission }= req.body;
+
+    let perm = new Role({ name, permission })
+
+    perm.save()
+    .then(e => res.status(200).json(e))
+    .catch(e=> res.status(500).send(e))
+  })
+
+  //update user role
+  api.put('/update/:id', (req, res)=>{
+    const { id }= req.params;
+    const { name, permission }= req.body;
+
+    if(isObjectIdValid(id) == false) return res.status(500).send("Id is required")
+
+    Role.findByIdAndUpdate(id, {name, permission}, { new: true })
+    .then(e => res.status(200).json(e))
+    .catch(e=> res.status(500).send(e))
+
+  })
+
   return api;
 }

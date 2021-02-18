@@ -168,7 +168,7 @@ export const action = (onValueChange) => ({
         // id: data.sbp_request_id
     }),
     filter: false,
-    width: 120,
+    // width: 120,
 })
 
 
