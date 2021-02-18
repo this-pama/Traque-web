@@ -5,6 +5,7 @@ import {iconChevronDown} from '@wfp/icons'
 import { Icon, Modal, Loading } from  '@wfp/ui';
 import axios from 'axios'
 import {toast } from 'react-toastify'
+import { Wrapper } from '../../../ManageFile/views/SectionColDef/Action'
 
 
 const Action = (props) => {
@@ -87,7 +88,7 @@ const Action = (props) => {
                     state: { edit: true, id : _id, data: props.data }
                     }}
             >
-                Edit 
+                EDIT
             </Link>
             
             <div 
@@ -97,7 +98,7 @@ const Action = (props) => {
                     cursor: 'pointer',
                     float: 'left',
                     marginLeft: 10,
-                    background: '#0d7fce',
+                    background: '#1841BA',
                     padding: '3px 5px 4px'
                 }}
                 onClick={()=> setAction(true) }
@@ -105,8 +106,8 @@ const Action = (props) => {
                 <Icon
                     className="wfp--link"
                     icon={iconChevronDown}
-                    width={'14px'}
-                    height={'14px'}
+                    width={'8'}
+                    height={'8'}
                     fill='#fff'
                     description="More actions"
                     className="dropbtn"
@@ -214,23 +215,3 @@ const Action = (props) => {
 
 export default Action
 
-
-const Wrapper = styled.div`
-    div:last-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: bold;
-    }
-    a.wfp--link {
-        float: left;
-        color: #fbfcfc;
-        background: #0e7fce;
-        border-radius: 6px;
-        padding: 4px 10px;
-        height: 27px;
-        display: inline-block;
-        -webkit-text-decoration: none;
-        text-decoration: none;
-    }
-        
-`

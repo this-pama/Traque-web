@@ -37,6 +37,8 @@ import NotAuthorized from './NotAuthorized'
 import CreateUserRole from './Dashboard/views/CreateUserRole'
 import ServiceFileTypes from './AdminDashboard/views/CreateServiceFileType'
 import CreateServiceFileType from './AdminDashboard/views/CreateServiceFileType'
+import OutdatedBrowser from './OutdatedBrowser'
+import styled from 'styled-components'
 
 class App extends React.Component {
   constructor(props) {
@@ -77,7 +79,6 @@ class App extends React.Component {
       // refetch user data on mount because it might have been updated
 
       checkLoginStatus(user);
-      // this.loadAvailabilityForms()
   }
   
 
@@ -98,7 +99,7 @@ class App extends React.Component {
   }
 
   render() {
-      const { user, error, comment } = this.props;
+      const { user } = this.props;
       const isLogged = user ? true : false;
 
        // Internet Explorer 6-11
@@ -112,6 +113,7 @@ class App extends React.Component {
                   dedupingInterval: 300,
               }}
           >
+              <AppWrapper>
               <IdleTimer
                     ref={(ref) => {
                         this.idleTimer = ref
@@ -129,6 +131,11 @@ class App extends React.Component {
                             exact
                             path="/login"
                             component={(props) => <Login {...props} />}
+                        />
+
+                        <Route
+                            path="/outdated-browser"
+                            component={OutdatedBrowser}
                         />
 
                         <Route
@@ -154,7 +161,7 @@ class App extends React.Component {
                         ) : (
                             <>
                             <Switch>
-                                {/* {isIE && <Redirect to='/outdated-browser' /> } */}
+                                {isIE && <Redirect to='/outdated-browser' /> }
 
                                 <ProtectedRoute
                                     isAllowed={isLogged}
@@ -305,6 +312,7 @@ class App extends React.Component {
                 
                 </>
                 </BrowserRouter>
+                </AppWrapper>
             </SWRConfig>
         )
     }
@@ -322,3 +330,18 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
+
+const AppWrapper= styled.div`
+    .wfp--link {
+        color: #1841BA;
+    }
+    .wfp--tabs__nav-item--selected .wfp--tabs__nav-link{
+        color: #1841BA;
+    }
+    .wfp--tabs__nav__bar {
+        background: #1841BA;
+    }
+    .wfp--breadcrumb-home {
+        fill: #1841BA;
+    }
+`

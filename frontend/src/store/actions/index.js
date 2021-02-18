@@ -17,10 +17,11 @@ export const clearStore = () => ({ type: CLEAR_STORE })
 export const checkLoginStatus = (data) => {
     return (dispatch) => {
         if (data && data._id) {
-            return axios.get(`/v1/user/${data.userId}`).then((res) => {
-                const { is_login } = res.data
+            return axios.get(`/v1/user/${data._id}`).then((res) => {
+                const  is_login =  res.data ? true : false;
+                
                 if (is_login) {
-                    dispatch(getUserData(res.data))
+                    return dispatch(setUserData(res.data))
                 }
                 else return dispatch(clearStore())
             })

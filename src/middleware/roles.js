@@ -3,9 +3,6 @@ export const SA = {
     permission: [
     'manageMinistry',
     'manageAdmin',
-    'manageDepartment',
-    'manageSubDepartment',
-    'manageServiceType',
 
     'manageUserRole',
     ]
@@ -16,23 +13,27 @@ export const admin = {
     permission: [
         'createUser',
         'manageDepartment',
+
         'manageServiceType',
+        
+        'manageDepartment',
+        'manageSubDepartment',
     ]
 }
 
 export const fto = {
     name : 'FTO',
     permission: [
-    'delayFile',
-    'viewIncoming',
-    'viewOutgoing',
-    'viewInbox',
-    'viewSent',
-    'viewDelayed',
-    'viewArchived',
-    'viewFileHistory',
+        'delayFile',
+        'viewIncoming',
+        'viewOutgoing',
+        'viewInbox',
+        'viewSent',
+        'viewDelayed',
+        'viewArchived',
+        'viewFileHistory',
 
-    'canSearchFile',
+        'canSearchFile',
     ]
 }
 
@@ -62,6 +63,54 @@ export const registry = {
     ]
 }
 
+export const registry_ser = {
+    name : 'Registry-service',
+    permission: [
+    'createServiceFile',
+
+    'archiveFile',
+    'deleteFile',
+
+    'delayFile',
+    'transferFile',
+
+    'viewRegistry',
+    'viewIncoming',
+    'viewOutgoing',
+    'viewInbox',
+    'viewSent',
+    'viewDelayed',
+    'viewArchived',
+    'viewFileHistory',
+
+    'canSearchFile',
+    ]
+}
+
+export const registry_mgt = {
+    name : 'Registry-management',
+    permission: [
+    'createManagementFile',
+
+    'archiveFile',
+    'deleteFile',
+
+    'delayFile',
+    'transferFile',
+
+    'viewRegistry',
+    'viewIncoming',
+    'viewOutgoing',
+    'viewInbox',
+    'viewSent',
+    'viewDelayed',
+    'viewArchived',
+    'viewFileHistory',
+
+    'canSearchFile',
+    ]
+}
+
 export const management = {
     name : 'Management',
     permission: [
@@ -69,3 +118,4 @@ export const management = {
     'viewMinistryReport',
     ]
 }
+

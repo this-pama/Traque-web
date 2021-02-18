@@ -1,8 +1,7 @@
 import React, { useState, useEffect }  from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import {iconChevronDown} from '@wfp/icons'
-import { Icon, Modal } from  '@wfp/ui';
+import { Wrapper } from '../../../ManageFile/views/SectionColDef/Action'
 
 const Action = (props) => {
     
@@ -32,28 +31,3 @@ const Action = (props) => {
 }
 
 export default Action
-
-const Wrapper = styled.div`
-    div:last-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: bold;
-    }
-    a.wfp--link {
-        float: left;
-        color: #fbfcfc;
-        background: #0e7fce;
-        border-radius: 6px;
-        padding: 4px 10px;
-        height: 27px;
-        display: inline-block;
-        -webkit-text-decoration: none;
-        text-decoration: none;
-    }
-    // @media (min-width: 600px) {
-        .wfp--modal-container {
-            min-width: 280px;
-        }
-    // }
-        
-`

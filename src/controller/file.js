@@ -93,7 +93,7 @@ export default({ config, db }) => {
       return res.status(500).send('Id is not valid')
 
     File.findByIdAndUpdate(req.params.id, 
-      { deleted: true})
+      { deleted: true, exceedSLA: false })
     .then(e=> res.status(200).json({ message: 'success'}))
     .catch(err=> res.status(500).send(err))
 
@@ -289,6 +289,7 @@ export default({ config, db }) => {
         outgoing,
         incoming,
         delayed,
+        exceedSLA: false,
         
       };
 
@@ -382,6 +383,7 @@ export default({ config, db }) => {
     let update = {
       outgoing,
       incoming,
+      exceedSLA: false,
       $push: { history: history } 
     };
 
@@ -562,6 +564,7 @@ export default({ config, db }) => {
       $push: { history: history },
       pending,
       delayed,
+      exceedSLA: false,
     };
     
 
@@ -816,6 +819,69 @@ export default({ config, db }) => {
 
     .then(e=> res.status(200).json({ message: 'success', data: e}))
     .catch(err=> res.status(500).send(err));
+
+  })
+
+
+  //search for a file using name and number
+  api.post('/search', (req, res)=>{
+    const { name, fileNo } = req.body;
+
+    File.aggregate({
+      $match: {
+        $or: [
+          { name: {
+            $regex: name,
+            '$options': 'i'
+          }},
+          { fileNo: {
+            $regex: name,
+            '$options': 'i'
+          }}
+        ]
+      }
+    })
+    .project('_id name fileNo createdBy type createdDate ministry')
+    .then(data => res.status(200).json(data))
+    .catch(e=> res.status(500).send(e))
+
+  })
+
+
+  
+  //get list of department file
+  api.get('/department/:department', async (req, res)=>{
+    const {department } = req.params; 
+    if(isObjectIdValid(department) == false) return res.status(500).send("department id not valid")
+
+    File.find({ 
+      department: ObjectId(department),
+    })
+    // .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'department', 'subDepartment'])
+    .populate({ path: 'createdBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'subDepartment', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'department', model: "Department", select: ['name', '_id']})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
+
+  })
+
+
+  
+  //get list of ministry file
+  api.get('/ministry/:ministry', async (req, res)=>{
+    const {ministry } = req.params; 
+    if(isObjectIdValid(ministry) == false) return res.status(500).send("ministry id not valid")
+
+    File.find({ 
+      ministry: ObjectId(ministry),
+    })
+    // .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'department', 'subDepartment'])
+    .populate({ path: 'createdBy', model: "User", select: ['firstName', 'lastName', '_id']})
+    .populate({ path: 'subDepartment', model: "Sub Department", select: ['name', '_id']})
+    .populate({ path: 'department', model: "Department", select: ['name', '_id']})
+    .then(e=> res.status(200).json({ message: 'success', data: e}))
+    .catch(err=> res.status(500).send(err))
 
   })
 

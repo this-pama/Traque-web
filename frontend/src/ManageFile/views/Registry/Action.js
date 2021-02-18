@@ -7,6 +7,7 @@ import store from '../../../store'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import Can from '../../../shared/Can'
+import { Wrapper } from '../SectionColDef/Action'
 
 const Action = (props) => {
     const { onValueChange } = props;
@@ -88,7 +89,7 @@ const Action = (props) => {
                                 icon={iconRestartGlyph}
                                 width={14}
                                 height={14}
-                                fill='#0b77c2'
+                                fill='#1841BA'
                                 description="FORWARD"
                             />
                             </Link>
@@ -112,7 +113,7 @@ const Action = (props) => {
                                 icon={iconEditGlyph}
                                 width={14}
                                 height={14}
-                                fill='#0b77c2'
+                                fill='#1841BA'
                                 description="EDIT"
                             />
 
@@ -132,7 +133,7 @@ const Action = (props) => {
                                 icon={iconDeleteGlyph}
                                 width={14}
                                 height={14}
-                                fill='#0b77c2'
+                                fill='#1841BA'
                                 description="DELETE"
                                 onClick={()=> setAction(true)}
                             />
@@ -150,7 +151,7 @@ const Action = (props) => {
                                 icon={iconAppServices}
                                 width={14}
                                 height={14}
-                                fill='#0b77c2'
+                                fill='#1841BA'
                                 description="ARCHIVE"
                                 onClick={()=> setAchive(true)}
                             />
@@ -198,29 +199,3 @@ const Action = (props) => {
 }
 
 export default Action
-
-const Wrapper = styled.div`
-    div:last-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: bold;
-    }
-    a.wfp--link {
-        float: left;
-        color: #fbfcfc;
-        font-size: 8px;
-        background: #0e7fce;
-        border-radius: 6px;
-        padding: 4px 10px;
-        // height: 27px;
-        display: inline-block;
-        -webkit-text-decoration: none;
-        text-decoration: none;
-    }
-    // @media (min-width: 600px) {
-        .wfp--modal-container {
-            min-width: 280px;
-        }
-    // }
-        
-`

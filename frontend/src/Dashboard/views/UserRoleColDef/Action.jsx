@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
+import { Wrapper } from '../../../ManageFile/views/SectionColDef/Action'
 
 const PositionLink = (props) => {
     const {  _id, } = props.data
@@ -25,22 +26,3 @@ const PositionLink = (props) => {
 export default PositionLink
 
 
-const Wrapper = styled.div`
-    div:last-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: bold;
-    }
-    a.wfp--link {
-        float: left;
-        color: #fbfcfc;
-        background: #0e7fce;
-        border-radius: 6px;
-        padding: 4px 10px;
-        height: 27px;
-        display: inline-block;
-        -webkit-text-decoration: none;
-        text-decoration: none;
-    }
-        
-`

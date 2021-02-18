@@ -25,6 +25,7 @@ import { iconCloseOutline } from '@wfp/icons'
 
 import { Form, FormSpy, Field } from 'react-final-form'
 import { deptType } from '../../shared/utils'
+import Summary from '../Summary'
 
 
 class Create extends React.Component {
@@ -33,7 +34,8 @@ class Create extends React.Component {
         formData: null,
         showErrors: false,
         loading: false,
-        admin: []
+        file: {},
+        history: [],
     }
     componentDidMount() {
         window.scrollTo(0, 0)
@@ -75,7 +77,7 @@ class Create extends React.Component {
     
     render() {
         const { showErrors } = this.state;
-        const { formData, loading, admin } = this.state;
+        const { file, loading, history } = this.state;
         const { location, userId } = this.props;
         const {state}= location;
         return (
@@ -100,14 +102,10 @@ class Create extends React.Component {
                             mobilePageWidth="full"
                         >
                             <Module noMargin>
-                                <ModuleHeader>
-                                    <span style={{ fontSize: 20 }}>
-                                       File History
-                                    </span>
-                                </ModuleHeader>
-                                <ModuleBody>
-                                    
-                                </ModuleBody>
+                                <div style={{ paddingLeft: 30 }}>
+                                    <Summary  file={ file} history={history} />
+                                </div>
+
                                 <ModuleFooter>
                                     <div></div>
                                     <div
@@ -148,4 +146,15 @@ export default connect(mapStateToProps, null)(Create)
 
 const FieldWrapper = styled.div`
     margin-bottom: 30px;
+`
+
+const ModuleWraper = styled.div`
+    .wfp--module .wfp--module__header{
+        margin: 1rem 2rem 0 2rem;
+        border-radius: 10px;
+        border-bottom: 6px solid;
+        background-color: #1841BA !important;
+        color: #fff;
+    }
+
 `

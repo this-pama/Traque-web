@@ -91,6 +91,10 @@ let File = new Schema({
    ministry :{type: Schema.Types.ObjectId, ref: 'Ministry', required : false },
    department: {type: Schema.Types.ObjectId, ref: 'Department', required : false },
    subDepartment: {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
+   exceedSLA: {
+     type: Boolean,
+     default: false
+   },
    outgoing: {
       value: {
         type: Boolean,

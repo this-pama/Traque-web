@@ -10,6 +10,8 @@ import SentFile from './views/SentFile'
 import ArchivedFile from './views/ArchivedFile'
 import DelayedFile from './views/DelayedFile'
 import RegistryFle from './views/Registry'
+import SectionFileReport from './views/SectionFileReport'
+import MinistryFileReport from './views/MinistryFileReport'
 
 import { Redirect, Route, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -55,7 +57,7 @@ const Dashboard = (props) => {
     const views = [
         {
             permissions: ['viewIncoming'],
-            defaultsForUserType: ['Admin', 'FTO', "Registry", 'Management'],
+            defaultsForUserType: ['Admin', 'FTO', "Registry",],
             label: 'Incoming file',
             path: '/file/incoming',
             component: () => <IncomingFile props={props} />,
@@ -101,6 +103,21 @@ const Dashboard = (props) => {
             label: 'Open Registry',
             path: '/file/registry',
             component: () => <RegistryFle props={props} />,
+        },
+
+        {
+            permissions: ['viewDepartmentReport'],
+            defaultsForUserType: ['Management'],
+            label: 'Section Report',
+            path: '/file/section-report',
+            component: () => <SectionFileReport props={props} />,
+        },
+        {
+            permissions: ['viewMinistryReport'],
+            defaultsForUserType: ['Management'],
+            label: 'Ministry Report',
+            path: '/file/ministry-report',
+            component: () => <MinistryFileReport props={props} />,
         },
     ]
 
