@@ -94,7 +94,7 @@ const View = ({props}) => {
             </div>
         
         <TableView
-            title={'Sent files'}
+            title={'Outbox'}
             data={mapData}
             filters={filters}
             fetchData={fetchData}

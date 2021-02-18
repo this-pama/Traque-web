@@ -103,7 +103,7 @@ class Create extends React.Component {
                         >
                             <Module noMargin>
                                 <div style={{ paddingLeft: 30 }}>
-                                    <Summary  file={ file} history={history} />
+                                    <Summary  file={ file} history={history && history.reverse()} />
                                 </div>
 
                                 <ModuleFooter>

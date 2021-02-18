@@ -79,7 +79,7 @@ const Dashboard = (props) => {
 
         {
             permissions: ['viewSent'],
-            label: 'Sent file',
+            label: 'Outbox',
             path: '/file/sent',
             component: () => <SentFile props={props} />,
         },

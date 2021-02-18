@@ -84,7 +84,7 @@ const View = ({props}) => {
             />
             </div>
         <TableView
-            title={'In-Process files'}
+            title={'Inbox'}
             data={applications}
             filters={filters}
             fetchData={fetchData}

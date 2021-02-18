@@ -176,6 +176,11 @@ class MainNav extends React.Component {
                         />
 
                         <br/>
+                            {searchResult.length <= 0 && searching== false &&
+                                <p style={{ textAlign: 'center' }}>
+                                    No file found
+                                </p>
+                            }
                         
                         <List
                             kind="details"
@@ -195,6 +200,7 @@ class MainNav extends React.Component {
                                 }}
                                 onClick={()=> this.setState({ startSearch: false, searchResult: [] })}
                                 >
+                                    
                                     <DomLink to={`/history/file/${p._id}`}>
                                         <ListItem >
                                             <div className='wfp--label'>{p.name}</div>

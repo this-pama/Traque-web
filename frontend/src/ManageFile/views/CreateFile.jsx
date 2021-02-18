@@ -128,17 +128,15 @@ class Create extends React.Component {
         const { formData, loading, admin } = this.state;
         const { location, userId, user } = this.props;
         const {state}= location;
-        const permission = user && user.permission ? user.permission 
-        : {
-            createServiceFile: false,
-            createManagementFile: false
-        };
+
+        const permissions = user && user.userRole ? user.userRole.permission : [];
+        const userRole = user && user.userRole ? user.userRole.name : null;
 
         const fileList = fileType.filter(p => 
             p.label == 'Service file' 
-            && p.createServiceFile == permission.createServiceFile 
+            && permissions.includes('createServiceFile')
             || p.label == 'Management file' 
-            && p.createManagementFile == permission.createManagementFile 
+            && permissions.includes('createManagementFile')
         );
 
         return (
