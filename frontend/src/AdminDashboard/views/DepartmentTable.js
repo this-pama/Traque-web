@@ -53,7 +53,7 @@ const View = ({props}) => {
     const endpoint = `/v1/department/department-list/${user && user._id}`
 
     const { data } = useSWR(endpoint)
-    const fetchData = () => true;
+    const fetchData = () => trigger(endpoint)
     const applications = data ? data.data.data : null;
     return (
         <>

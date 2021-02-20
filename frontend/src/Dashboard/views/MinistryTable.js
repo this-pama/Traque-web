@@ -26,7 +26,7 @@ const endpoint = '/v1/ministry/'
 
 const MinistryView = ({props}) => {
     const { data } = useSWR(endpoint)
-    const fetchData = () => true
+    const fetchData = () => trigger(endpoint)
     const applications = data ? data.data : null;
     const { user } = props;
     const permissions = user && user.userRole ? user.userRole.permission : [];

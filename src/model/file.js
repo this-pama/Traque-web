@@ -155,6 +155,8 @@ let File = new Schema({
 
       receivingDept: {type: Schema.Types.ObjectId, ref: 'Department', required : false },
       receivingSubDept: {type: Schema.Types.ObjectId, ref: 'Sub Department', required : false },
+
+      slaExpiration: {  type: Date },
   },
   sent: [{
     value: {

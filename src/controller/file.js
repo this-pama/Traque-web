@@ -11,7 +11,7 @@ var randomize = require('randomatic');
 export default({ config, db }) => {
   let api = Router();
 
-  const { FILE_NUMBER_PREFIX, EMAIL_SENDER } = process.env;
+  const { FILE_NUMBER_PREFIX, EMAIL_SENDER, SLA_HOURS } = process.env;
   //NOTE: file types: created, outgoing, incoming, pending, sent, delayed, achived
 
   // '/v1/file' - GET all files
@@ -71,6 +71,58 @@ export default({ config, db }) => {
     })
 
   })
+
+
+   // 'v1/file/add/upload/:userId' - bulk upload files
+   api.post('/add/upload/:userId', async (req,res) =>{
+    // check if user id is valid
+    const { userId } = req.params;
+
+    if(isObjectIdValid(userId) == false)
+      return res.status(500).send('User id is invalid')
+
+    const user = await User.findById(userId);
+    if(!user || user._id == null ) return res.status(500).send('User not found')
+
+    const { ministry, department, subDepartment } = user;
+    const { data }= req.body;
+
+    let upload = await data ? data.map(p=>{
+      let rand = randomize('0', 6);
+      let fileNumber = FILE_NUMBER_PREFIX +  rand + '-' + p.fileNo;
+
+      let history= {
+        type: 'created',
+        label: "Created",
+        createdBy: userId,
+        createdDate: p.createdDate, 
+        originatingDept: department,
+        originatingSubDept: subDepartment,
+        // location,
+      }
+
+      return ({
+        name : p.name, 
+        type : p.type, 
+        createdBy : userId,
+        createdDate : p.createdDate, 
+        fileNo: fileNumber,
+        ministry, department, subDepartment,
+        deleted: false,
+        history,
+      
+      })}
+    )
+    : [];
+
+    if(upload.length <= 0) return res.status(400).send(" No data found")
+
+    File.insertMany(upload)
+    .then((doc)=> res.status(200).send(doc))
+    .catch(e=> res.status(500).send(e))
+
+  })
+
 
   //update file details 
   api.put('/update/:id', async (req, res)=>{
@@ -433,7 +485,7 @@ export default({ config, db }) => {
       'pending.value' : true,
       deleted: false,
     })
-    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'pending'])
+    .select(['_id', 'name', 'fileNo', 'createdBy', 'type', 'createdDate', 'pending', 'exceedSLA'])
     .populate({ path: "createdBy", model: 'User', select: ['firstName', 'lastName', '_id']})
     .populate({ path: 'pending.sentBy', model: "User", select: ['firstName', 'lastName', '_id']})
     .populate({ path: 'pending.receivedBy', model: "User", select: ['firstName', 'lastName', '_id']})
@@ -621,6 +673,8 @@ export default({ config, db }) => {
   
       receivingDept: user ? user.department : null,
       receivingSubDept: user ? user.subDepartment : null,
+
+      slaExpiration: new Date() + ( SLA_HOURS * 60 * 60 * 1000)
     };
 
     const sent= {

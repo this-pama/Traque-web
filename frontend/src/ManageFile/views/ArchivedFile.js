@@ -50,7 +50,7 @@ const View = ({props}) => {
     const endpoint = `/v1/file/archived/${user && user._id}`
 
     const { data } = useSWR(endpoint)
-    const fetchData = () => true;
+    const fetchData = () => trigger(endpoint)
     const applications = data ? data.data.data : null;
 
     const permissions = user && user.userRole ? user.userRole.permission : [];

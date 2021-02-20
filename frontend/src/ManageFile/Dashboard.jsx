@@ -100,7 +100,7 @@ const Dashboard = (props) => {
 
         {
             permissions: ['viewRegistry'],
-            label: 'Open Registry',
+            label: 'Registry',
             path: '/file/registry',
             component: () => <RegistryFle props={props} />,
         },

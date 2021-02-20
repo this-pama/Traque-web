@@ -7,6 +7,8 @@ import routes from './routes';
 import passport from 'passport';
 import path from 'path'
 
+import { SLAJob } from './middleware/jobs'
+
 const LocalStrategy = require('passport-local').Strategy;
 
 let app = express();
@@ -61,5 +63,8 @@ app.use('/v1', routes);
 app.server.listen(config.port);
 
 console.log(`Started on port ${app.server.address().port}`);
+
+//run sla jobs every 1 hours
+setInterval(()=>SLAJob(), 1000 * 60 * 60);
 
 export default app;
