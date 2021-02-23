@@ -87,7 +87,7 @@ const View = ({props}) => {
         
         <TableView
             title={'Incoming files'}
-            data={applications}
+            data={applications && applications.reverse()}
             filters={filters}
             fetchData={fetchData}
             gridConfig={getColumnDefs('incomingFile', fetchData)}

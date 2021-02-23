@@ -115,6 +115,7 @@ export default({ config, db }) => {
     )
     : [];
 
+
     if(upload.length <= 0) return res.status(400).send(" No data found")
 
     File.insertMany(upload)

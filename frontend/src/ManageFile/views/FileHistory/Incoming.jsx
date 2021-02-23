@@ -1,4 +1,6 @@
 import { InlineInfo, Section } from '../../Summary'
+import { Icon, Modal, Loading } from  '@wfp/ui';
+import {iconWarningGlyph  } from '@wfp/icons'
 
 const  View= props =>{
     const { file, p }= props;
@@ -61,6 +63,27 @@ const  View= props =>{
             }
             </p>
         </InlineInfo>
+        {/* <InlineInfo>
+            <p>
+            {
+                file.exceedSLA && (
+                    <>
+                    <Icon
+                        // class="wfp--link"
+                        icon={iconWarningGlyph}
+                        width={14}
+                        height={14}
+                        fill='red'
+                        description="Warning for SLA"
+                    /> { `  `}
+                    <span style={{ color : 'red', marginBottom : 30 }}>
+                        File has defaulted SLA time.
+                    </span>
+                    </>
+                )
+            }
+            </p>
+        </InlineInfo> */}
         
     </Section>
 )}

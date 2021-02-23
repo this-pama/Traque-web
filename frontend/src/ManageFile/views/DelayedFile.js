@@ -85,7 +85,7 @@ const View = ({props}) => {
             </div>
         <TableView
             title={'Delayed files'}
-            data={applications}
+            data={applications && applications.reverse()}
             filters={filters}
             fetchData={fetchData}
             gridConfig={getColumnDefs('delayedFile', fetchData)}

@@ -95,7 +95,7 @@ const View = ({props}) => {
         
         <TableView
             title={'Outbox'}
-            data={mapData}
+            data={mapData && mapData.reverse()}
             filters={filters}
             fetchData={fetchData}
             gridConfig={getColumnDefs('sentFile', fetchData)}

@@ -187,7 +187,7 @@ const View = ({props}) => {
             </div>
         <TableView
             title={'Registry'}
-            data={applications}
+            data={applications && applications.reverse()}
             filters={filters}
             fetchData={fetchData}
             gridConfig={getColumnDefs('registryFile', fetchData)}
