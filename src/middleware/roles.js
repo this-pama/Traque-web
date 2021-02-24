@@ -1,121 +1,111 @@
 export const SA = {
-    name: "Super Admin",
-    permission: [
-    'manageMinistry',
-    'manageAdmin',
-
-    'manageUserRole',
-    ]
-}
+  name: "Super Admin",
+  permission: ["manageMinistry", "manageAdmin", "manageUserRole"],
+};
 
 export const admin = {
-    name: 'Admin',
-    permission: [
-        'createUser',
-        'manageDepartment',
+  name: "Admin",
+  permission: [
+    "createUser",
+    "manageDepartment",
 
-        'manageServiceType',
-        
-        'manageDepartment',
-        'manageSubDepartment',
-    ]
-}
+    "manageServiceType",
+
+    "manageDepartment",
+    "manageSubDepartment",
+  ],
+};
 
 export const fto = {
-    name : 'FTO',
-    permission: [
-        'delayFile',
-        'viewIncoming',
-        'viewOutgoing',
-        'viewInbox',
-        'viewSent',
-        'viewDelayed',
-        'viewArchived',
-        'viewFileHistory',
+  name: "FTO",
+  permission: [
+    "delayFile",
+    "viewIncoming",
+    "viewOutgoing",
+    "viewInbox",
+    "viewSent",
+    "viewDelayed",
+    "viewArchived",
+    "viewFileHistory",
 
-        'canSearchFile',
-    ]
-}
-
+    "canSearchFile",
+  ],
+};
 
 export const registry = {
-    name : 'Registry',
-    permission: [
-    'createManagementFile',
-    'createServiceFile',
+  name: "Registry",
+  permission: [
+    "createManagementFile",
+    "createServiceFile",
 
-    'archiveFile',
-    'deleteFile',
+    "archiveFile",
+    "deleteFile",
 
-    'delayFile',
-    'transferFile',
+    "delayFile",
+    "transferFile",
 
-    'viewRegistry',
-    'viewIncoming',
-    'viewOutgoing',
-    'viewInbox',
-    'viewSent',
-    'viewDelayed',
-    'viewArchived',
-    'viewFileHistory',
+    "viewRegistry",
+    "viewIncoming",
+    "viewOutgoing",
+    "viewInbox",
+    "viewSent",
+    "viewDelayed",
+    "viewArchived",
+    "viewFileHistory",
 
-    'canSearchFile',
-    ]
-}
+    "canSearchFile",
+  ],
+};
 
 export const registry_ser = {
-    name : 'Registry-service',
-    permission: [
-    'createServiceFile',
+  name: "Registry-service",
+  permission: [
+    "createServiceFile",
 
-    'archiveFile',
-    'deleteFile',
+    "archiveFile",
+    "deleteFile",
 
-    'delayFile',
-    'transferFile',
+    "delayFile",
+    "transferFile",
 
-    'viewRegistry',
-    'viewIncoming',
-    'viewOutgoing',
-    'viewInbox',
-    'viewSent',
-    'viewDelayed',
-    'viewArchived',
-    'viewFileHistory',
+    "viewRegistry",
+    "viewIncoming",
+    "viewOutgoing",
+    "viewInbox",
+    "viewSent",
+    "viewDelayed",
+    "viewArchived",
+    "viewFileHistory",
 
-    'canSearchFile',
-    ]
-}
+    "canSearchFile",
+  ],
+};
 
 export const registry_mgt = {
-    name : 'Registry-management',
-    permission: [
-    'createManagementFile',
+  name: "Registry-management",
+  permission: [
+    "createManagementFile",
 
-    'archiveFile',
-    'deleteFile',
+    "archiveFile",
+    "deleteFile",
 
-    'delayFile',
-    'transferFile',
+    "delayFile",
+    "transferFile",
 
-    'viewRegistry',
-    'viewIncoming',
-    'viewOutgoing',
-    'viewInbox',
-    'viewSent',
-    'viewDelayed',
-    'viewArchived',
-    'viewFileHistory',
+    "viewRegistry",
+    "viewIncoming",
+    "viewOutgoing",
+    "viewInbox",
+    "viewSent",
+    "viewDelayed",
+    "viewArchived",
+    "viewFileHistory",
 
-    'canSearchFile',
-    ]
-}
+    "canSearchFile",
+  ],
+};
 
 export const management = {
-    name : 'Management',
-    permission: [
-    'viewDepartmentReport',
-    'viewMinistryReport',
-    ]
-}
-
+  name: "Management",
+  permission: ["viewDepartmentReport", "viewMinistryReport"],
+};

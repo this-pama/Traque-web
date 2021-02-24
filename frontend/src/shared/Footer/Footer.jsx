@@ -1,5 +1,5 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 
 const Wrapper = styled.div`
     .footer {
@@ -29,21 +29,20 @@ const Wrapper = styled.div`
     width: 100%;
     color: #1841BA;
 }
-`
+`;
 
-const Header = (props)=>{
-
-    return(
-        <Wrapper >
-            <footer className='footer'>
-                <div className='wrapper wrapper--width-lg'>
-                    <div className='footer__content'>
-                        Copyright {new Date().getFullYear()} &#64; Traquer
-                    </div>
-                </div>
-            </footer>
-        </Wrapper>
-    )
-}
+const Header = (props) => {
+  return (
+    <Wrapper>
+      <footer className="footer">
+        <div className="wrapper wrapper--width-lg">
+          <div className="footer__content">
+            Copyright {new Date().getFullYear()} &#64; Traquer
+          </div>
+        </div>
+      </footer>
+    </Wrapper>
+  );
+};
 
 export default Header;

@@ -1,146 +1,144 @@
-import { globalFilterParams, cellRenderBasedOnKey } from '../../../shared/utils'
-import moment from 'moment'
-import React from 'react'
-
+import {
+  globalFilterParams,
+  cellRenderBasedOnKey,
+} from "../../../shared/utils";
+import moment from "moment";
+import React from "react";
 
 export const name = () => ({
-    headerName: 'File Name/Title',
-    lockPosition: true,
-    __isExported: true,
-    hide: false,
-    editable: false,
-    field: 'name',
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
-})
+  headerName: "File Name/Title",
+  lockPosition: true,
+  __isExported: true,
+  hide: false,
+  editable: false,
+  field: "name",
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+});
 
 export const no = () => ({
-    headerName: 'File number',
-    lockPosition: true,
-    __isExported: true,
-    hide: false,
-    editable: false,
-    field: 'fileNo',
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
-})
+  headerName: "File number",
+  lockPosition: true,
+  __isExported: true,
+  hide: false,
+  editable: false,
+  field: "fileNo",
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+});
 
 export const type = () => ({
-    headerName: 'File type',
-    lockPosition: true,
-    __isExported: true,
-    hide: false,
-    editable: false,
-    field: 'type',
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
-})
+  headerName: "File type",
+  lockPosition: true,
+  __isExported: true,
+  hide: false,
+  editable: false,
+  field: "type",
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+});
 
 export const destination = () => ({
-    headerName: 'Destination',
-    lockPosition: true,
-    __isExported: true,
-    hide: false,
-    editable: false,
-    field: 'outgoing',
-    valueGetter: ({data}) => {
-        return data.outgoing && data.outgoing.receivingDept
-        ? `${data.outgoing.receivingDept.name}`
-        : null
-    },
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
-})
+  headerName: "Destination",
+  lockPosition: true,
+  __isExported: true,
+  hide: false,
+  editable: false,
+  field: "outgoing",
+  valueGetter: ({ data }) => {
+    return data.outgoing && data.outgoing.receivingDept
+      ? `${data.outgoing.receivingDept.name}`
+      : null;
+  },
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+});
 
 export const destinationSubDept = () => ({
-    headerName: 'Sub Department',
-    lockPosition: true,
-    __isExported: true,
-    hide: false,
-    editable: false,
-    field: 'outgoing',
-    valueGetter: ({data}) => {
-        return data.outgoing && data.outgoing.receivingSubDept
-        ? `${data.outgoing.receivingSubDept.name}`
-        : null
-    },
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
-})
+  headerName: "Sub Department",
+  lockPosition: true,
+  __isExported: true,
+  hide: false,
+  editable: false,
+  field: "outgoing",
+  valueGetter: ({ data }) => {
+    return data.outgoing && data.outgoing.receivingSubDept
+      ? `${data.outgoing.receivingSubDept.name}`
+      : null;
+  },
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+});
 
 export const designationOfficer = () => ({
-    headerName: 'Designated Officer',
-    lockPosition: true,
-    __isExported: true,
-    hide: false,
-    editable: false,
-    field: 'outgoing',
-    valueGetter: ({data}) => {
-        return data.outgoing && data.outgoing.receivedBy
-        ? `${data.outgoing.receivedBy.firstName} ${data.outgoing.receivedBy.lastName}`
-        : null
-    },
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
-})
-
-
-
+  headerName: "Designated Officer",
+  lockPosition: true,
+  __isExported: true,
+  hide: false,
+  editable: false,
+  field: "outgoing",
+  valueGetter: ({ data }) => {
+    return data.outgoing && data.outgoing.receivedBy
+      ? `${data.outgoing.receivedBy.firstName} ${data.outgoing.receivedBy.lastName}`
+      : null;
+  },
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+});
 
 export const date = () => ({
-    headerName: 'Date forwarded',
-    editable: false,
-    lockPosition: true,
-    keyCreator: cellRenderBasedOnKey,
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
-    __isExported: true,
-    comparator: (date1, date2) => new Date(date1) - new Date(date2),
-    valueGetter: ({data }) => {
-        return data.outgoing && data.outgoing.sentDate 
-        ? new Date(data.outgoing.sentDate).toDateString()
-        : null
-    },
-})
+  headerName: "Date forwarded",
+  editable: false,
+  lockPosition: true,
+  keyCreator: cellRenderBasedOnKey,
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+  __isExported: true,
+  comparator: (date1, date2) => new Date(date1) - new Date(date2),
+  valueGetter: ({ data }) => {
+    return data.outgoing && data.outgoing.sentDate
+      ? new Date(data.outgoing.sentDate).toDateString()
+      : null;
+  },
+});
 
 export const status = () => ({
-    headerName: 'Status',
-    lockPosition: true,
-    __isExported: true,
-    hide: false,
-    editable: false,
-    valueGetter: ({data}) => "Awaiting response",
-    filter: 'agTextColumnFilter',
-    filterParams: globalFilterParams,
-})
+  headerName: "Status",
+  lockPosition: true,
+  __isExported: true,
+  hide: false,
+  editable: false,
+  valueGetter: ({ data }) => "Awaiting response",
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+});
 
 export const action = (onValueChange) => ({
-    headerName: 'Action',
-    lockPosition: true,
-    __isExported: false,
-    hide: false,
-    editable: false,
-    field: 'action',
-    cellRenderer: "OutgoingFileAction",
-    cellRendererParams: ({data}) => ({
-        onValueChange,
-        // id: data.sbp_request_id
-    }),
-    filter: false,
-})
-
+  headerName: "Action",
+  lockPosition: true,
+  __isExported: false,
+  hide: false,
+  editable: false,
+  field: "action",
+  cellRenderer: "OutgoingFileAction",
+  cellRendererParams: ({ data }) => ({
+    onValueChange,
+    // id: data.sbp_request_id
+  }),
+  filter: false,
+});
 
 export default [
-    name,
-    no,
-    type,
+  name,
+  no,
+  type,
 
-    destination,
-    destinationSubDept,
-    designationOfficer,
+  destination,
+  destinationSubDept,
+  designationOfficer,
 
-    date,
-    status,
+  date,
+  status,
 
-    action
-]
+  action,
+];

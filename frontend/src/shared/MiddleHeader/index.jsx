@@ -1,3 +1,3 @@
-import MiddleHeader from './MiddleHeader'
+import MiddleHeader from "./MiddleHeader";
 
 export default MiddleHeader;

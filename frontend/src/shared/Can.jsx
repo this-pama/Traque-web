@@ -1,13 +1,13 @@
-import { check } from './utils'
+import { check } from "./utils";
 
 const Can = (props) =>
-    check(props.rules, props.userRole, props.perform, props.data)
-        ? props.yes()
-        : props.no()
+  check(props.rules, props.userRole, props.perform, props.data)
+    ? props.yes()
+    : props.no();
 
 Can.defaultProps = {
-    yes: () => null,
-    no: () => null,
-}
+  yes: () => null,
+  no: () => null,
+};
 
-export default Can
+export default Can;

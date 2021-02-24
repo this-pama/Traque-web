@@ -1,45 +1,43 @@
-const mongoose = require( 'mongoose')
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const passportLocalMongoose = require( 'passport-local-mongoose')
+const passportLocalMongoose = require("passport-local-mongoose");
 
 let Account = new Schema({
   email: {
     type: String,
     lowercase: true,
     trim: true,
-    unique: true
-   },
+    unique: true,
+  },
   password: {
     type: String,
-    trim: true
+    trim: true,
   },
   email: String,
-  userId : {type: Schema.Types.ObjectId, ref: 'User'},
+  userId: { type: Schema.Types.ObjectId, ref: "User" },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   isAdmin: {
     type: Boolean,
-    default: false
+    default: false,
   },
   isStaff: {
     type: Boolean,
-    default: false
+    default: false,
   },
   isSuper: {
     type: Boolean,
-    default: false
+    default: false,
   },
   disable: {
     type: Boolean,
-    default: false
+    default: false,
   },
-  createdAt:  {
+  createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 Account.plugin(passportLocalMongoose);
-module.exports = mongoose.model('Account', Account);
-
-
+module.exports = mongoose.model("Account", Account);

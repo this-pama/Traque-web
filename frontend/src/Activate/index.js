@@ -1,3 +1,3 @@
-import Activate from './Activate.jsx'
+import Activate from "./Activate.jsx";
 
-export default Activate
+export default Activate;
