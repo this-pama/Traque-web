@@ -99,7 +99,7 @@ class MainNav extends React.Component {
         {location.pathname === "/login" ? null : (
           <Wrapper>
             <CustomWrapper>
-              <MainNavigation logo={<a href="/"> Traquer</a>}>
+              <MainNavigation logo={<a href="#"> Traquer</a>}>
                 <Can
                   rules={permissions}
                   userRole={userRole}
