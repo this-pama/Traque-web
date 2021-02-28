@@ -997,6 +997,7 @@ export default ({ config, db }) => {
         "createdDate",
         "history",
         "ministry",
+        'exceedSLA',
       ])
       .populate({
         path: "createdBy",

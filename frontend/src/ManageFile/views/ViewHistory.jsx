@@ -7,6 +7,9 @@ import { Row, Col } from "react-flexbox-grid";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import { connect } from "react-redux";
+import { Section, InlineInfo } from '../Summary'
+import { Icon, Modal } from "@wfp/ui";
+import { iconWarningGlyph } from "@wfp/icons";
 
 import MySecondaryNavigation from "../../Dashboard/MySecondaryNavigation";
 import {
@@ -97,6 +100,29 @@ class Create extends React.Component {
             <Wrapper pageWidth="lg" spacing="md" mobilePageWidth="full">
               <Module noMargin>
                 <div style={{ paddingLeft: 30 }}>
+                  <Section>
+                  <InlineInfo>
+                    <p>
+                    {
+                        file.exceedSLA && (
+                            <>
+                            <Icon
+                                // class="wfp--link"
+                                icon={iconWarningGlyph}
+                                width={14}
+                                height={14}
+                                fill='red'
+                                description="Warning for SLA"
+                            /> { `  `}
+                            <span style={{ color : 'red', marginBottom : 30 }}>
+                                File has defaulted SLA time with current file holder.
+                            </span>
+                            </>
+                        )
+                    }
+                    </p>
+                </InlineInfo>
+                </Section>
                   <Summary file={file} history={history && history.reverse()} />
                 </div>
 

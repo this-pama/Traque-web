@@ -117,11 +117,13 @@ class Create extends React.Component {
   };
 
   fetchStaff = async (p) => {
-    const { user, id } = this.props;
+    const { user, id, userId } = this.props;
     this.setState({ loading: true });
     try {
       axios.get(`/v1/department/staff/${p && p._id}`).then((data) => {
-        this.setState({ staffList: data.data.data.staff, loading: false });
+        this.setState({ staffList: data.data.data.staff.filter(
+          p=> p._id !== userId
+        ), loading: false });
       });
     } catch (err) {
       console.log("Error while loading department", err);

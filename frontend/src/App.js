@@ -301,9 +301,6 @@ class App extends React.Component {
                   </Switch>
                 </>
               )}
-
-              <ToastContainer />
-
               {isLogged && <Footer />}
 
               <Modal
@@ -321,6 +318,8 @@ class App extends React.Component {
                 </p>
               </Modal>
             </>
+
+            <ToastContainer />
           </BrowserRouter>
         </AppWrapper>
       </SWRConfig>
