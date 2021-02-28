@@ -204,8 +204,14 @@ export default ({ config, db }) => {
     if (isObjectIdValid(userId) == false)
       return res.status(500).send("User id not valid");
 
+    const user = await User.findById(userId);
+
+    if(!user || user._id == null)
+    return res.status(500).send("User not found");
+
     File.find({
-      createdBy: userId,
+      // createdBy: userId,
+      ministry: user.ministry,
       deleted: false,
       outgoing: { value: false },
       incoming: { value: false },
