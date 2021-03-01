@@ -73,7 +73,7 @@ POST::  URL_PATH/user/add
 ```
 
 ### Refer to API documentation on how to activate account
--   [API Documentation](http://ec2-3-15-39-122.us-east-2.compute.amazonaws.com/login)
+-   [API Documentation](https://documenter.getpostman.com/view/2203927/TWDdjtsb)
 
 ## Deployment
 - The assumption is that the Ubuntu server has been created and you have ssh into the server.
