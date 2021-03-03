@@ -53,11 +53,11 @@ cd frontend && yarn install
 
 ### Open browser and Seed required uer role data in db:
 ```sh
-URL_PATH/seed/user-role
+URL_PATH/v1/seed/user-role
 ```
 ### Open postman and create root user:
 ```sh
-POST::  URL_PATH/user/add
+POST::  URL_PATH/v1/user/add
 ```
 ```sh
 {
@@ -68,7 +68,8 @@ POST::  URL_PATH/user/add
       "dob": "2021/01/12",
       "gender": "M",
       "designation": "Super Administrator",
-      "isSuper" : true
+      "isSuper" : true,
+      "userRole": userRole_id
 }
 ```
 
@@ -94,7 +95,7 @@ sudo npm install pm2 -g
 git clone ${REPO_URL}
 ```
 ```sh
-cd Traque-web
+cd web
 ```
 
 ```sh
@@ -139,7 +140,7 @@ server{
     server_name localhost;
     # react app frontend files
     location    / {
-                root /home/ubuntu/Traque-web/frontend/build;
+                root /home/ubuntu/web/frontend/build;
                 index index.html;
                 try_files $uri /index.html;
                 expires 30d;
