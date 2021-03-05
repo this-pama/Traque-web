@@ -150,14 +150,12 @@ const Login = (props) => {
     <Wrapper>
       <div className="login">
         <div className="login--banner">
-          <img src={Logo} alt="Logo" style={{ width: 150, height: 150 }} />
+          <img src={Logo} alt="Logo" style={{ width: 200, height: 150 }} />
         </div>
         <div className="login--border">
           <p className="login--paragraph">
-            Introducing Traquer, a passionate bird that helps you watch over
-            your files while you go about your daily business. Traquer is a
-            location file tracking system. A simulation of manual file movement
-            to electronic file monitoring
+            Traquer is a simulation of physical file movement
+            from one office desk/department to another.
           </p>
         </div>
         <div className="login--border">
@@ -242,7 +240,7 @@ const Login = (props) => {
                             <div className="footer">
                               <div style={{ float: "left" }}>
                                 <Checkbox
-                                  checked
+                                  // checked
                                   id="check-2"
                                   labelText="Remember me"
                                   // onChange={function noRefCheck(){}}

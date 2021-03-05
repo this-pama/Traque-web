@@ -8,6 +8,9 @@ import getColumnDefs from "../../shared/columnDefs";
 import MySecondaryNavigation from "../../Dashboard/MySecondaryNavigation";
 import styled from "styled-components";
 
+import store from "../../store";
+import Can from "../../shared/Can";
+
 const filters = [
   {
     title: "Agency",
@@ -41,6 +44,11 @@ const filters = [
 const View = (props) => {
   const { id } = props;
 
+  const storeData = store.getState();
+  const { user } = storeData;
+  const permission = user && user.userRole ? user.userRole.permission : [];
+  const userRole = user && user.userRole ? user.userRole.name : null;
+
   const endpoint = `/v1/department/details/${id}`;
 
   const { data } = useSWR(endpoint);
@@ -62,9 +70,14 @@ const View = (props) => {
         <Wrapper pageWidth="lg" spacing="md">
           <InnerWrapper>
             <div id="export-button-portal">
+            <Can
+            rules={permission}
+            userRole={userRole}
+            perform="viewIncoming"
+            yes={() => (
               <Button
                 onClick={(data) => {
-                  props.history.push(`/create-sub-department/${id}`);
+                  props.history.push(`/file`);
                 }}
                 icon={iconDocument}
                 kind="secondary"
@@ -72,17 +85,27 @@ const View = (props) => {
               >
                 Manage file
               </Button>
+            )}
+          />
+
               <span style={{ paddingLeft: 20 }} />
-              <Button
-                onClick={(data) => {
-                  props.history.push(`/create-sub-department/${id}`);
-                }}
-                icon={iconAddOutline}
-                kind="secondary"
-                small
-              >
-                Create sub department
-              </Button>
+              <Can
+              rules={permission}
+              userRole={userRole}
+              perform="manageDepartment"
+              yes={() => (
+                  <Button
+                    onClick={(data) => {
+                      props.history.push(`/create-sub-department/${id}`);
+                    }}
+                    icon={iconAddOutline}
+                    kind="secondary"
+                    small
+                  >
+                    Create sub department
+                  </Button>
+              )}
+          />
             </div>
             <TableView
               title={"Sub Departments"}

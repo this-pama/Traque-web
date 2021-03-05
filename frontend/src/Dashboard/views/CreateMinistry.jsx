@@ -5,6 +5,7 @@ import styled from "styled-components";
 import _ from "lodash";
 import { Row, Col } from "react-flexbox-grid";
 import { toast } from "react-toastify";
+import { Modal, } from "@wfp/ui";
 import Select from "react-select";
 
 import MySecondaryNavigation from "../MySecondaryNavigation";
@@ -31,6 +32,9 @@ class Create extends React.Component {
     showErrors: false,
     loading: false,
     admin: [],
+    message: '', 
+    showSuccess: false,
+    showFailed: false,
   };
   componentDidMount() {
     window.scrollTo(0, 0);
@@ -74,34 +78,35 @@ class Create extends React.Component {
 
         await axios
           .put(`/v1/ministry/update/${state.id}`, formData)
-          .then(() => this.setState({ loading: false }));
-        toast("Successfully updated a ministry", {
-          closeOnClick: true,
-          autoClose: 1000,
-        });
-        this.props.history.goBack();
+          .then(() => 
+          this.setState({ 
+            loading: false,
+            message: 'Successfully updated ministry', 
+            showSuccess: true 
+          }));
+        
       } else {
         await axios
           .post(`/v1/ministry/add`, { name: values.ministry })
-          .then(() => this.setState({ loading: false }));
-        toast("Successfully created a ministry", {
-          closeOnClick: true,
-          autoClose: 1000,
-        });
-        this.props.history.goBack();
+          .then(() => 
+            this.setState({ 
+              loading: false,
+              message: 'Successfully created a ministry', 
+              showSuccess: true 
+            }));
       }
     } catch (err) {
-      console.log("Ooops! error occurred, please try again", err);
-      toast.error("Ooops! error occurred, please try again", {
-        closeOnClick: true,
-        autoClose: 1000,
+      this.setState({ 
+        loading: false, 
+        message: "Error occurred, please try again", 
+        showFailed: true 
       });
-      this.setState({ loading: false });
+      
     }
   };
 
   render() {
-    const { showErrors } = this.state;
+    const { showErrors, message, showSuccess, showFailed } = this.state;
     const { formData, loading, admin } = this.state;
     const { location } = this.props;
     const { state } = location;
@@ -116,9 +121,8 @@ class Create extends React.Component {
             state && state.edit ? "Update ministry" : "Create ministry"
           }
         />
-        {loading ? (
-          <Loading active={true} withOverlay={true} />
-        ) : (
+          <Loading active={loading} withOverlay={true} />
+         
           <div
             className="wfp--module__background"
             style={{ minHeight: "400px" }}
@@ -142,6 +146,7 @@ class Create extends React.Component {
                 render={({ values, onSave, valid, reset }) => (
                   <form>
                     <Module noMargin>
+                    
                       <ModuleHeader>
                         <span style={{ fontSize: 20 }}>
                           {state && state.edit
@@ -245,9 +250,34 @@ class Create extends React.Component {
                   </form>
                 )}
               />
+
+            <Modal
+              modalHeading=""
+              modalLabel="SUCCESS"
+              primaryButtonText="OK"
+              onRequestClose={()=>this.setState({ showSuccess: false})}
+              onRequestSubmit={()=>this.props.history.goBack()}
+              open={showSuccess}
+            >
+              {message}
+            </Modal>
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>this.setState({ showFailed: false})}
+              onRequestSubmit={()=>this.setState({ showFailed: false})}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
+
             </Wrapper>
           </div>
-        )}
+        
       </>
     );
   }

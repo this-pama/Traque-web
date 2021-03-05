@@ -73,7 +73,10 @@ const Action = (props) => {
         onRequestClose={() => setAction(false)}
         onRequestSubmit={() => setAction(false)}
       >
-        <Link className="wfp--link" to={"/create-sub-department/" + _id}>
+        <Link className="wfp--link" to={{
+          pathname: "/create-sub-department/" + _id,
+          state: {id: _id, data: props.data },
+        }}>
           Add sub department
         </Link>
 

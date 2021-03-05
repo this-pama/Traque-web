@@ -50,10 +50,9 @@ const Action = (props) => {
         Edit
       </Link>
 
-        <br /> <br />
       <Link
         className="wfp--link"
-        style={{ fontWeight: "bold" }}
+        style={{ fontWeight: "bold",  marginLeft: 10  }}
         onClick={() => setKey(true)}
       >
         Resend Activation key

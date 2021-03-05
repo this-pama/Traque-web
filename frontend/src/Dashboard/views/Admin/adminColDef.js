@@ -130,6 +130,7 @@ export const action = (onValueChange) => ({
     // id: data.sbp_request_id
   }),
   filter: false,
+  width: 300,
 });
 
 export default [
@@ -138,8 +139,8 @@ export default [
   email,
   telephone,
 
-  gender,
-  designation,
+  // gender,
+  // designation,
 
   ministry,
   userRole,

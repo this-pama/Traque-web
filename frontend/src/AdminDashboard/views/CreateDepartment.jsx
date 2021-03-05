@@ -12,6 +12,7 @@ import MySecondaryNavigation from "../../Dashboard/MySecondaryNavigation";
 import {
   Wrapper,
   Loading,
+  Modal,
   Module,
   ModuleHeader,
   ModuleBody,
@@ -33,6 +34,9 @@ class Create extends React.Component {
     showErrors: false,
     loading: false,
     admin: [],
+    message: '', 
+    showSuccess: false,
+    showFailed: false,
   };
   componentDidMount() {
     window.scrollTo(0, 0);
@@ -84,16 +88,16 @@ class Create extends React.Component {
       }
     } catch (err) {
       console.log("Ooops! error occurred, please try again", err);
-      toast.error("Ooops! error occurred, please try again", {
-        closeOnClick: true,
-        autoClose: 1000,
+      this.setState({ 
+        loading: false, 
+        message: "Error occurred, please try again", 
+        showFailed: true 
       });
-      this.setState({ loading: false });
     }
   };
 
   render() {
-    const { showErrors } = this.state;
+    const { showErrors, message, showFailed, showSuccess } = this.state;
     const { formData, loading, admin } = this.state;
     const { location, userId } = this.props;
     const { state } = location;
@@ -237,6 +241,19 @@ class Create extends React.Component {
                   </form>
                 )}
               />
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>this.setState({ showFailed: false})}
+              onRequestSubmit={()=>this.setState({ showFailed: false})}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
             </Wrapper>
           </div>
         )}

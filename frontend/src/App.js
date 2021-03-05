@@ -292,12 +292,6 @@ class App extends React.Component {
                     />
 
                     <Route path="/not-authorized" component={NotAuthorized} />
-
-                    <Route
-                      // exact
-                      path="/sa-landing"
-                      component={() => <SA_Landing />}
-                    />
                   </Switch>
                 </>
               )}
@@ -318,9 +312,9 @@ class App extends React.Component {
                 </p>
               </Modal>
             </>
-
-            <ToastContainer />
+            {/* <ToastContainer closeOnClick autoClose={1000} /> */}
           </BrowserRouter>
+          
         </AppWrapper>
       </SWRConfig>
     );

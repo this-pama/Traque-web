@@ -12,6 +12,7 @@ import MySecondaryNavigation from "../../Dashboard/MySecondaryNavigation";
 import {
   Wrapper,
   Loading,
+  Modal,
   Module,
   ModuleHeader,
   ModuleBody,
@@ -33,6 +34,9 @@ class Create extends React.Component {
     showErrors: false,
     loading: false,
     admin: [],
+    message: '', 
+    showSuccess: false,
+    showFailed: false,
   };
   componentDidMount() {
     window.scrollTo(0, 0);
@@ -67,54 +71,51 @@ class Create extends React.Component {
         await axios
           .put(`/v1/department/sub/update/${state.id}`, formData)
           .then(() => this.setState({ loading: false }));
-        toast("Successfully updated sub department", {
-          closeOnClick: true,
-          autoClose: 1000,
-        });
+            toast("Successfully updated sub department", {
+              closeOnClick: true,
+              autoClose: 1000,
+            });
         this.props.history.goBack();
       } else {
         await axios
           .post(`/v1/department/sub/add/${id}/${userId}`, formData)
           .then(() => this.setState({ loading: false }));
-        toast("Successfully created a sub department", {
-          closeOnClick: true,
-          autoClose: 1000,
-        });
-        this.props.history.goBack();
+            toast("Successfully created a sub department", {
+              closeOnClick: true,
+              autoClose: 1000,
+            });
+            this.props.history.goBack();
       }
     } catch (err) {
       console.log("Ooops! error occurred, please try again", err);
-      toast.error("Ooops! error occurred, please try again", {
-        closeOnClick: true,
-        autoClose: 1000,
+      this.setState({ 
+        loading: false, 
+        message: "Error occurred, please try again", 
+        showFailed: true 
       });
-      this.setState({ loading: false });
     }
   };
 
   render() {
-    const { showErrors } = this.state;
+    const { showErrors, message, showFailed } = this.state;
     const { formData, loading, admin } = this.state;
     const { location, id } = this.props;
     const { state } = location;
+    console.log('statw', state)
     return (
       <>
         <MySecondaryNavigation
           l1Label="Department"
           l1Link="/department"
-          l1Label="Sub Department"
-          l1Link="#"
-          l2Label={
+          l2Label="Sub Department"
+          // l2Link=""
+          l3Label={
             state && state.edit
               ? "Update sub department"
               : "Create sub department"
           }
-          l2Link="#"
-          pageTitle={
-            state && state.edit
-              ? "Update sub department"
-              : "Create sub department"
-          }
+          // l3Link="#"
+          pageTitle={ state && state.data.name + ' - ' + state.data.type }
         />
         {loading ? (
           <Loading active={true} withOverlay={true} />
@@ -244,6 +245,19 @@ class Create extends React.Component {
                   </form>
                 )}
               />
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>this.setState({ showFailed: false})}
+              onRequestSubmit={()=>this.setState({ showFailed: false})}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
             </Wrapper>
           </div>
         )}

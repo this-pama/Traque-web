@@ -10,6 +10,7 @@ import MySecondaryNavigation from "../../Dashboard/MySecondaryNavigation";
 import {
   Wrapper,
   Loading,
+  Modal,
   Module,
   ModuleHeader,
   ModuleBody,
@@ -36,6 +37,9 @@ class Create extends React.Component {
     role: [],
     departmentValue: null,
     subDepartmentList: [],
+    message: '', 
+    showSuccess: false,
+    showFailed: false,
   };
   componentDidMount() {
     window.scrollTo(0, 0);
@@ -163,31 +167,34 @@ class Create extends React.Component {
       if (state && state.edit) {
         await axios
           .put(`/v1/user/update/${state.id}`, formData)
-          .then(() => this.setState({ loading: false }));
-        toast("Successfully updated ", { closeOnClick: true, autoClose: 1000 });
-        this.props.history.goBack();
+          .then(() => 
+          this.setState({ 
+            loading: false,
+            message: 'Successfully updated', 
+            showSuccess: true 
+          }));
       } else {
         await axios
           .post(`/v1/user/add/staff`, formData)
-          .then(() => toast("Successfully created"), {
-            closeOnClick: true,
-            autoClose: 1000,
-          });
-        this.setState({ loading: false });
-        this.props.history.goBack();
+          .then(() =>
+          this.setState({ 
+            loading: false,
+            message: 'Successfully created', 
+            showSuccess: true 
+          }));
       }
     } catch (err) {
-      console.log("Error in ScreeningForm onSubmit method", err);
-      toast.error("Oops! something went wrong. Please try again ", {
-        closeOnClick: true,
-        autoClose: 1000,
+      this.setState({ 
+        loading: false, 
+        message: "Error occurred, please try again", 
+        showFailed: true 
       });
-      this.setState({ loading: false });
+      
     }
   };
 
   render() {
-    const { showErrors, role } = this.state;
+    const { showErrors, role, message, showSuccess, showFailed } = this.state;
     const { formData, loading, department, subDepartmentList } = this.state;
     const { id } = this.props.match.params;
     const { location } = this.props;
@@ -223,16 +230,48 @@ class Create extends React.Component {
                 } = values;
 
                 if (
-                  !firstName ||
-                  !lastName ||
-                  !email ||
-                  !telephone ||
-                  !gender ||
-                  !department ||
-                  !designation ||
-                  !role
+                  !firstName 
                 ) {
                   errors.firstName = {
+                    value: "Required",
+                    show: showErrors,
+                  };
+                }
+
+                if (
+                  !lastName 
+                ){
+                  errors.lastName = {
+                    value: "Required",
+                    show: showErrors,
+                  };
+                }
+
+                if (
+                  !department 
+                ){
+                  errors.department = {
+                    value: "Required",
+                    show: showErrors,
+                  };
+                }
+
+                if (!email ){
+                  errors.email = {
+                    value: "Required",
+                    show: showErrors,
+                  };
+                }
+
+                if (!telephone ){
+                  errors.telephone = {
+                    value: "Required",
+                    show: showErrors,
+                  };
+                }
+
+                if (!role ){
+                  errors.role = {
                     value: "Required",
                     show: showErrors,
                   };
@@ -522,6 +561,32 @@ class Create extends React.Component {
                 </form>
               )}
             />
+
+            
+            <Modal
+              modalHeading=""
+              modalLabel="SUCCESS"
+              primaryButtonText="OK"
+              onRequestClose={()=>this.setState({ showSuccess: false})}
+              onRequestSubmit={()=>this.props.history.goBack()}
+              open={showSuccess}
+            >
+              {message}
+            </Modal>
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>this.setState({ showFailed: false})}
+              onRequestSubmit={()=>this.setState({ showFailed: false})}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
+
           </Wrapper>
         </div>
       </>

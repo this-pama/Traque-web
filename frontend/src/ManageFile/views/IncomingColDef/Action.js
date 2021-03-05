@@ -21,23 +21,22 @@ const Action = (props) => {
   const [isAction, setAction] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [ showFailed, setShowFailed ] = useState(false);
+  const [ showSuccess, setShowSuccess ]= useState(false);
+  const [ message, setMessage ]= useState('');
+
   const onConfirm = async () => {
     setLoading(true);
     try {
       await axios
         .post(`/v1/file/receive/${_id}/${user && user._id}`)
         .then(() => setLoading(false));
-      onValueChange();
-      toast("Successfully acknowledged receipt of file", {
-        closeOnClick: true,
-        autoClose: 1000,
-      });
-      window.location.reload();
+          onValueChange();
+          setMessage('Successfully acknowledged receipt of file')
+          setShowSuccess(true)
     } catch (err) {
-      toast.error("Ooops! error occurred, please try again", {
-        closeOnClick: true,
-        autoClose: 1000,
-      });
+      setMessage('Error occurred, please try again');
+      setShowFailed(true)
       setLoading(false);
     }
 
@@ -92,6 +91,32 @@ const Action = (props) => {
           confirm receipt?
         </p>
       </Modal>
+
+      
+            <Modal
+              modalHeading=""
+              modalLabel="SUCCESS"
+              primaryButtonText="OK"
+              onRequestClose={()=>setShowSuccess(false)}
+              onRequestSubmit={()=>setShowSuccess(false)}
+              open={showSuccess}
+            >
+              {message}
+            </Modal>
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>setShowFailed(false)}
+              onRequestSubmit={()=>setShowFailed(false)}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
+
     </Wrapper>
   );
 };

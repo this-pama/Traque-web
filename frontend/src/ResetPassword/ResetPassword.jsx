@@ -187,7 +187,7 @@ const Login = (props) => {
     <Wrapper>
       <div className="login">
         <div className="login--banner">
-          <img src={Logo} alt="Logo" style={{ width: 150, height: 150 }} />
+          <img src={Logo} alt="Logo" style={{ width: 200, height: 150 }} />
         </div>
         <div className="login--border">
           <p className="login--paragraph">

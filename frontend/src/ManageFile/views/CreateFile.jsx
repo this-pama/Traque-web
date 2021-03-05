@@ -15,6 +15,7 @@ import MySecondaryNavigation from "../../Dashboard/MySecondaryNavigation";
 import {
   Wrapper,
   Loading,
+  Modal,
   Module,
   ModuleHeader,
   ModuleBody,
@@ -39,6 +40,9 @@ class Create extends React.Component {
     date: moment(),
     focused: null,
     serviceType: [],
+    message: '', 
+    showSuccess: false,
+    showFailed: false,
   };
   componentDidMount() {
     window.scrollTo(0, 0);
@@ -93,29 +97,28 @@ class Create extends React.Component {
 
         await axios
           .put(`/v1/file/update/${state.id}`, { ...formData, fileNo })
-          .then(() => this.setState({ loading: false }));
-        toast("File successfully updated", {
-          closeOnClick: true,
-          autoClose: 1000,
-        });
-        this.props.history.goBack();
+          .then(() => 
+            this.setState({ 
+              loading: false,
+              message:"File successfully updated", 
+              showSuccess: true 
+            }));
       } else {
         await axios
           .post(`/v1/file/add/${userId}`, formData)
-          .then(() => this.setState({ loading: false }));
-        toast("File successfully created", {
-          closeOnClick: true,
-          autoClose: 1000,
-        });
-        this.props.history.goBack();
+          .then(() => 
+          this.setState({ 
+            loading: false,
+            message:"File successfully created", 
+            showSuccess: true 
+          }));
       }
     } catch (err) {
-      console.log("Ooops! error occurred, please try again", err);
-      toast.error("Ooops! error occurred, please try again", {
-        closeOnClick: true,
-        autoClose: 1000,
+      this.setState({ 
+        loading: false, 
+        message: "Error occurred, please try again", 
+        showFailed: true 
       });
-      this.setState({ loading: false });
     }
   };
 
@@ -131,7 +134,7 @@ class Create extends React.Component {
   };
 
   render() {
-    const { showErrors, serviceType } = this.state;
+    const { showErrors, serviceType, message, showSuccess, showFailed } = this.state;
     const { formData, loading, admin } = this.state;
     const { location, userId, user } = this.props;
     const { state } = location;
@@ -169,18 +172,25 @@ class Create extends React.Component {
                 initialValues={formData}
                 validate={(values) => {
                   const errors = {};
-                  const { name, type } = values;
+                  const { name, type, fileNo } = values;
 
                   if (!name) {
                     errors.name = {
-                      value: "Department name is required",
+                      value: "File name is required",
                       show: showErrors,
                     };
                   }
 
                   if (!type) {
-                    errors.name = {
-                      value: "Department type is required",
+                    errors.type = {
+                      value: "Type is required",
+                      show: showErrors,
+                    };
+                  }
+
+                  if (!fileNo) {
+                    errors.fileNo = {
+                      value: "File number is required",
                       show: showErrors,
                     };
                   }
@@ -364,6 +374,30 @@ class Create extends React.Component {
                   </form>
                 )}
               />
+              
+            <Modal
+              modalHeading=""
+              modalLabel="SUCCESS"
+              primaryButtonText="OK"
+              onRequestClose={()=>this.setState({ showSuccess: false})}
+              onRequestSubmit={()=>this.props.history.goBack()}
+              open={showSuccess}
+            >
+              {message}
+            </Modal>
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>this.setState({ showFailed: false})}
+              onRequestSubmit={()=>this.setState({ showFailed: false})}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
             </Wrapper>
           </div>
         )}

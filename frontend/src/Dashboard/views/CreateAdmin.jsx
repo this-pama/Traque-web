@@ -205,20 +205,53 @@ class Create extends React.Component {
                   } = values;
 
                   if (
-                    !firstName ||
-                    !lastName ||
-                    !email ||
-                    !telephone ||
-                    !gender ||
-                    !designation ||
-                    !role ||
-                    !ministry
+                    !firstName 
                   ) {
                     errors.firstName = {
                       value: "Required",
                       show: showErrors,
                     };
                   }
+
+                  if (
+                    !lastName 
+                  ){
+                    errors.lastName = {
+                      value: "Required",
+                      show: showErrors,
+                    };
+                  }
+
+                  if (
+                    !ministry 
+                  ){
+                    errors.ministry = {
+                      value: "Required",
+                      show: showErrors,
+                    };
+                  }
+
+                  if (!email ){
+                    errors.email = {
+                      value: "Required",
+                      show: showErrors,
+                    };
+                  }
+
+                  if (!telephone ){
+                    errors.telephone = {
+                      value: "Required",
+                      show: showErrors,
+                    };
+                  }
+
+                  if (!role ){
+                    errors.role = {
+                      value: "Required",
+                      show: showErrors,
+                    };
+                  }
+
                   return errors;
                 }}
                 render={({ values, onSave, valid, reset }) => (

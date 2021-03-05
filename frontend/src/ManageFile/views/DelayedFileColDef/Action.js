@@ -21,6 +21,9 @@ const Action = (props) => {
   const [isAction, setAction] = useState(false);
   const [isAchive, setAchive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [ showFailed, setShowFailed ] = useState(false);
+  const [ showSuccess, setShowSuccess ]= useState(false);
+  const [ message, setMessage ]= useState('');
 
   const onConfirm = async () => {
     setLoading(true);
@@ -28,16 +31,12 @@ const Action = (props) => {
       await axios
         .post(`/v1/file/receive/${_id}/${user && user._id}`)
         .then(() => setLoading(false));
-      onValueChange();
-      toast("Successfully acknowledged receipt of file", {
-        closeOnClick: true,
-        autoClose: 1000,
-      });
+          onValueChange();
+          setMessage('Successfully acknowledged receipt of file')
+          setShowSuccess(true)
     } catch (err) {
-      toast.error("Ooops! error occurred, please try again", {
-        closeOnClick: true,
-        autoClose: 1000,
-      });
+      setMessage('Error occurred, please try again');
+      setShowFailed(true)
       setLoading(false);
     }
 
@@ -52,14 +51,12 @@ const Action = (props) => {
         .then(() => {
           setLoading(false);
           props.onValueChange && props.onValueChange();
-          toast("Successful", { closeOnClick: true, autoClose: 1000 });
-          window.location.reload();
+          setMessage('file successfully archived')
+          setShowSuccess(true)
         });
     } catch (err) {
-      toast.error("Ooops! error occurred, please try again", {
-        closeOnClick: true,
-        autoClose: 1000,
-      });
+      setMessage('Error occurred, please try again');
+      setShowFailed(true)
       setLoading(false);
     }
 
@@ -138,6 +135,31 @@ const Action = (props) => {
           Are you sure you want to Archive this file?
         </p>
       </Modal>
+
+      
+          <Modal
+              modalHeading=""
+              modalLabel="SUCCESS"
+              primaryButtonText="OK"
+              onRequestClose={()=>setShowSuccess(false)}
+              onRequestSubmit={()=>setShowSuccess(false)}
+              open={showSuccess}
+            >
+              {message}
+            </Modal>
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>setShowFailed(false)}
+              onRequestSubmit={()=>setShowFailed(false)}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
     </Wrapper>
   );
 };

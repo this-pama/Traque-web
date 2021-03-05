@@ -21,8 +21,8 @@ export const sendMail = (sender, receiver, folder) => {
     },
     send: true,
     transport: {
-      host: "smtp.mailtrap.io",
-      port: 2525,
+      host: "smtp-mail.outlook.com",
+      port: 587,
       ssl: false,
       tls: true,
       auth: {
