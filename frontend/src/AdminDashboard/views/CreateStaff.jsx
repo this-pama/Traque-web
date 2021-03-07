@@ -59,6 +59,7 @@ class Create extends React.Component {
         gradeLevel,
         designation,
         department,
+        subDepartment,
         userRole,
       } = state.data;
 
@@ -73,6 +74,7 @@ class Create extends React.Component {
           designation,
           // staffId,
           department,
+          subDepartment,
 
           role: userRole && userRole._id,
         },
