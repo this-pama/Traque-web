@@ -175,7 +175,7 @@ class Create extends React.Component {
                                     className="wfp--react-select-container auto-width"
                                     classNamePrefix="wfp--react-select"
                                     closeMenuOnSelect={true}
-                                    options={deptType}
+                                    options={deptType.filter(p=> p.label == "Unit")}
                                     getOptionValue={(option) => option["value"]}
                                     getOptionLabel={(option) => option["label"]}
                                     {...input}
