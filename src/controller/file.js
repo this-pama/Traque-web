@@ -44,6 +44,12 @@ export default ({ config, db }) => {
       serviceFileType,
     } = req.body;
 
+    //check if file number is unique
+    const fileCheck = await File.find({
+      manualFileNo: fileNo
+    })
+    if (fileCheck.length > 0) return res.status(500).send("File number must be unique");
+
     const rand = randomize("0", 6);
 
     let fileNumber = FILE_NUMBER_PREFIX + rand + "-" + fileNo;
