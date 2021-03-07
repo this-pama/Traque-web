@@ -52,18 +52,16 @@ const Wrapper = styled.div`
     &--description {
       font-size: 0.8rem;
       // margin: 1rem 0;
-      justify-content: center;
-      align-item: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      // display: flex;
+      // align-items: center;
+      // justify-content: center;
     }
     &--paragraph {
       font-size: 0.8rem;
       margin-top: -2rem;
-      display: flex;
-      align-items: center;
-      justify-content: ;
+      // display: flex;
+      // align-items: center;
+      // justify-content: ;
       padding-bottom: 1rem;
     }
     &&--card {
