@@ -10,6 +10,7 @@ import {
   TextInput,
   Loading,
   ReduxFormWrapper,
+  Modal,
 } from "@wfp/ui";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
@@ -114,6 +115,9 @@ const Wrapper = styled.div`
 
 const Login = (props) => {
   const [loading, setLoading] = useState(false);
+  const [ showFailed, setShowFailed ] = useState(false);
+  const [ showSuccess, setShowSuccess ]= useState(false);
+  const [ message, setMessage ]= useState('');
 
   const onSubmit = async (values) => {
     setLoading(true);
@@ -138,11 +142,8 @@ const Login = (props) => {
         setLoading(false);
       });
     } catch (err) {
-      console.log("Ooops! login failed", err);
-      toast.error("Ooops! login failed", {
-        closeOnClick: true,
-        autoClose: 1000,
-      });
+      setMessage('Error occurred, please try again');
+      setShowFailed(true)
       setLoading(false);
     }
   };
@@ -274,6 +275,19 @@ const Login = (props) => {
           </Link>
         </div>
       </div>
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>setShowFailed(false)}
+              onRequestSubmit={()=>setShowFailed(false)}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
     </Wrapper>
   );
 };

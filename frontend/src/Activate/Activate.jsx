@@ -10,6 +10,7 @@ import {
   TextInput,
   Loading,
   ReduxFormWrapper,
+  Modal,
 } from "@wfp/ui";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -111,6 +112,9 @@ const Wrapper = styled.div`
 
 const Login = (props) => {
   const [loading, setLoading] = useState(false);
+  const [ showFailed, setShowFailed ] = useState(false);
+  const [ showSuccess, setShowSuccess ]= useState(false);
+  const [ message, setMessage ]= useState('');
 
   const onSubmit = async (values) => {
     setLoading(true);
@@ -129,18 +133,14 @@ const Login = (props) => {
           }
           setLoading(false);
 
-          return toast.error("Ooops! login failed", {
-            closeOnClick: true,
-            autoClose: 1000,
-          });
+          setMessage('Activation code has either expired or has been used');
+          setShowFailed(true)
+          return;
         });
     } catch (err) {
-      console.log("Ooops! activation error", err);
-      toast.error("Ooops! activation failed", {
-        closeOnClick: true,
-        autoClose: 1000,
-      });
-      setLoading(false);
+        setMessage('Activation code has either expired or has been used');
+        setShowFailed(true)
+        setLoading(false);
     }
   };
 
@@ -151,25 +151,18 @@ const Login = (props) => {
       .post(`/v1/user/activate/${userId}`, { ...formData, email })
       .then((res) => {
         if (res.data && res.data.message == "success") {
-          toast("Account activation successful", {
-            closeOnClick: true,
-            autoClose: 1000,
-          });
-          props.history.push("/login");
+          setMessage('Account activation successful');
+          setShowSuccess(true)
         }
 
-        toast.error("Ooops! activation failed", {
-          closeOnClick: true,
-          autoClose: 1000,
-        });
+        setMessage('Error occurred, please try again');
+        setShowFailed(true)
 
         setLoading(false);
       })
       .catch((e) => {
-        toast.error("Ooops! activation failed", {
-          closeOnClick: true,
-          autoClose: 1000,
-        });
+        setMessage('Error occurred, please try again');
+        setShowFailed(true)
         setLoading(false);
       });
   };
@@ -293,6 +286,30 @@ const Login = (props) => {
           </div>
         </div>
       </div>
+
+          <Modal
+              modalHeading=""
+              modalLabel="SUCCESS"
+              primaryButtonText="OK"
+              onRequestClose={()=>setShowSuccess(false)}
+              onRequestSubmit={()=>props.history.push("/login")}
+              open={showSuccess}
+            >
+              {message}
+            </Modal>
+
+            <Modal
+              modalHeading=""
+              modalLabel="Ooops!!!"
+              primaryButtonText="Try again"
+              onRequestClose={()=>setShowFailed(false)}
+              onRequestSubmit={()=>setShowFailed(false)}
+              open={showFailed}
+              type='danger'
+              danger
+            >
+              {message}
+            </Modal>
     </Wrapper>
   );
 };
