@@ -62,7 +62,7 @@ class Create extends React.Component {
         subDepartment,
         userRole,
       } = state.data;
-
+      
       this.setState({
         formData: {
           firstName,
@@ -137,7 +137,7 @@ class Create extends React.Component {
       gradeLevel,
       designation,
       department,
-      subDeparment,
+      subDepartment,
       role,
     } = values;
     const { user } = this.props;
@@ -154,13 +154,15 @@ class Create extends React.Component {
 
       ministry: user && user.ministry,
       department: department && department._id,
-      subDeparment: subDeparment && subDeparment._id,
+      subDepartment: subDepartment && subDepartment._id,
       isAdmin: false,
       isSuper: false,
       isStaff: true,
 
       userRole: role,
     };
+
+    
 
     const { location } = this.props;
     const { state } = location;
