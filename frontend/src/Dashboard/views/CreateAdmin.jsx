@@ -313,6 +313,7 @@ class Create extends React.Component {
                               name="telephone"
                               type="text"
                               labelText="Telephone"
+                              helperText="Format is either 08021212121 or 2348021212121"
                             />
                           </FieldWrapper>
                         </Col>

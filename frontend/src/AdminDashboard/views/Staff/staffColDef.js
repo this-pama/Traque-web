@@ -170,9 +170,9 @@ export default [
   email,
   telephone,
 
-  gender,
+  // gender,
   userRole,
-  designation,
+  // designation,
 
   department,
   subDepartment,
