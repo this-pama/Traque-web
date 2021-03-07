@@ -39,6 +39,7 @@ class Create extends React.Component {
     date: moment(),
     focused: null,
     serviceType: [],
+    serviceTypeList: [],
     deptList: [],
     staffList: [],
     department: {},
@@ -50,6 +51,7 @@ class Create extends React.Component {
     const { state } = location;
 
     this.fetchDepartment();
+    this.fetchServiceTypeList();
 
     if (state && state.edit && state.data) {
       let oldNumber =
@@ -63,15 +65,23 @@ class Create extends React.Component {
             label: state.data.type,
           },
           fileNo: oldNumber,
+          serviceType: state.data.serviceFileType,
         },
         date: state.data.createdDate
           ? moment(state.data.createdDate)
           : moment(),
-        serviceType: {
-          id: state.data.serviceFileType,
-        },
+        
       });
     }
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    const { serviceTypeList } = this.state;
+    console.log('prevProps, prevState', prevState)
+    if(prevState.serviceTypeList != serviceTypeList){
+      this.setState({ serviceTypeList })
+    }
+
   }
 
   onSubmit = async (values) => {
@@ -131,6 +141,20 @@ class Create extends React.Component {
     }
   };
 
+
+  fetchServiceTypeList = async (p) => {
+    const { user, id, userId } = this.props;
+    this.setState({ loading: true });
+    try {
+      axios.get(`/v1/service/file/${user && user.ministry}`).then((data) => {
+        this.setState({ serviceTypeList : data.data.data, loading: false });
+      });
+    } catch (err) {
+      console.log("Error while loading department", err);
+      this.setState({ loading: false });
+    }
+  };
+
   validate = (values) => {
     const error = {};
     const { department, designatedOfficer } = values;
@@ -156,7 +180,7 @@ class Create extends React.Component {
   };
 
   render() {
-    const { showErrors, serviceType, deptList } = this.state;
+    const { showErrors, serviceType, deptList, serviceTypeList } = this.state;
     const { formData, loading, staffList } = this.state;
     const { location, userId, user } = this.props;
     const { state } = location;
@@ -185,6 +209,7 @@ class Create extends React.Component {
           l2Link="#"
           pageTitle={"File Transfer"}
         />
+        
         <Loading active={loading} withOverlay={true} />
 
         <div className="wfp--module__background" style={{ minHeight: "400px" }}>
@@ -258,7 +283,7 @@ class Create extends React.Component {
                         </FieldWrapper>
                       </Col>
 
-                      {values.type == "Service file" && (
+                      {values.type && values.type.value == "Service file" && (
                         <Col md={8} sm={8} xs={12}>
                           <FieldWrapper>
                             <Field
@@ -276,7 +301,7 @@ class Create extends React.Component {
                                     className="wfp--react-select-container auto-width"
                                     classNamePrefix="wfp--react-select"
                                     closeMenuOnSelect={true}
-                                    options={serviceType}
+                                    options={serviceTypeList}
                                     getOptionValue={(option) => option["_id"]}
                                     getOptionLabel={(option) => option["name"]}
                                     {...input}

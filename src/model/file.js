@@ -129,6 +129,11 @@ let File = new Schema(
       type: String,
       trim: true,
     },
+    manualFileNo: {
+      type: String,
+      trim: true,
+      unique: true,
+    },
     type: String,
     serviceFileType: String,
     isDelayed: Boolean,

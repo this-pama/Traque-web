@@ -64,6 +64,7 @@ export default ({ config, db }) => {
       createdDate,
       serviceFileType,
       fileNo: fileNumber,
+      manualFileNo: fileNo,
       ministry,
       department,
       subDepartment,
@@ -224,6 +225,11 @@ export default ({ config, db }) => {
       delayed: { value: false },
       pending: { value: false },
       archived: { value: false },
+    })
+    .populate({
+      path: "serviceFileType",
+      model: "Service file type",
+      select: ["name", "_id"],
     })
       .then((doc) => res.status(200).json({ data: doc }))
       .catch((err) => res.status(500).send(err));

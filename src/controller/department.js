@@ -2,6 +2,7 @@ require("dotenv").config();
 import { Router } from "express";
 import Department from "../model/department";
 import SubDepartment from "../model/subDepartment";
+import User from '../model/user'
 import File from "../model/file";
 
 import { isObjectIdValid, sendMail, sendSms } from "../middleware/service";
@@ -99,15 +100,14 @@ export default ({ config, db }) => {
     if (isObjectIdValid(id) == false)
       return res.status(500).send("Id is invalid");
 
-    const data = await Department.findById(id).populate({
-      path: "staff",
-      model: "User",
-      select: ["firstName", "lastName", "_id"],
-    });
+    const data = await User.find({ department: id })
+    .select(["firstName", "lastName", "_id"])
 
     return res.status(200).json({
       message: "success",
-      data,
+      data: {
+        staff: data
+      },
     });
   });
 
@@ -118,15 +118,14 @@ export default ({ config, db }) => {
     if (isObjectIdValid(id) == false)
       return res.status(500).send("Id is invalid");
 
-    const data = await SubDepartment.findById(id).populate({
-      path: "staff",
-      model: "User",
-      select: ["firstName", "lastName", "_id"],
-    });
+    const data = await User.find({ subDepartment : id })
+    .select(["firstName", "lastName", "_id"])
 
     return res.status(200).json({
-      message: "success",
-      data,
+        message: "success",
+        data: {
+          staff: data
+        },
     });
   });
 
