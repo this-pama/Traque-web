@@ -18,7 +18,7 @@ const View = (props) => {
       <InlineInfo>
         <p className="label">Received by</p>
         <p>
-          {p.sentBy
+          {p.receivedBy
             ? `${p.receivedBy.firstName} ${p.receivedBy.lastName}`
             : null}
         </p>

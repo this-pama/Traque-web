@@ -34,6 +34,12 @@ export const type = () => ({
   hide: false,
   editable: false,
   field: "type",
+  cellRenderer: ({ data})=>`
+  <div>
+  ${data.type == 'Service file' && data.serviceFileType && data.serviceFileType.name
+? data.serviceFileType.name
+: data.type}
+  </div>`,
   filter: "agTextColumnFilter",
   filterParams: globalFilterParams,
 });

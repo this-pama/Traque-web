@@ -10,7 +10,7 @@ import Can from "../../shared/Can";
 
 const filters = [
   {
-    title: "Pending",
+    title: "Inbox",
     role: "Type",
     amountLabel: "FILE",
     comparator: (rowData) => rowData.pending && rowData.pending.value,

@@ -122,10 +122,120 @@ export default ({ config, db }) => {
             createdBy: userId,
             createdDate: p.createdDate,
             fileNo: fileNumber,
+            manualFileNo: p.fileNo,
             ministry,
             department,
             subDepartment,
             deleted: false,
+            history,
+          };
+        })
+      : [];
+
+    if (upload.length <= 0) return res.status(400).send(" No data found");
+
+    File.insertMany(upload)
+      .then((doc) => res.status(200).send(doc))
+      .catch((e) => res.status(500).send(e));
+  });
+
+
+
+  // 'v1/file/add/upload/department/:userId' - bulk upload files to specific department
+  api.post("/add/upload/department/:userId", async (req, res) => {
+    // check if user id is valid
+    const { userId } = req.params;
+
+    if (isObjectIdValid(userId) == false)
+      return res.status(500).send("User id is invalid");
+
+    if (isObjectIdValid(req.body.department) == false)
+      return res.status(500).send("department id is invalid");
+
+    if (req.body.subDepartment != null && isObjectIdValid(req.body.subDepartment) == false)
+      return res.status(500).send("subDepartment id is invalid");
+
+    const user = await User.findById(userId);
+    if (!user || user._id == null)
+      return res.status(500).send("User not found");
+
+    const { ministry, department, subDepartment } = user;
+    const { data, serviceType, type } = req.body;
+
+    let upload = (await data)
+      ? data.map((p) => {
+          let rand = randomize("0", 6);
+          let fileNumber = FILE_NUMBER_PREFIX + rand + "-" + p.fileNo;
+
+          const pending = {
+            value: true,
+            label: "Pending",
+            userId: req.body.receivedBy,
+      
+            originatingDept: user && user.department,
+            originatingSubDept: user && user.subDepartment,
+      
+            sentBy: user && user._id,
+            sentDate: new Date(),
+            sentTime: new Date(),
+      
+            // location,
+      
+            receivedBy: req.body.receivedBy,
+            receivedDate: new Date(),
+            receivedTime: new Date(),
+      
+            receivingDept: req.body.department || null,
+            receivingSubDept: req.body.subDepartment || null,
+      
+            // slaExpiration: new Date() + SLA_HOURS * 60 * 60 * 1000,
+          };
+
+          let history = [{
+            type: "created",
+            label: "Created",
+            createdBy: userId,
+            createdDate: p.createdDate,
+            originatingDept: department,
+            originatingSubDept: subDepartment,
+            // location,
+          },
+          {      
+            type: "incoming",
+            label: "Incoming",
+            userId: req.body.receivedBy,
+
+            originatingDept: user && user.department,
+            originatingSubDept: user && user.subDepartment,
+
+            sentBy: user && user._id,
+            sentDate: new Date(),
+            sentTime: new Date(),
+
+            // location,
+
+            receivedBy: req.body.receivedBy,
+            receivedDate: new Date(),
+            receivedTime: new Date(),
+
+            receivingDept: req.body.department || null,
+            receivingSubDept: req.body.subDepartment || null,
+          }
+        ];
+
+          return {
+            name: p.name,
+            type,
+            serviceFileType: serviceType,
+            createdBy: userId,
+            createdDate: p.createdDate,
+            fileNo: fileNumber,
+            manualFileNo: p.fileNo,
+            ministry,
+            department,
+            subDepartment,
+            deleted: false,
+            pending,
             history,
           };
         })
@@ -180,6 +290,7 @@ export default ({ config, db }) => {
         "createdDate",
         "outgoing",
         "createdDate",
+        "serviceFileType"
       ])
       .populate({
         path: "createdBy",
@@ -199,6 +310,11 @@ export default ({ config, db }) => {
       .populate({
         path: "outgoing.receivingDept",
         model: "Department",
+        select: ["name", "_id"],
+      })
+      .populate({
+        path: "serviceFileType",
+        model: "Service file type",
         select: ["name", "_id"],
       })
       .then((e) => res.status(200).json({ message: "success", data: e }))
@@ -264,6 +380,7 @@ export default ({ config, db }) => {
         "subDepartment",
         "ministry",
         "createdDate",
+        "serviceFileType"
       ])
       .populate({
         path: "createdBy",
@@ -298,6 +415,11 @@ export default ({ config, db }) => {
       .populate({
         path: "archived.archivedDept",
         model: "Department",
+        select: ["name", "_id"],
+      })
+      .populate({
+        path: "serviceFileType",
+        model: "Service file type",
         select: ["name", "_id"],
       })
       .then((e) => res.status(200).json({ message: "success", data: e }))
@@ -555,6 +677,7 @@ export default ({ config, db }) => {
         "type",
         "createdDate",
         "incoming",
+        "serviceFileType"
       ])
       .populate({
         path: "createdBy",
@@ -574,6 +697,11 @@ export default ({ config, db }) => {
       .populate({
         path: "incoming.originatingDept",
         model: "Department",
+        select: ["name", "_id"],
+      })
+      .populate({
+        path: "serviceFileType",
+        model: "Service file type",
         select: ["name", "_id"],
       })
       .then((e) => res.status(200).json({ message: "success", data: e }))
@@ -600,6 +728,7 @@ export default ({ config, db }) => {
         "createdDate",
         "pending",
         "exceedSLA",
+        "serviceFileType"
       ])
       .populate({
         path: "createdBy",
@@ -626,6 +755,11 @@ export default ({ config, db }) => {
         model: "Department",
         select: ["name", "_id"],
       })
+      .populate({
+        path: "serviceFileType",
+        model: "Service file type",
+        select: ["name", "_id"],
+      })
       .then((e) => res.status(200).json({ message: "success", data: e }))
       .catch((err) => res.status(500).send(err));
   });
@@ -649,6 +783,7 @@ export default ({ config, db }) => {
         "type",
         "createdDate",
         "delayed",
+        "serviceFileType"
       ])
       .populate({
         path: "createdBy",
@@ -683,6 +818,11 @@ export default ({ config, db }) => {
       .populate({
         path: "delayed.originatingDept",
         model: "Department",
+        select: ["name", "_id"],
+      })
+      .populate({
+        path: "serviceFileType",
+        model: "Service file type",
         select: ["name", "_id"],
       })
       .then((e) => res.status(200).json({ message: "success", data: e }))

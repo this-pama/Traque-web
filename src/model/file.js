@@ -135,7 +135,7 @@ let File = new Schema(
       unique: true,
     },
     type: String,
-    serviceFileType: String,
+    serviceFileType: { type: Schema.Types.ObjectId, ref: "Service file type", required: false },
     isDelayed: Boolean,
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: false },
     createdDate: { type: Date },

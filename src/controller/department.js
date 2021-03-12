@@ -138,5 +138,12 @@ export default ({ config, db }) => {
     return res.status(200).json({ data });
   });
 
+   //get list of dept for a specific ministry
+   api.get("/department/ministry/:ministry", async (req, res) => {
+    const data = await Department.find({ ministry: req.params.ministry })
+
+    return res.status(200).json({ data });
+  });
+
   return api;
 };
