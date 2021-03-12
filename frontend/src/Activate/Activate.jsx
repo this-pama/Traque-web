@@ -134,7 +134,7 @@ const Login = (props) => {
           setLoading(false);
 
           setMessage('Activation code has either expired or has been used');
-          setShowFailed(true)
+          setShowSuccess(true)
           return;
         });
     } catch (err) {
