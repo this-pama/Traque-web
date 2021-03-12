@@ -1257,6 +1257,7 @@ export default ({ config, db }) => {
         "sent",
         "ministry",
         "archived",
+        'serviceFileType'
       ])
       .populate({
         path: "createdBy",
@@ -1299,7 +1300,11 @@ export default ({ config, db }) => {
         model: "Department",
         select: ["name", "_id"],
       })
-
+      .populate({
+        path: "serviceFileType",
+        model: "Service file type",
+        select: ["name", "_id"],
+      })
       .then((e) => res.status(200).json({ message: "success", data: e }))
       .catch((err) => res.status(500).send(err));
   });
