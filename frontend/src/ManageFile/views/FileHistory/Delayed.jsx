@@ -30,7 +30,7 @@ const View = (props) => {
         <p>{p.delayedDept ? `${p.delayedDept.name}` : null}</p>
       </InlineInfo>
       <InlineInfo>
-        <p className="label">Sub Department</p>
+        <p className="label">Office/Unit</p>
         <p>{p.delayedSubDept ? p.delayedSubDept.name : null}</p>
       </InlineInfo>
 

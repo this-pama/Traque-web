@@ -101,18 +101,17 @@ class Create extends React.Component {
     const { formData, loading, admin } = this.state;
     const { location, id } = this.props;
     const { state } = location;
-    console.log('statw', state)
     return (
       <>
         <MySecondaryNavigation
           l1Label="Department"
           l1Link="/department"
-          l2Label="Sub Department"
+          l2Label="Office/Unit"
           // l2Link=""
           l3Label={
             state && state.edit
-              ? "Update sub department"
-              : "Create sub department"
+              ? "Update Office/Unit"
+              : "Create Office/Unit"
           }
           // l3Link="#"
           pageTitle={ state && state.data.name + ' - ' + state.data.type }
@@ -134,14 +133,14 @@ class Create extends React.Component {
 
                   if (!name) {
                     errors.name = {
-                      value: "Sub Department name is required",
+                      value: "Office/Unit name is required",
                       show: showErrors,
                     };
                   }
 
                   if (!type) {
                     errors.name = {
-                      value: "Sub Department type is required",
+                      value: "Office/Unit type is required",
                       show: showErrors,
                     };
                   }
@@ -153,8 +152,8 @@ class Create extends React.Component {
                       <ModuleHeader>
                         <span style={{ fontSize: 20 }}>
                           {state && state.edit
-                            ? "Update Sub department"
-                            : "Create Sub department"}
+                            ? "Update Office/Unit"
+                            : "Create Office/Unit"}
                         </span>
                       </ModuleHeader>
                       <ModuleBody>
@@ -169,7 +168,7 @@ class Create extends React.Component {
                               {({ input, meta }) => (
                                 <>
                                   <div className="wfp--label">
-                                    Sub Department type
+                                    Office/Unit type
                                   </div>
                                   <Select
                                     className="wfp--react-select-container auto-width"
@@ -195,7 +194,7 @@ class Create extends React.Component {
                               id="subdepartment"
                               name="name"
                               type="text"
-                              labelText="Sub Department name"
+                              labelText="Office/Unit name"
                             />
                           </FieldWrapper>
                         </Col>

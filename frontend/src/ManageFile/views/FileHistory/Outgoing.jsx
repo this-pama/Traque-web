@@ -22,7 +22,7 @@ const View = (props) => {
         <p>{p.receivingDept ? `${p.receivingDept.name}` : null}</p>
       </InlineInfo>
       <InlineInfo>
-        <p className="label">Sub Department</p>
+        <p className="label">Office/Unit</p>
         <p>{p.receivingSubDept ? p.receivingSubDept.name : null}</p>
       </InlineInfo>
       <InlineInfo>

@@ -20,7 +20,7 @@ const Action = (props) => {
               state: { edit: true, id: _id, data: props.data },
             }}
           >
-            Edit sub department
+            Edit Office/Unit
           </Link>
         </div>
       </div>

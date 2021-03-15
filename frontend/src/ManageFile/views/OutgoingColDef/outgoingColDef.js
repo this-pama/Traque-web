@@ -61,7 +61,7 @@ export const destination = () => ({
 });
 
 export const destinationSubDept = () => ({
-  headerName: "Sub Department",
+  headerName: "Office/Unit",
   lockPosition: true,
   __isExported: true,
   hide: false,

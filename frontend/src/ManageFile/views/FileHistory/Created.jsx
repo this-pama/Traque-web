@@ -42,7 +42,7 @@ const View = (props) => {
         <p>{p.originatingDept ? `${p.originatingDept.name}` : null}</p>
       </InlineInfo>
       <InlineInfo>
-        <p className="label">Sub Department</p>
+        <p className="label">Office/Unit</p>
         <p>{p.originatingSubDept ? p.originatingSubDept.name : null}</p>
       </InlineInfo>
     </Section>

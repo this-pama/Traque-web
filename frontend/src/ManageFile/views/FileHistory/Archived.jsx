@@ -64,7 +64,7 @@ const View = (props) => {
         <p>{p.archivedDept ? `${p.archivedDept.name}` : null}</p>
       </InlineInfo>
       <InlineInfo>
-        <p className="label">Sub Department</p>
+        <p className="label">Office/Unit</p>
         <p>{p.archivedSubDept ? p.archivedSubDept.name : null}</p>
       </InlineInfo>
     </Section>

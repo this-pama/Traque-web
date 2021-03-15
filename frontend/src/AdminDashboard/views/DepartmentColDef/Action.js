@@ -77,13 +77,13 @@ const Action = (props) => {
           pathname: "/create-sub-department/" + _id,
           state: {id: _id, data: props.data },
         }}>
-          Add sub department
+          Add Office/Unit
         </Link>
 
         <br />
         <br />
         <Link className="wfp--link" to={"/sub/department/" + _id}>
-          View sub department
+          View Office/Unit
         </Link>
       </Modal>
     </Wrapper>

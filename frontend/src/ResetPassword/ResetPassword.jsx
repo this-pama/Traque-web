@@ -20,7 +20,10 @@ const Wrapper = styled.div`
     width: 100vw;
     height: 100vh;
     background-color: #193a9d;
-    // background-image: url(${Logo})
+    background-image: url('/background.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
     color: #fff;
     text-align: center;
     &--banner {

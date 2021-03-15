@@ -49,7 +49,7 @@ export const no_of_staff = () => ({
 });
 
 export const sub = () => ({
-  headerName: "No of sub department",
+  headerName: "No of Office/Unit",
   // width: 140,
   editable: false,
   lockPosition: true,

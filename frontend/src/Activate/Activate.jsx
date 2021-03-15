@@ -18,10 +18,13 @@ import { toast } from "react-toastify";
 
 const Wrapper = styled.div`
   .login {
-    // width: 100vw;
-    // height: 100vh;
+    width: 100vw;
+    height: 100vh;
     background-color: #193a9d;
-    // background-image: url(${Logo})
+    background-image: url('/background.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
     color: #fff;
     text-align: center;
     &--banner {
@@ -134,7 +137,7 @@ const Login = (props) => {
           setLoading(false);
 
           setMessage('Activation code has either expired or has been used');
-          setShowSuccess(true)
+          setShowFailed(true)
           return;
         });
     } catch (err) {
@@ -155,8 +158,8 @@ const Login = (props) => {
           setShowSuccess(true)
         }
 
-        setMessage('Error occurred, please try again');
-        setShowFailed(true)
+        // setMessage('Error occurred, please try again');
+        // setShowFailed(true)
 
         setLoading(false);
       })

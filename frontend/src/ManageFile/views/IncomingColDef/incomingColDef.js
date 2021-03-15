@@ -77,7 +77,7 @@ export const department = () => ({
 });
 
 export const subDepartment = () => ({
-  headerName: "Sub Department",
+  headerName: "Office/Unit",
   lockPosition: true,
   __isExported: true,
   hide: false,

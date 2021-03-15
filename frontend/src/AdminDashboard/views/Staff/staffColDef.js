@@ -105,7 +105,7 @@ export const ministry = () => ({
 });
 
 export const subDepartment = () => ({
-  headerName: "Sub department",
+  headerName: "Office/Unit",
   // width: 140,
   editable: false,
   lockPosition: true,

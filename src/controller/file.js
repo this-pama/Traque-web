@@ -965,6 +965,8 @@ export default ({ config, db }) => {
 
     if (file.length <= 0) return res.status(500).send("File not found");
 
+    let slaExpiration = new Date().setDate( new Date().getDate() + SLA_HOURS/24);
+
     const pending = {
       value: true,
       label: "Pending",
@@ -988,7 +990,7 @@ export default ({ config, db }) => {
       receivingDept: user ? user.department : null,
       receivingSubDept: user ? user.subDepartment : null,
 
-      slaExpiration: new Date() + SLA_HOURS * 60 * 60 * 1000,
+      slaExpiration: new Date(slaExpiration),
     };
 
     const sent = {
