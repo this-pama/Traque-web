@@ -621,6 +621,51 @@ export default ({ config, db }) => {
       location,
     };
 
+    const pending = {
+      value: false,
+      label: "Pending",
+      userId: null,
+
+      originatingDept: null,
+      originatingSubDept: null,
+
+      sentBy: null,
+      sentDate: null,
+      sentTime: null,
+
+      location,
+
+      receivedBy: null,
+      receivedDate: null,
+      receivedTime: null,
+
+      receivingDept: null,
+      receivingSubDept: null,
+    };
+
+    const delayed = {
+      value: false,
+      label: "Delayed",
+      userId: null,
+
+      originatingDept: null,
+      originatingSubDept: null,
+
+      sentBy: null,
+      sentDate: null,
+      sentTime:  null,
+
+      location,
+      justification : null,
+
+      delayedBy: null,
+      delayedDate: null,
+      delayedTime: null,
+
+      delayedDept: null,
+      delayedSubDept: null,
+    };
+
     const history = {
       type: "outgoing",
       label: "Outgoing",
@@ -641,6 +686,8 @@ export default ({ config, db }) => {
     let update = {
       outgoing,
       incoming,
+      pending,
+      delayed,
       exceedSLA: false,
       $push: { history: history },
     };
