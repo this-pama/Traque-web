@@ -4,6 +4,7 @@ import {
 } from "../../../shared/utils";
 import moment from "moment";
 import React from "react";
+import { phoneNumber } from '../IncomingColDef/incomingColDef'
 
 export const name = () => ({
   headerName: "File Name/Title",
@@ -137,6 +138,7 @@ export const action = (onValueChange) => ({
 export default [
   name,
   no,
+  phoneNumber,
   type,
 
   destination,

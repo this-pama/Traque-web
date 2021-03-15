@@ -67,9 +67,7 @@ class Create extends React.Component {
           fileNo: oldNumber,
           serviceType: state.data.serviceFileType,
         },
-        date: state.data.createdDate
-          ? moment(state.data.createdDate)
-          : moment(),
+        date: moment(),
         
       });
     }

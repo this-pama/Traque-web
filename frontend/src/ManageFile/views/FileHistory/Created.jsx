@@ -34,6 +34,12 @@ const View = (props) => {
         </p>
       </InlineInfo>
       <InlineInfo>
+        <p className="label">Phone number</p>
+        <p>
+          {p.telephone || null}
+        </p>
+      </InlineInfo>
+      <InlineInfo>
         <p className="label">Designation</p>
         <p>{p.createdBy ? `${p.createdBy.designation}` : null}</p>
       </InlineInfo>

@@ -63,6 +63,7 @@ class Create extends React.Component {
             label: state.data.type,
           },
           fileNo: oldNumber,
+          telephone: state.data.telephone || null,
         },
         date: state.data.createdDate
           ? moment(state.data.createdDate)
@@ -83,6 +84,7 @@ class Create extends React.Component {
       type: values.type.value,
       fileNo: values.fileNo,
       createdDate: this.state.date,
+      telephone: values.telephone,
       serviceFileType:
         values.type.value == "Service file"
           ? values.serviceType && values.serviceType._id
@@ -328,6 +330,21 @@ class Create extends React.Component {
                             </Field>
                           </FieldWrapper>
                         </Col>
+
+                        <Col md={8} sm={8} xs={12}>
+                        <FieldWrapper>
+                          <Field
+                            component={ReduxFormWrapper}
+                            inputComponent={TextInput}
+                            id="telephone"
+                            name="telephone"
+                            type="text"
+                            labelText="Phone number"
+                            helperText="Acceptable format is 2348021212121"
+                          />
+                        </FieldWrapper>
+                      </Col>
+
                       </ModuleBody>
                       <ModuleFooter>
                         <div></div>

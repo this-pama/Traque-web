@@ -27,6 +27,17 @@ export const no = () => ({
   filterParams: globalFilterParams,
 });
 
+export const phoneNumber = () => ({
+  headerName: "Phone number",
+  lockPosition: true,
+  __isExported: true,
+  hide: false,
+  editable: false,
+  field: "telephone",
+  filter: "agTextColumnFilter",
+  filterParams: globalFilterParams,
+});
+
 export const type = () => ({
   headerName: "File type",
   lockPosition: true,
@@ -129,6 +140,7 @@ export const action = (onValueChange) => ({
 export default [
   name,
   no,
+  phoneNumber,
   type,
 
   sentBy,

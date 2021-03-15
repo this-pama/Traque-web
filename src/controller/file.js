@@ -42,6 +42,7 @@ export default ({ config, db }) => {
       fileNo,
       location,
       serviceFileType,
+      telephone,
     } = req.body;
 
     //check if file number is unique
@@ -66,6 +67,7 @@ export default ({ config, db }) => {
     let newFile = new File({
       name,
       type,
+      telephone,
       createdBy: userId,
       createdDate,
       serviceFileType,
@@ -123,6 +125,7 @@ export default ({ config, db }) => {
             createdDate: p.createdDate,
             fileNo: fileNumber,
             manualFileNo: p.fileNo,
+            telephone: p.telephone,
             ministry,
             department,
             subDepartment,
@@ -231,6 +234,7 @@ export default ({ config, db }) => {
             createdDate: p.createdDate,
             fileNo: fileNumber,
             manualFileNo: p.fileNo,
+            telephone: p.telephone,
             ministry,
             department,
             subDepartment,

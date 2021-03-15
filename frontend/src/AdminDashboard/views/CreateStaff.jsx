@@ -473,7 +473,7 @@ class Create extends React.Component {
                               {({ input, meta }) => (
                                 <>
                                   <div className="wfp--label">
-                                    Sub Department
+                                    Office/Unit
                                   </div>
                                   <Select
                                     className="wfp--react-select-container auto-width"

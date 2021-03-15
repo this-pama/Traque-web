@@ -134,6 +134,7 @@ let File = new Schema(
       trim: true,
       unique: true,
     },
+    telephone: Number,
     type: String,
     serviceFileType: { type: Schema.Types.ObjectId, ref: "Service file type", required: false },
     isDelayed: Boolean,

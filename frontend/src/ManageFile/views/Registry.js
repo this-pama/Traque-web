@@ -138,6 +138,7 @@ const View = ({ props }) => {
             fileNo: p[1],
             type: p[2],
             createdDate: p[3],
+            telephone: p[4],
           }));
 
         try {
@@ -198,6 +199,7 @@ const View = ({ props }) => {
             name: p[0],
             fileNo: p[1],
             createdDate: p[2],
+            telephone: p[3],
           }));
 
         try {
