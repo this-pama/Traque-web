@@ -54,7 +54,7 @@ export const SLAJob = async () => {
             fileName: p.name,
             fileNo: p.fileNo,
           };
-          sendSms(data.telephone, message(data));
+          sendSms(data.telephone, message(data), p._id, true);
           sendMail(
             EMAIL_SENDER,
             {

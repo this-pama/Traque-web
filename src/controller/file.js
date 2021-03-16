@@ -294,7 +294,8 @@ export default ({ config, db }) => {
         "createdDate",
         "outgoing",
         "createdDate",
-        "serviceFileType"
+        "serviceFileType",
+        'telephone'
       ])
       .populate({
         path: "createdBy",
@@ -384,7 +385,8 @@ export default ({ config, db }) => {
         "subDepartment",
         "ministry",
         "createdDate",
-        "serviceFileType"
+        "serviceFileType",
+        'telephone'
       ])
       .populate({
         path: "createdBy",
@@ -565,7 +567,7 @@ export default ({ config, db }) => {
             { email: sender.email, firstName: sender.firstName, message },
             "file"
           );
-          sendSms(sender.telephone, message);
+          sendSms(sender.telephone, message, sender._id, true);
         }
 
         return res.status(200).json({ message: "success", data: e });
@@ -590,7 +592,7 @@ export default ({ config, db }) => {
     if (user == null || receiver == null)
       return res.status(500).send("User not found");
 
-    const { email, telephone, firstName } = receiver;
+    const { email, telephone, firstName, _id } = receiver;
 
     const outgoing = {
       value: true,
@@ -702,7 +704,7 @@ export default ({ config, db }) => {
         let message = `Hello ${firstName}, ${e.name} has been forwarded to you.`;
         sendMail(EMAIL_SENDER, { email, firstName, message }, "file");
 
-        sendSms(telephone, message);
+        sendSms(telephone, message, _id, true);
 
         return res.status(200).json({ message: "success", data: e });
       })
@@ -728,7 +730,8 @@ export default ({ config, db }) => {
         "type",
         "createdDate",
         "incoming",
-        "serviceFileType"
+        "serviceFileType",
+        'telephone'
       ])
       .populate({
         path: "createdBy",
@@ -779,7 +782,8 @@ export default ({ config, db }) => {
         "createdDate",
         "pending",
         "exceedSLA",
-        "serviceFileType"
+        "serviceFileType",
+        'telephone'
       ])
       .populate({
         path: "createdBy",
@@ -834,7 +838,8 @@ export default ({ config, db }) => {
         "type",
         "createdDate",
         "delayed",
-        "serviceFileType"
+        "serviceFileType",
+        'telephone'
       ])
       .populate({
         path: "createdBy",
@@ -993,7 +998,7 @@ export default ({ config, db }) => {
             "file"
           );
 
-          sendSms(sender.telephone, message);
+          sendSms(sender.telephone, message, sender._id, true);
         }
 
         return res.status(200).json({ message: "success", data: e });
@@ -1144,7 +1149,7 @@ export default ({ config, db }) => {
             "file"
           );
 
-          sendSms(sender.telephone, message);
+          sendSms(sender.telephone, message, sender._id, true);
         }
 
         return res.status(200).json({ message: "success", data: e });
@@ -1209,6 +1214,7 @@ export default ({ config, db }) => {
         "history",
         "ministry",
         'exceedSLA',
+        'telephone',
       ])
       .populate({
         path: "createdBy",
@@ -1310,7 +1316,8 @@ export default ({ config, db }) => {
         "sent",
         "ministry",
         "archived",
-        'serviceFileType'
+        'serviceFileType',
+        'telephone'
       ])
       .populate({
         path: "createdBy",

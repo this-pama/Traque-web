@@ -5,6 +5,8 @@ const fetch = require("node-fetch");
 import Expo from "expo-server-sdk";
 const ObjectId = require("mongoose").Types.ObjectId;
 
+import ExpoToken from '../model/expoPushToken'
+
 const { NODE_ENV } = process.env;
 
 export const isObjectIdValid = (id) =>
@@ -68,16 +70,31 @@ export const sendMail = (sender, receiver, folder) => {
     .catch(console.error);
 };
 
-export const sendSms = (number, message) => {
+export const sendSms = (number, message, userId, sendPushNotification) => {
+  
+  //send push notification
+  if(sendPushNotification){
+    handlePushTokens(message, userId);
+  }
+  
+
+  //send sms message
   const { SMS_USERNAME, SMS_PASSWORD, SMS_SENDER } = process.env;
   let url = `http://rslr.connectbind.com/bulksms/bulksms?username=${SMS_USERNAME}&password=${SMS_PASSWORD}&type=0&dlr=1&destination=${number}&source=${SMS_SENDER}&message=${message}`;
 
   fetch(url).then(console.log("sms sent successfully")).catch(console.error);
+
 };
 
 // Create a new Expo SDK client
-export const handlePushTokens = (message, savedPushTokens) => {
+export const handlePushTokens = async (message, userId) => {
   let expo = new Expo();
+
+  let savedTokens = await ExpoToken.find({ user: userId });
+
+  if(savedTokens.length <= 0) return console.log("No push token found for user")
+
+  let savedPushTokens = savedTokens.map(p => p.token)
 
   let notifications = [];
   for (let pushToken of savedPushTokens) {
@@ -88,7 +105,7 @@ export const handlePushTokens = (message, savedPushTokens) => {
     notifications.push({
       to: pushToken,
       sound: "default",
-      title: "Traque",
+      title: "Traquer",
       body: message,
       badge: 1,
       _displayInForeground: true,

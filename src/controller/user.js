@@ -406,7 +406,7 @@ export default ({ config, db }) => {
   //Save Expo Push Notification Token
   api.post("/push-token", (req, res) => {
     if (!Expo.isExpoPushToken(req.body.token)) {
-      return res.status(201).json({
+      return res.status(400).json({
         message: `Push token ${req.body.token} is not a valid Expo push token`,
       });
     }
@@ -423,7 +423,7 @@ export default ({ config, db }) => {
 
         if (savedToken.length > 0) {
           return res
-            .status(200)
+            .status(400)
             .json({ success: false, message: "token already saved" });
         }
 
