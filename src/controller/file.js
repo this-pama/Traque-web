@@ -565,7 +565,9 @@ export default ({ config, db }) => {
           sendMail(
             EMAIL_SENDER,
             { email: sender.email, firstName: sender.firstName, message },
-            "file"
+            "file",
+            sender && sender._id,
+            false,
           );
           sendSms(sender.telephone, message, sender._id, true);
         }
@@ -702,7 +704,7 @@ export default ({ config, db }) => {
       .then((e) => {
         //send messages
         let message = `Hello ${firstName}, ${e.name} has been forwarded to you.`;
-        sendMail(EMAIL_SENDER, { email, firstName, message }, "file");
+        sendMail(EMAIL_SENDER, { email, firstName, message }, "file", _id, false);
 
         sendSms(telephone, message, _id, true);
 
@@ -995,7 +997,9 @@ export default ({ config, db }) => {
           sendMail(
             EMAIL_SENDER,
             { email: sender.email, firstName: sender.firstName, message },
-            "file"
+            "file",
+            sender && sender._id,
+            false
           );
 
           sendSms(sender.telephone, message, sender._id, true);
@@ -1146,7 +1150,9 @@ export default ({ config, db }) => {
           sendMail(
             EMAIL_SENDER,
             { email: sender.email, firstName: sender.firstName, message },
-            "file"
+            "file",
+            sender && sender._id,
+            false
           );
 
           sendSms(sender.telephone, message, sender._id, true);

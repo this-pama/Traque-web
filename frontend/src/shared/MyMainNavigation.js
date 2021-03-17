@@ -17,7 +17,7 @@ import {
   List,
   ListItem,
 } from "@wfp/ui";
-import { iconHeaderSearch } from "@wfp/icons";
+import { iconHeaderSearch, iconSettings } from "@wfp/icons";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { logout } from "../store/actions";
@@ -115,10 +115,27 @@ class MainNav extends React.Component {
                           description="Search file using file name or number"
                           onClick={() => this.setState({ startSearch: true })}
                         />
+                        {/* Search file */}
                       </MainNavigationItem>
                     </div>
                   )}
                 />
+
+                { user && user.isSuper ? null 
+                : (
+                  <MainNavigationItem>
+                  <Icon
+                    icon={iconSettings}
+                    fill={"#fff"}
+                    width={14}
+                    height={14}
+                    description="Notification settings"
+                  />
+                  <DomLink to={`/settings`} style={{ fontSize: 12 }}>
+                    Settings
+                  </DomLink>
+                </MainNavigationItem>
+                )}
 
                 <MainNavigationItem
                   className="wfp--main-navigation__user"

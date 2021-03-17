@@ -14,6 +14,8 @@ import CreateMinistry from "./Dashboard/views/CreateMinistry";
 import { ToastContainer, toast } from "react-toastify";
 import Footer from "./shared/Footer";
 
+import Settings from './Settings'
+
 // import 'ag-grid-enterprise'
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham.css";
@@ -288,6 +290,14 @@ class App extends React.Component {
                       path="/create-user-role"
                       component={(props) => (
                         <CreateUserRole {...props} user={user} />
+                      )}
+                    />
+
+                    <ProtectedRoute
+                      isAllowed={isLogged}
+                      path="/settings"
+                      component={(props) => (
+                        <Settings {...props} user={user} />
                       )}
                     />
 

@@ -54,7 +54,7 @@ export const SLAJob = async () => {
             fileName: p.name,
             fileNo: p.fileNo,
           };
-          sendSms(data.telephone, message(data), p._id, true);
+          sendSms(data.telephone, message(data), p.pending.userId && p.pending.userId._id, true);
           sendMail(
             EMAIL_SENDER,
             {
@@ -62,7 +62,8 @@ export const SLAJob = async () => {
               firstName: data.firstName,
               message: message(data),
             },
-            "file"
+            "file",
+            p.pending.userId && p.pending.userId._id
           );
         }
 

@@ -12,6 +12,7 @@ import file from "../controller/file";
 import serviceFile from "../controller/serviceFileType";
 import seedUserRole from "../middleware/seedUserRoles";
 import role from "../controller/role";
+import settings from '../controller/settings'
 
 let router = express();
 
@@ -31,6 +32,7 @@ initializeDb((db) => {
   router.use("/service/file", serviceFile({ config, db }));
   router.use("/seed", seedUserRole({ config, db }));
   router.use("/role", role({ config, db }));
+  router.use("/settings", settings({ config, db }));
 });
 
 export default router;

@@ -164,12 +164,17 @@ export default ({ config, db }) => {
               lastName: user.lastName,
               token,
             },
-            "forgotpassword"
+            "forgotpassword",
+            user && user._id,
+            true,
           );
 
           sendSms(
             user.telephone,
-            `Hello, kindly reset your Traque password using this token ${token}. Valid for 1 hours.`
+            `Hello, kindly reset your Traque password using this token ${token}. Valid for 1 hours.`,
+            null,
+            false,
+            true
           );
 
           return res.json({ success: true, message: user._id });
@@ -262,7 +267,9 @@ export default ({ config, db }) => {
               lastName: user.lastName,
               token,
             },
-            "changepassword"
+            "changepassword",
+            user && user._id,
+            true,
           );
         },
       ],

@@ -22,6 +22,7 @@ import {
   respond,
 } from "../middleware/authMiddleware";
 import { select } from "async";
+import Settings from "../model/settings";
 
 export default ({ config, db }) => {
   let api = Router();
@@ -129,11 +130,12 @@ export default ({ config, db }) => {
         firstName,
         lastName,
         activationKey,
-      });
+      }, null, doc && doc._id, true );
 
       sendSms(
         telephone,
-        `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`
+        `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`,
+        null, null, true
       );
 
       let key = new ActivationKey({
@@ -142,6 +144,17 @@ export default ({ config, db }) => {
         userId: doc._id,
         email,
       });
+
+      //save settings for admin user
+      if(isAdmin){
+        let settings = new Settings({
+          userId: doc._id,
+          ministrySettings: true,
+          ministry: doc && doc.ministry
+        });
+
+        await settings.save();
+      }
 
       await key.save();
 
@@ -241,11 +254,12 @@ export default ({ config, db }) => {
         firstName,
         lastName,
         activationKey,
-      });
+      }, null, doc && doc._id, true);
 
       sendSms(
         telephone,
-        `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`
+        `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`,
+        null, null, true
       );
 
       let key = new ActivationKey({
@@ -255,7 +269,12 @@ export default ({ config, db }) => {
         email,
       });
 
+      let settings = new Settings({
+        userId: doc._id,
+      });
+
       await key.save();
+      await settings.save();
 
       return res.status(200).json({
         message: "success",
@@ -393,11 +412,12 @@ export default ({ config, db }) => {
       firstName,
       lastName,
       activationKey,
-    });
+    }, null, doc && doc._id, true);
 
     sendSms(
       telephone,
-      `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`
+      `Hello ${firstName}, your activation code to proceed with Traquer is ${activationKey}. Valid for 24 hours.`,
+      null, null, true
     );
 
     return res.status(200).json({ success: true, message: "success" });

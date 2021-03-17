@@ -5,6 +5,9 @@ const fetch = require("node-fetch");
 import Expo from "expo-server-sdk";
 const ObjectId = require("mongoose").Types.ObjectId;
 
+import User from '../model/user'
+import Settings from '../model/settings'
+
 import ExpoToken from '../model/expoPushToken'
 
 const { NODE_ENV } = process.env;
@@ -16,7 +19,7 @@ export const isObjectIdValid = (id) =>
       : false
     : false;
 
-export const sendMail = (sender, receiver, folder) => {
+export const sendMail = async (sender, receiver, folder, userId, sendByDefault) => {
   const email = new Email({
     message: {
       from: sender,
@@ -58,7 +61,10 @@ export const sendMail = (sender, receiver, folder) => {
       folderPath = path.join(__dirname, "../emails/welcome");
   }
 
-  email
+  const value = await evaluateEmailNotificationSettings(userId);
+
+  if(value){
+    email
     .send({
       template: folderPath,
       message: {
@@ -68,22 +74,43 @@ export const sendMail = (sender, receiver, folder) => {
     })
     .then(console.log("successfully sent email"))
     .catch(console.error);
+  }
+  else if(sendByDefault){
+    email
+    .send({
+      template: folderPath,
+      message: {
+        to: receiver.email,
+      },
+      locals: receiver,
+    })
+    .then(console.log("successfully sent email"))
+    .catch(console.error);
+  }
+
+  
 };
 
-export const sendSms = (number, message, userId, sendPushNotification) => {
+export const sendSms = async (number, message, userId, sendPushNotification, sendByDefault) => {
   
   //send push notification
   if(sendPushNotification){
     handlePushTokens(message, userId);
   }
   
+  const value = await evaluateSmsNotificationSettings(userId);
 
   //send sms message
   const { SMS_USERNAME, SMS_PASSWORD, SMS_SENDER } = process.env;
   let url = `http://rslr.connectbind.com/bulksms/bulksms?username=${SMS_USERNAME}&password=${SMS_PASSWORD}&type=0&dlr=1&destination=${number}&source=${SMS_SENDER}&message=${message}`;
 
-  fetch(url).then(console.log("sms sent successfully")).catch(console.error);
-
+  if(value){
+    fetch(url).then(console.log("sms sent successfully")).catch(console.error);
+  }
+  else if(sendByDefault){
+    fetch(url).then(console.log("sms sent successfully")).catch(console.error);
+  }
+  
 };
 
 // Create a new Expo SDK client
@@ -124,3 +151,68 @@ export const handlePushTokens = async (message, userId) => {
     }
   })();
 };
+
+
+const evaluateSmsNotificationSettings = async (userId)=>{
+  if (isObjectIdValid(userId) == false) return false;
+
+  let notification;
+  //get user data
+  const user = await User.findById(userId);
+
+  if(!user || user.ministry == null) return false;
+
+  //check admin settings
+  const adminSettings = await Settings.findOne({ ministry: user.ministry, ministrySettings: true });
+
+  const userSettings = await Settings.findOne({ userId: user._id });
+
+  if(adminSettings && adminSettings.smsNotification){
+    notification = true;
+
+    if(userSettings && userSettings.smsNotification){
+      notification = true;
+    }
+    else{
+      notification = false
+    }
+  }
+  else{
+    notification = false
+  }
+
+  return notification;
+
+}
+
+const evaluateEmailNotificationSettings = async (userId)=>{
+  if (isObjectIdValid(userId) == false) return false;
+  
+  let notification;
+  //get user data
+  const user = await User.findById(userId);
+
+  if(!user || user.ministry == null) return false;
+
+  //check admin settings
+  const adminSettings = await Settings.findOne({ ministry: user.ministry, ministrySettings: true });
+
+  const userSettings = await Settings.findOne({ userId: user._id });
+
+  if(adminSettings && adminSettings.emailNotification){
+    notification = true;
+
+    if(userSettings && userSettings.emailNotification){
+      notification = true;
+    }
+    else{
+      notification = false
+    }
+  }
+  else{
+    notification = false
+  }
+
+  return notification;
+
+}
