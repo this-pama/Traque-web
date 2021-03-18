@@ -431,31 +431,18 @@ export default ({ config, db }) => {
       });
     }
 
-    ExpoToken.find(
+    ExpoToken.findOneAndUpdate({ user: req.body.user },
       {
         token: req.body.token,
         user: req.body.user,
-      },
+      },{ new: true, upsert: true },
       (err, savedToken) => {
         if (err) {
           return res.status(500).json(err);
         }
-
-        if (savedToken.length > 0) {
-          return res
-            .status(400)
-            .json({ success: false, message: "token already saved" });
-        }
-
-        let saveToken = new ExpoToken(req.body);
-        saveToken.save((err) => {
-          if (err) {
-            return res.status(500).json(err);
-          }
           return res.status(200).json({ success: true, message: "success" });
-        });
-      }
-    );
+    });
+      
   });
 
   api.get("/admin/admin-list", async (req, res) => {
