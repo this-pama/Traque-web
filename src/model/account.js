@@ -37,7 +37,9 @@ let Account = new Schema({
     type: Date,
     default: Date.now,
   },
-});
+},
+{ timestamps: { createdAt: 'created_at' } }
+);
 
 Account.plugin(passportLocalMongoose);
 module.exports = mongoose.model("Account", Account);

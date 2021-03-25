@@ -12,6 +12,7 @@ import DelayedFile from "./views/DelayedFile";
 import RegistryFle from "./views/Registry";
 import SectionFileReport from "./views/SectionFileReport";
 import MinistryFileReport from "./views/MinistryFileReport";
+import ViewReport from './views/ViewReport'
 
 import { Redirect, Route, Switch } from "react-router";
 import { Link } from "react-router-dom";
@@ -107,17 +108,24 @@ const Dashboard = (props) => {
 
     {
       permissions: ["viewDepartmentReport"],
-      defaultsForUserType: ["Management"],
+      // defaultsForUserType: ["Management"],
       label: "Section Report",
       path: "/file/section-report",
       component: () => <SectionFileReport props={props} />,
     },
     {
       permissions: ["viewMinistryReport"],
-      defaultsForUserType: ["Management"],
+      // defaultsForUserType: ["Management"],
       label: "Ministry Report",
       path: "/file/ministry-report",
       component: () => <MinistryFileReport props={props} />,
+    },
+    {
+      permissions: ["viewReport"],
+      defaultsForUserType: ["Management"],
+      label: "Report",
+      path: "/file/report",
+      component: () => <ViewReport props={props} />,
     },
   ];
 

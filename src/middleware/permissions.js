@@ -28,5 +28,7 @@ export default [
   "manageUserRole",
   "createUser",
 
-  "canBatchUploadToDepartment"
+  "canBatchUploadToDepartment",
+
+  'viewReport'
 ];

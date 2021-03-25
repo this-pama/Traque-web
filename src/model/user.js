@@ -79,7 +79,8 @@ let UserSchema = new Schema(
       default: Date.now,
     },
   },
-  { usePushEach: true }
+  { usePushEach: true },
+  { timestamps: { createdAt: 'created_at' } }
 );
 
 module.exports = mongoose.model("User", UserSchema);

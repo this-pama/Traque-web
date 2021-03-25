@@ -107,5 +107,5 @@ export const registry_mgt = {
 
 export const management = {
   name: "Management",
-  permission: ["viewDepartmentReport", "viewMinistryReport"],
+  permission: ['viewReport'],
 };

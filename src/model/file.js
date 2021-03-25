@@ -379,7 +379,8 @@ let File = new Schema(
       default: false,
     },
   },
-  { usePushEach: true, timestamps: true }
+  { usePushEach: true, timestamps: true },
+  { timestamps: { createdAt: 'created_at' } }
 );
 
 module.exports = mongoose.model("File", File);
