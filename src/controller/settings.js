@@ -77,8 +77,13 @@ export default ({ config, db }) => {
       return res.status(500).send("Department id is required");
 
       let from60Date = new Date(Date.now() - 60 * 60 * 24 * 60 * 1000); // 60 days from current date
+      let from61Date = new Date(Date.now() - 60 * 60 * 24 * 61 * 1000); // 61 days from current date
       let from30Date = new Date(Date.now() - 60 * 60 * 24 * 30 * 1000); // 30 days from current date
-      let from90Date = new Date(Date.now() - 60 * 60 * 24 * 90 * 1000); // 60 days from current date
+      let from31Date = new Date(Date.now() - 60 * 60 * 24 * 31 * 1000); // 31 days from current date
+      let from90Date = new Date(Date.now() - 60 * 60 * 24 * 90 * 1000); 
+      let from91Date = new Date(Date.now() - 60 * 60 * 24 * 91 * 1000); 
+      let from120Date = new Date(Date.now() - 60 * 60 * 24 * 120 * 1000); 
+      let above121 = new Date(Date.now() - 60 * 60 * 24 * 121 * 1000); // 121 days from current date
 
     //check if service file id and sub department id exist
     if(service && service != null && isObjectIdValid(service)
@@ -96,19 +101,24 @@ export default ({ config, db }) => {
      
      const TtFileExceedSlaBtw30_60 = await 
        File.find({ 'pending.value' : true, department, serviceFileType: service, subDepartment })
-         .where({"pending.slaExpiration": { $lte: from30Date, $gte: from60Date } })
+         .where({"pending.slaExpiration": { $lte: from31Date, $gte: from60Date } })
          .count();
  
      const TtFileExceedSlaBtw60_90 = await 
        File.find({ 'pending.value' : true, department, serviceFileType: service, subDepartment })
-         .where({"pending.slaExpiration": { $lte: from60Date, $gte: from90Date }})
+         .where({"pending.slaExpiration": { $lte: from61Date, $gte: from90Date }})
          .count();
  
  
      const TtFileExceedSla90 = await 
        File.find({ 'pending.value' : true, department, serviceFileType: service, subDepartment })
-         .where({ "pending.slaExpiration": { $lt: from90Date } })
+         .where({ "pending.slaExpiration": { $lt: from91Date, $gte: from120Date } })
          .count();
+
+      const slaAbove121 = await 
+         File.find({ 'pending.value' : true, department, serviceFileType: service, subDepartment })
+           .where({ "pending.slaExpiration": { $lt: above121, } })
+           .count();
  
        const treatedToday = await 
          File
@@ -141,6 +151,7 @@ export default ({ config, db }) => {
            TtFileExceedSlaBtw30_60,
            TtFileExceedSlaBtw60_90,
            TtFileExceedSla90,
+           slaAbove121,
            treatedToday,
            avgPerDay,
            avgPerWeek,
@@ -163,19 +174,24 @@ export default ({ config, db }) => {
       
       const TtFileExceedSlaBtw30_60 = await 
         File.find({ 'pending.value' : true, department, subDepartment })
-          .where({"pending.slaExpiration": { $lte: from30Date, $gte: from60Date } })
+          .where({"pending.slaExpiration": { $lte: from31Date, $gte: from60Date } })
           .count();
   
       const TtFileExceedSlaBtw60_90 = await 
         File.find({ 'pending.value' : true, department, subDepartment })
-          .where({"pending.slaExpiration": { $lte: from60Date, $gte: from90Date }})
+          .where({"pending.slaExpiration": { $lte: from61Date, $gte: from90Date }})
           .count();
   
   
       const TtFileExceedSla90 = await 
         File.find({ 'pending.value' : true, department, subDepartment })
-          .where({ "pending.slaExpiration": { $lt: from90Date } })
+          .where({ "pending.slaExpiration": { $lt: from91Date,  $gte: from120Date } })
           .count();
+
+      const slaAbove121 = await 
+          File.find({ 'pending.value' : true, department, subDepartment })
+            .where({ "pending.slaExpiration": { $lt: above121, } })
+            .count();
   
         const treatedToday = await 
           File
@@ -208,6 +224,7 @@ export default ({ config, db }) => {
             TtFileExceedSlaBtw30_60,
             TtFileExceedSlaBtw60_90,
             TtFileExceedSla90,
+            slaAbove121,
             treatedToday,
             avgPerDay,
             avgPerWeek,
@@ -232,18 +249,23 @@ export default ({ config, db }) => {
       
       const TtFileExceedSlaBtw30_60 = await 
         File.find({ 'pending.value' : true, department, serviceFileType: service })
-          .where({"pending.slaExpiration": { $lte: from30Date, $gte: from60Date } })
+          .where({"pending.slaExpiration": { $lte: from31Date, $gte: from60Date } })
           .count();
   
       const TtFileExceedSlaBtw60_90 = await 
         File.find({ 'pending.value' : true, department, serviceFileType: service })
-          .where({"pending.slaExpiration": { $lte: from60Date, $gte: from90Date }})
+          .where({"pending.slaExpiration": { $lte: from61Date, $gte: from90Date }})
           .count();
   
   
       const TtFileExceedSla90 = await 
         File.find({ 'pending.value' : true, department, serviceFileType: service })
-          .where({ "pending.slaExpiration": { $lt: from90Date } })
+          .where({ "pending.slaExpiration": { $lt: from91Date, $gte: from120Date } })
+          .count();
+      
+      const slaAbove121 = await 
+        File.find({ 'pending.value' : true, department, serviceFileType: service })
+          .where({ "pending.slaExpiration": { $lt: above121, } })
           .count();
   
         const treatedToday = await 
@@ -277,6 +299,7 @@ export default ({ config, db }) => {
             TtFileExceedSlaBtw30_60,
             TtFileExceedSlaBtw60_90,
             TtFileExceedSla90,
+            slaAbove121,
             treatedToday,
             avgPerDay,
             avgPerWeek,
@@ -297,19 +320,26 @@ export default ({ config, db }) => {
     
     const TtFileExceedSlaBtw30_60 = await 
       File.find({ 'pending.value' : true, department })
-        .where({"pending.slaExpiration": { $lte: from30Date, $gte: from60Date } })
+        .where({"pending.slaExpiration": { $lte: from31Date, $gte: from60Date } })
         .count();
 
     const TtFileExceedSlaBtw60_90 = await 
       File.find({ 'pending.value' : true, department })
-        .where({"pending.slaExpiration": { $lte: from60Date, $gte: from90Date }})
+        .where({"pending.slaExpiration": { $lte: from61Date, $gte: from90Date }})
         .count();
 
 
     const TtFileExceedSla90 = await 
       File.find({ 'pending.value' : true, department })
-        .where({ "pending.slaExpiration": { $lt: from90Date } })
+        .where({ "pending.slaExpiration": { $lt: from91Date, $gte: from120Date } })
         .count();
+
+
+    const slaAbove121 = await 
+        File.find({ 'pending.value' : true, department })
+          .where({ "pending.slaExpiration": { $lt: above121, } })
+          .count();
+
 
       const treatedToday = await 
         File
@@ -342,6 +372,7 @@ export default ({ config, db }) => {
         TtFileExceedSlaBtw30_60,
         TtFileExceedSlaBtw60_90,
         TtFileExceedSla90,
+        slaAbove121,
         treatedToday,
         avgPerDay,
         avgPerWeek,

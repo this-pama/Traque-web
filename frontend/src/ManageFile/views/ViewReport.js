@@ -29,37 +29,37 @@ const filters = [
     value: 'totalFileExceedSla'
   },
   {
-    title: "SLA less than 30 days",
+    title: "SLA between 0-30 days",
     role: "Type",
     amountLabel: "FILE",
     value: 'TtFileExceedSla30'
   },
   {
-    title: "SLA Between 30-60 days",
+    title: "SLA Between 31-60 days",
     // warning: true,
     role: "Type",
     amountLabel: "FILE",
     value: 'TtFileExceedSlaBtw30_60'
   },
   {
-    title: "SLA Between 60-90 days",
+    title: "SLA Between 61-90 days",
     // warning: true,
     role: "Type",
     amountLabel: "FILE",
     value: 'TtFileExceedSlaBtw60_90'
   },
   {
-    title: "SLA Above 90 days",
+    title: "SLA between 91-120 days",
     // warning: true,
     role: "Type",
     amountLabel: "FILE",
     value: 'TtFileExceedSla90'
   },
   {
-    title: "Treated file today",
+    title: "SLA above 121 days",
     role: "Type",
     amountLabel: "FILE",
-    value: 'treatedToday'
+    value: 'slaAbove121'
   },
 
   {
@@ -153,10 +153,11 @@ const applications = data ? data.data : null;
   const chartData = {
     labels: [
       'Total files exceeded SLA', 
-      "SLA less than 30 days", 
-      "SLA Between 30-60 days",
-      "SLA Between 60-90 days",
-      "SLA Above 90 days",
+      "SLA between 0-30 days", 
+      "SLA Between 31-60 days",
+      "SLA Between 61-90 days",
+      "SLA between 91-120 days",
+      "SLA above 121 days",
       "Avg processed file/day",
       "Avg processed file/week",
       "Avg processed file/month"
@@ -170,6 +171,7 @@ const applications = data ? data.data : null;
           applications ? applications['TtFileExceedSlaBtw30_60'] : 0,
           applications ? applications['TtFileExceedSlaBtw60_90'] : 0,
           applications ? applications['TtFileExceedSla90'] : 0,
+          applications ? applications['slaAbove121'] : 0,
           applications ? applications['avgPerDay'] : 0,
           applications ? applications['avgPerWeek'] : 0,
           applications ? applications['avgPerMonth'] : 0,
@@ -183,6 +185,7 @@ const applications = data ? data.data : null;
           'rgba(255, 159, 64, 0.2)',
           'rgba(255, 120, 60, 0.2)',
           'rgba(78, 159, 64, 0.2)',
+          'rgba(98, 150, 235, 0.2)',
         ],
         borderColor: [
           'rgba(255, 99, 132, 1)',
@@ -193,6 +196,7 @@ const applications = data ? data.data : null;
           'rgba(255, 159, 64, 1)',
           'rgba(255, 120, 60, 1)',
           'rgba(78, 159, 64, 1)',
+          'rgba(98, 150, 235, 1)',
         ],
         borderWidth: 1,
       },
@@ -206,6 +210,7 @@ const applications = data ? data.data : null;
       "SLA Between 30-60 days",
       "SLA Between 60-90 days",
       "SLA Above 90 days",
+      "SLA above 121 days",
       "Avg processed file/day",
       "Avg processed file/week",
       "Avg processed file/month"
@@ -219,6 +224,7 @@ const applications = data ? data.data : null;
           applications ? applications['TtFileExceedSlaBtw30_60'] : 0,
           applications ? applications['TtFileExceedSlaBtw60_90'] : 0,
           applications ? applications['TtFileExceedSla90'] : 0,
+          applications ? applications['slaAbove121'] : 0,
           applications ? applications['avgPerDay'] : 0,
           applications ? applications['avgPerWeek'] : 0,
           applications ? applications['avgPerMonth'] : 0,
