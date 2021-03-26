@@ -96,7 +96,7 @@ export default ({ config, db }) => {
     
      const TtFileExceedSla30 = await 
        File.find({ 'pending.value' : true, exceedSLA: true, department, serviceFileType: service, subDepartment })
-         .where({"pending.slaExpiration": { $lte: from30Date, $gte: new Date() } })
+         .where({"pending.slaExpiration": { $gte: from30Date } })
          .count();
      
      const TtFileExceedSlaBtw30_60 = await 
@@ -169,7 +169,7 @@ export default ({ config, db }) => {
      
       const TtFileExceedSla30 = await 
         File.find({ 'pending.value' : true, exceedSLA: true, department, subDepartment })
-          .where({"pending.slaExpiration": { $lte: from30Date, $gte: new Date() } })
+          .where({"pending.slaExpiration": { $gte: from30Date } })
           .count();
       
       const TtFileExceedSlaBtw30_60 = await 
@@ -244,7 +244,7 @@ export default ({ config, db }) => {
      
       const TtFileExceedSla30 = await 
         File.find({ 'pending.value' : true, exceedSLA: true, department, serviceFileType: service })
-          .where({"pending.slaExpiration": { $lte: from30Date, $gte: new Date() } })
+          .where({"pending.slaExpiration": { $gte: from30Date } })
           .count();
       
       const TtFileExceedSlaBtw30_60 = await 
@@ -315,7 +315,7 @@ export default ({ config, db }) => {
    
     const TtFileExceedSla30 = await 
       File.find({ 'pending.value' : true, exceedSLA: true, department })
-        .where({"pending.slaExpiration": { $lte: from30Date, $gte: new Date() } })
+        .where({"pending.slaExpiration": { $gte: from30Date } })
         .count();
     
     const TtFileExceedSlaBtw30_60 = await 
