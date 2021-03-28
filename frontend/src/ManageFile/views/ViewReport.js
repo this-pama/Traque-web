@@ -16,6 +16,25 @@ import { Doughnut, Pie, Bar, Radar } from 'react-chartjs-2';
 
 const filters = [
   {
+    title: "Avg processed file/day",
+    role: "Type",
+    amountLabel: "FILE",
+    value: 'avgPerDay'
+  },
+  {
+    title: "Avg processed file/week",
+    role: "Type",
+    amountLabel: "FILE",
+    // warning: true,
+    value: 'avgPerWeek'
+  },
+  {
+    title: "Avg processed file/month",
+    role: "Type",
+    amountLabel: "FILE",
+    value: 'avgPerMonth'
+  },
+  {
     title: "Total files",
     role: "Type",
     amountLabel: "FILE",
@@ -60,29 +79,7 @@ const filters = [
     role: "Type",
     amountLabel: "FILE",
     value: 'slaAbove121'
-  },
-
-  {
-    title: "Avg processed file/day",
-    role: "Type",
-    amountLabel: "FILE",
-    value: 'avgPerDay'
-  },
-
-  {
-    title: "Avg processed file/week",
-    role: "Type",
-    amountLabel: "FILE",
-    // warning: true,
-    value: 'avgPerWeek'
-  },
-  {
-    title: "Avg processed file/month",
-    role: "Type",
-    amountLabel: "FILE",
-    value: 'avgPerMonth'
-  },
-  
+  },  
 ];
 
 const View = ({ props }) => {
@@ -369,7 +366,7 @@ const applications = data ? data.data : null;
       />
       
       <div style={{ paddingBottom: 40 }} />
-      { applications && (
+      {/* { applications && (
       <Row>
         <Col md={6} sm={6} xs={12}>
           <Doughnut 
@@ -408,7 +405,7 @@ const applications = data ? data.data : null;
           />
         </Col>
       </Row>
-      )}
+      )} */}
       
     </>
   );
