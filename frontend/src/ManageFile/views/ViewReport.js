@@ -16,6 +16,19 @@ import { Doughnut, Pie, Bar, Radar } from 'react-chartjs-2';
 
 const filters = [
   {
+    title: "Total files",
+    role: "Type",
+    amountLabel: "FILE",
+    value: 'totalFile',
+  },
+  {
+    title: "Total files exceeded SLA",
+    // warning: true,
+    role: "Type",
+    amountLabel: "FILE",
+    value: 'totalFileExceedSla'
+  },
+  {
     title: "Avg processed file/day",
     role: "Type",
     amountLabel: "FILE",
@@ -33,19 +46,6 @@ const filters = [
     role: "Type",
     amountLabel: "FILE",
     value: 'avgPerMonth'
-  },
-  {
-    title: "Total files",
-    role: "Type",
-    amountLabel: "FILE",
-    value: 'totalFile',
-  },
-  {
-    title: "Total files exceeded SLA",
-    // warning: true,
-    role: "Type",
-    amountLabel: "FILE",
-    value: 'totalFileExceedSla'
   },
   {
     title: "SLA between 0-30 days",
