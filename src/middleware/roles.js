@@ -109,3 +109,13 @@ export const management = {
   name: "Management",
   permission: ['viewReport'],
 };
+
+export const ministryManagement = {
+  name: "Ministry Report",
+  permission: ['viewReport-Ministry-level'],
+};
+
+export const departmentManagement = {
+  name: "Department Report",
+  permission: ['viewReport-Department-level', "canSearchFile",],
+};

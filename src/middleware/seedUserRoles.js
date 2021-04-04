@@ -7,6 +7,8 @@ import {
   registry_mgt,
   SA,
   admin,
+  ministryManagement,
+  departmentManagement,
 } from "./roles";
 import { Router } from "express";
 
@@ -17,6 +19,8 @@ export default ({ config, db }) => {
     Role.insertMany([
       fto,
       management,
+      departmentManagement,
+      ministryManagement,
       registry,
       admin,
       SA,

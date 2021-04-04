@@ -14,6 +14,10 @@ import userRolePermission from "../Dashboard/views/UserRoleColDef/userRoleColDef
 import serviceFileTypes from "../AdminDashboard/views/ServiceFileTypeColDef/ServiceFileTypeColDef";
 import sectionReport from "../ManageFile/views/SectionColDef/SectionColDef";
 
+import ministryReportColDef from '../ManageFile/views/ViewMinistryReports/colDef'
+import departmentReportColDef from '../ManageFile/views/ViewDepartmentReports/colDef'
+
+import  ministryReportColDef2 from '../ManageFile/views/ViewMinistryReports/colDef2'
 // this function returns only the columns needed for specific view (for example /hr/global )
 export default function getColumnDefs(viewName, onValueChange) {
   let columnDefs;
@@ -74,6 +78,18 @@ export default function getColumnDefs(viewName, onValueChange) {
 
     case "sectionReport":
       columnDefs = [...sectionReport];
+      break;
+
+    case "viewMinistryReport":
+      columnDefs = [...ministryReportColDef];
+      break;
+
+    case "viewMinistryReport2":
+      columnDefs = [...ministryReportColDef2];
+      break;
+
+    case "viewDepartmentReport":
+      columnDefs = [...departmentReportColDef];
       break;
 
     default:

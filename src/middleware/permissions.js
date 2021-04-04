@@ -30,5 +30,7 @@ export default [
 
   "canBatchUploadToDepartment",
 
-  'viewReport'
+  'viewReport',
+  'viewReport-Ministry-level',
+  'viewReport-Department-level'
 ];

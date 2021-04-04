@@ -13,6 +13,8 @@ import RegistryFle from "./views/Registry";
 import SectionFileReport from "./views/SectionFileReport";
 import MinistryFileReport from "./views/MinistryFileReport";
 import ViewReport from './views/ViewReport'
+import ViewMinistryReport from './views/ViewMinistryReports/ViewReport'
+import ViewDepartmentReport from './views/ViewDepartmentReports/ViewReport'
 
 import { Redirect, Route, Switch } from "react-router";
 import { Link } from "react-router-dom";
@@ -127,6 +129,20 @@ const Dashboard = (props) => {
       path: "/file/report",
       component: () => <ViewReport props={props} />,
     },
+    {
+      permissions: ['viewReport-Ministry-level'],
+      defaultsForUserType: ["Ministry Report"],
+      label: "Reports",
+      path: "/file/ministry-report",
+      component: () => <ViewMinistryReport props={props} />,
+    },
+    {
+      permissions: ['viewReport-Department-level'],
+      defaultsForUserType: ["Department Report"],
+      label: "Departmental Reports",
+      path: "/file/department-report",
+      component: () => <ViewDepartmentReport props={props} />,
+    },
   ];
 
   const defaultView = views.find(
@@ -141,7 +157,6 @@ const Dashboard = (props) => {
 
   return (
     <div>
-      {/* <Header /> */}
       <MySecondaryNavigation
         l1Label={user.isStaff ? "Manage File" : "Admin dashboard"}
         l1Link={user.isStaff ? "#" : "/department"}

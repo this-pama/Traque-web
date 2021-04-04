@@ -13,6 +13,7 @@ import UserRoleAction from "../../Dashboard/views/UserRoleColDef/Action";
 import ArchivedAction from "../../ManageFile/views/ArchivedFile/Action";
 import ServiceFileTypeAction from "../../AdminDashboard/views/ServiceFileTypeColDef/Action";
 import SectionReportAction from "../../ManageFile/views/SectionColDef/Action";
+import ViewMinistryReportAction from '../../ManageFile/views/ViewMinistryReports/Action'
 
 export {
   MinistryAction,
@@ -30,4 +31,5 @@ export {
   ArchivedAction,
   ServiceFileTypeAction,
   SectionReportAction,
+  ViewMinistryReportAction,
 };
