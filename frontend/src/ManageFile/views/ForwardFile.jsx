@@ -116,8 +116,8 @@ class Create extends React.Component {
     this.setState({ loading: true });
     try {
       axios
-        .get(`/v1/department`)
-        .then((data) => this.setState({ deptList: data.data, loading: false }));
+        .get(`/v1/department/department/ministry/${user && user.ministry}`)
+        .then((data) => this.setState({ deptList: data && data.data.data, loading: false }));
     } catch (err) {
       console.log("Error while loading department", err);
       this.setState({ loading: false });
