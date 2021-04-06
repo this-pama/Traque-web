@@ -16,7 +16,7 @@ export const name = () => ({
   filter: "agTextColumnFilter",
   filterParams: globalFilterParams,
   filter: false,
-  valueGetter: ({ data }) => data && data.ministry ? data.ministry.ministry.name : null
+  valueGetter: ({ data }) => data && data.ministry ? data.ministry.name : null
 });
 
 export const totalFile = () => ({

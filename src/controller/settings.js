@@ -533,7 +533,7 @@ export default ({ config, db }) => {
             avgPerDay,
             avgPerWeek,
             avgPerMonth,
-            ministry: min
+            ministry: x
           })
 
       }
