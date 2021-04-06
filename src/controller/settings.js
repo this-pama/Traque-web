@@ -7,6 +7,7 @@ import File from '../model/file'
 
 import Department from "../model/department";
 import SubDepartment from '../model/subDepartment'
+import Ministry from '../model/ministry'
 
 let from60Date = new Date(Date.now() - 60 * 60 * 24 * 60 * 1000); // 60 days from current date
 let from61Date = new Date(Date.now() - 60 * 60 * 24 * 61 * 1000); // 61 days from current date
@@ -444,15 +445,13 @@ export default ({ config, db }) => {
                 .where({ "updatedAt": { $gte: new Date(Date.now() - 60 * 60 * 24 * 30 * 1000) } })
                 .count();
 
-      const ministry = await 
-        File
-          .distinct('ministry', { deleted : false })
+      const ministry = await Ministry.find({})
 
       let data = [];
       
       for(let x of  ministry){
 
-        const min = await File.findOne({ ministry: x })
+        const min = await File.findOne({ ministry: x && x._id })
         .select([
           "_id",
           "ministry",
@@ -463,62 +462,62 @@ export default ({ config, db }) => {
           select: ["name", "_id"],
         })
 
-        const TtFile = await File.find({ ministry: x }).count();
+        const TtFile = await File.find({ ministry: x && x._id }).count();
 
-        const TtFileExceedSla = await File.where({ exceedSLA: true, ministry: x  }).count();
+        const TtFileExceedSla = await File.where({ exceedSLA: true, ministry: x && x._id  }).count();
 
       
         const TtFileExceedSla30 = await 
-          File.find({ 'pending.value' : true, exceedSLA: true, ministry: x   })
+          File.find({ 'pending.value' : true, exceedSLA: true, ministry: x && x._id   })
             .where({"pending.slaExpiration": { $gte: from30Date } })
             .count();
     
         const TtFileExceedSlaBtw30_60 = await 
-          File.find({ 'pending.value' : true, exceedSLA: true, ministry: x   })
+          File.find({ 'pending.value' : true, exceedSLA: true, ministry: x && x._id   })
             .where({"pending.slaExpiration": { $lte: from31Date, $gte: from60Date } })
             .count();
 
         const TtFileExceedSlaBtw60_90 = await 
-          File.find({ 'pending.value' : true, exceedSLA: true, ministry: x  })
+          File.find({ 'pending.value' : true, exceedSLA: true, ministry: x && x._id  })
             .where({"pending.slaExpiration": { $lte: from61Date, $gte: from90Date }})
             .count();
 
 
         const TtFileExceedSla90 = await 
           File
-            .find({ 'pending.value' : true, exceedSLA: true, ministry: x  })
+            .find({ 'pending.value' : true, exceedSLA: true, ministry: x && x._id  })
             .where({ "pending.slaExpiration": { $lt: from91Date, $gte: from120Date } })
             .count();
 
 
         const slaAbove121 = await 
             File
-              .find({ 'pending.value' : true, exceedSLA: true, ministry: x  })
+              .find({ 'pending.value' : true, exceedSLA: true, ministry: x && x._id  })
               .where({ "pending.slaExpiration": { $lt: above121, } })
               .count();
 
 
         const treatedToday = await 
           File
-          .find({ ministry: x  })
+          .find({ ministry: x && x._id  })
             .where({ "updatedAt": { $gte: new Date() } })
             .count(); 
 
         const avgPerDay = await 
             File
-            .find({ ministry: x  })
+            .find({ ministry: x && x._id  })
               .where({ "updatedAt": { $gte: new Date() } })
               .count();
       
           const avgPerWeek = await 
                 File
-                .find({ ministry: x  })
+                .find({ ministry: x && x._id  })
                   .where({ "updatedAt": { $gte: new Date(Date.now() - 60 * 60 * 24 * 7 * 1000) } })
                   .count();
 
           const avgPerMonth = await 
                   File
-                  .find({ ministry: x  })
+                  .find({ ministry: x && x._id  })
                     .where({ "updatedAt": { $gte: new Date(Date.now() - 60 * 60 * 24 * 30 * 1000) } })
                     .count();
 

@@ -83,10 +83,12 @@ class Create extends React.Component {
   }
 
   fetchDept = async () => {
+    const { user } = this.props;
+
     try {
       axios
-        .get(`/v1/department`)
-        .then((data) => this.setState({ department: data.data }));
+        .get(`/v1/department/department/ministry/${user && user.ministry}`)
+        .then((data) => this.setState({ department: data && data.data.data }));
     } catch (err) {
       console.log("Error while loading department", err);
     }
@@ -602,6 +604,7 @@ class Create extends React.Component {
 const mapStateToProps = (state) => {
   return {
     userId: state.user._id,
+    user : state.user
   };
 };
 

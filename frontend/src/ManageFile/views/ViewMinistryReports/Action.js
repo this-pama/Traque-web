@@ -12,7 +12,7 @@ import useSWR, { trigger } from "swr";
 
 const Action = (props) => {
   const { request_status, _id, reviewed_candidate, create_user, ministry } = props.data;
-console.log('props.data', props.data)
+
   const storeData = store.getState();
 
   const { user } = storeData;
