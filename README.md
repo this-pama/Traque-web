@@ -2,7 +2,6 @@
 
 Traquer is a passionate bird that helps you watch over your files while you go about your daily business. Traquer is a location file tracking system. A simulation of manual file movement to electronic file monitoring
 
--   [Traquer Staging URL](http://ec2-3-15-39-122.us-east-2.compute.amazonaws.com/login)
 
 ## Technical stack:
 - Back-end: Node JS
@@ -13,17 +12,17 @@ Traquer is a passionate bird that helps you watch over your files while you go a
     - MONGO_HOSTNAME=localhost
     - MONGO_PORT=27017
 
-    - MAILTRAP_USERNAME=ba4a71919cb1e7
-    - MAILTRAP_PASSWORD=c257ebc8ef7cab
-    - EMAIL_SENDER=info@apexapps.net
+    - MAILTRAP_USERNAME=
+    - MAILTRAP_PASSWORD=
+    - EMAIL_SENDER=
 
     - NODE_ENV=development
 
-    - SMS_USERNAME=apx-ftsa
-    - SMS_PASSWORD=Fts@2021
-    - SMS_SENDER=Traquer
+    - SMS_USERNAME=
+    - SMS_PASSWORD=
+    - SMS_SENDER=
 
-    - FILE_NUMBER_PREFIX=OYSG
+    - FILE_NUMBER_PREFIX=
 
     - SLA_HOURS=48
 
@@ -61,9 +60,9 @@ POST::  URL_PATH/v1/user/add
 ```
 ```sh
 {
-     "firstName": "Super",
-      "lastName" : "Admin",
-      "email": "super@admin.com",
+     "firstName": "",
+      "lastName" : "",
+      "email": "",
       "telephone": 23480******,
       "dob": "2021/01/12",
       "gender": "M",
